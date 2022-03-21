@@ -22,17 +22,19 @@ public class UIService : BaseService, IUIService
 
     public void OpenWindow(string winName, UILayer layer = UILayer.Normal)
     {
+        _resourceService.LoadGameObjectAsync(winName, (go) => 
+        {
+            go.name = winName;
+            go.transform.SetParent(_uiRoot);
+            go.transform.localScale = Vector3.one;
+            RectTransform rect = go.transform as RectTransform;
+            rect.anchorMin = Vector3.zero;
+            rect.anchorMax = Vector3.one;
+            rect.offsetMin = Vector3.zero;
+            rect.offsetMax = Vector3.zero;
 
-        string path = ResourceHelper.GetUIPath(winName);
-        var go = Resources.Load<GameObject>(path);
-        GameObject ui = GameObject.Instantiate(go);
-        ui.transform.SetParent(_uiRoot);
-        ui.transform.localScale = Vector3.one;
-        RectTransform rect = ui.transform as RectTransform;
-        rect.anchorMin = Vector3.zero;
-        rect.anchorMax = Vector3.one;
-        rect.offsetMin = Vector3.zero;
-        rect.offsetMax = Vector3.zero;
+            //_resourceService.ReleaseAsset(go);
+        });
     }
 
     public void CloseWindow(string winName)

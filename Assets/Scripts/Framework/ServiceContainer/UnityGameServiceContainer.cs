@@ -8,5 +8,6 @@ public class UnityGameServiceContainer:GameServiceContainer
     {
         RegisterService(new NetworkService());
         RegisterService(new UIService());
+        RegisterService(new ResourceService());
     }
 }

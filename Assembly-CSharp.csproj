@@ -9,7 +9,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{19E82F7F-AEB9-5E5F-560A-48816C29BE8B}</ProjectGuid>
+    <ProjectGuid>{6DA85072-0C81-B8D3-487D-7ADDAFE768A3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -54,119 +54,123 @@
   </PropertyGroup>
   <ItemGroup>
     <Analyzer Include="G:\VS2022\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
+    <Analyzer Include="G:\MFramework\Assets\Scripts\Proto\ProtoDLL\System.Runtime.CompilerServices.Unsafe.dll" />
+    <Analyzer Include="G:\MFramework\Assets\Scripts\Proto\ProtoDLL\System.Buffers.dll" />
+    <Analyzer Include="G:\MFramework\Assets\Scripts\Proto\ProtoDLL\System.Memory.dll" />
+    <Analyzer Include="G:\MFramework\Assets\Scripts\Proto\ProtoDLL\Google.Protobuf.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\lockstep\Collision2D\QuadTree\QuadTreeExt.cs" />
-    <Compile Include="Assets\lockstep\NetWork\NetworkProxy.cs" />
-    <Compile Include="Assets\lockstep\Collision2D\Utils.cs" />
-    <Compile Include="Assets\lockstep\Collision2D\ColliderDataMono.cs" />
-    <Compile Include="Assets\lockstep\Util\LitJson\Netstandard15Polyfill.cs" />
-    <Compile Include="Assets\lockstep\Math\LUT\LUTAsin.cs" />
-    <Compile Include="Assets\lockstep\Util\LTime.cs" />
-    <Compile Include="Assets\lockstep\Collision2D\CRigidbody.cs" />
-    <Compile Include="Assets\lockstep\NetWork\TCPService.cs" />
-    <Compile Include="Assets\lockstep\Util\LitJson\JsonException.cs" />
-    <Compile Include="Assets\lockstep\Util\LitJson\JsonData.cs" />
-    <Compile Include="Assets\lockstep\Util\CoroutineHelper.cs" />
-    <Compile Include="Assets\lockstep\Collision2D\CollisionHelper.cs" />
-    <Compile Include="Assets\lockstep\Util\LitJson\JsonMockWrapper.cs" />
-    <Compile Include="Assets\lockstep\Framework\Interface\IUIService.cs" />
-    <Compile Include="Assets\lockstep\Collision2D\ColliderProxy.cs" />
-    <Compile Include="Assets\lockstep\Math\BaseType\LVector2Int.cs" />
-    <Compile Include="Assets\lockstep\Framework\Service\CommonStateService.cs" />
-    <Compile Include="Assets\lockstep\Collision2D\Shape\CPolygon.cs" />
-    <Compile Include="Assets\lockstep\Collision2D\Shape\COBB.cs" />
-    <Compile Include="Assets\lockstep\Math\BaseType\LFloat.cs" />
-    <Compile Include="Assets\lockstep\Logging\Debug.cs" />
-    <Compile Include="Assets\lockstep\Framework\Interface\ISimulatorService.cs" />
-    <Compile Include="Assets\lockstep\Math\BaseType\LVector2.cs" />
-    <Compile Include="Assets\lockstep\ClientLogic\GameManager.cs" />
-    <Compile Include="Assets\lockstep\Util\LitJson\IJsonWrapper.cs" />
-    <Compile Include="Assets\lockstep\NetWork\IMessageDispatcher.cs" />
-    <Compile Include="Assets\lockstep\NetWork\Package\CircleBuffer.cs" />
-    <Compile Include="Assets\lockstep\Collision2D\CTransform2D.cs" />
-    <Compile Include="Assets\lockstep\Proto\Message.cs" />
-    <Compile Include="Assets\lockstep\NetWork\TCPChannel.cs" />
-    <Compile Include="Assets\lockstep\Framework\Interface\INetworkService.cs" />
-    <Compile Include="Assets\lockstep\Framework\Service\BaseGameService.cs" />
-    <Compile Include="Assets\lockstep\Framework\Service\EventRegisterService.cs" />
-    <Compile Include="Assets\lockstep\Util\Util.cs" />
-    <Compile Include="Assets\lockstep\Collision2D\CollisionHelper1.cs" />
-    <Compile Include="Assets\lockstep\NetWork\UDPService.cs" />
-    <Compile Include="Assets\lockstep\Logging\BaseLogger.cs" />
-    <Compile Include="Assets\lockstep\Util\JsonUtil.cs" />
-    <Compile Include="Assets\lockstep\Collision2D\CollisionSystem_Unity.cs" />
-    <Compile Include="Assets\lockstep\Util\ReflectionUtility.cs" />
-    <Compile Include="Assets\lockstep\Collision2D\Shape\CRay.cs" />
-    <Compile Include="Assets\lockstep\NetWork\NetTest.cs" />
-    <Compile Include="Assets\lockstep\NetWork\UDPChannel.cs" />
-    <Compile Include="Assets\lockstep\Math\LMath.cs" />
-    <Compile Include="Assets\lockstep\Logging\LogEventArgs.cs" />
-    <Compile Include="Assets\lockstep\Collision2D\QuadTree\BoundQuadTreeNode.cs" />
-    <Compile Include="Assets\lockstep\Framework\Helper\EEvent.cs" />
-    <Compile Include="Assets\lockstep\Util\LitJson\JsonMapper.cs" />
-    <Compile Include="Assets\lockstep\Collision2D\CollisionSystem.cs" />
-    <Compile Include="Assets\lockstep\Util\NativeUtil\NativePool.cs" />
-    <Compile Include="Assets\lockstep\Collision2D\Shape\CCircle.cs" />
-    <Compile Include="Assets\lockstep\Util\LitJson\JsonReader.cs" />
-    <Compile Include="Assets\lockstep\Framework\Helper\ResourceHelper.cs" />
-    <Compile Include="Assets\lockstep\Framework\Interface\IService.cs" />
-    <Compile Include="Assets\lockstep\Framework\Interface\IResourceService.cs" />
+    <Compile Include="Assets\Scripts\Collision2D\QuadTree\QuadTreeExt.cs" />
+    <Compile Include="Assets\Scripts\NetWork\NetworkProxy.cs" />
+    <Compile Include="Assets\Scripts\Collision2D\Utils.cs" />
+    <Compile Include="Assets\Scripts\Collision2D\ColliderDataMono.cs" />
+    <Compile Include="Assets\Scripts\Util\LitJson\Netstandard15Polyfill.cs" />
+    <Compile Include="Assets\Scripts\Math\LUT\LUTAsin.cs" />
+    <Compile Include="Assets\Scripts\Util\LTime.cs" />
+    <Compile Include="Assets\Scripts\Collision2D\CRigidbody.cs" />
+    <Compile Include="Assets\Scripts\NetWork\TCPService.cs" />
+    <Compile Include="Assets\Scripts\Util\LitJson\JsonException.cs" />
+    <Compile Include="Assets\Scripts\Util\LitJson\JsonData.cs" />
+    <Compile Include="Assets\Scripts\Util\CoroutineHelper.cs" />
+    <Compile Include="Assets\Scripts\Collision2D\CollisionHelper.cs" />
+    <Compile Include="Assets\Scripts\Util\LitJson\JsonMockWrapper.cs" />
+    <Compile Include="Assets\Scripts\Framework\Interface\IUIService.cs" />
+    <Compile Include="Assets\Scripts\Collision2D\ColliderProxy.cs" />
+    <Compile Include="Assets\Scripts\Math\BaseType\LVector2Int.cs" />
+    <Compile Include="Assets\Scripts\Framework\Service\CommonStateService.cs" />
+    <Compile Include="Assets\Scripts\Collision2D\Shape\CPolygon.cs" />
+    <Compile Include="Assets\Scripts\Collision2D\Shape\COBB.cs" />
+    <Compile Include="Assets\Scripts\Math\BaseType\LFloat.cs" />
+    <Compile Include="Assets\Scripts\Logging\Debug.cs" />
+    <Compile Include="Assets\Scripts\Framework\Interface\ISimulatorService.cs" />
+    <Compile Include="Assets\Scripts\Math\BaseType\LVector2.cs" />
+    <Compile Include="Assets\Scripts\ClientLogic\GameManager.cs" />
+    <Compile Include="Assets\Scripts\Util\LitJson\IJsonWrapper.cs" />
+    <Compile Include="Assets\Scripts\NetWork\IMessageDispatcher.cs" />
+    <Compile Include="Assets\Scripts\NetWork\Package\CircleBuffer.cs" />
+    <Compile Include="Assets\Scripts\Collision2D\CTransform2D.cs" />
+    <Compile Include="Assets\Scripts\Proto\Message.cs" />
+    <Compile Include="Assets\Scripts\NetWork\TCPChannel.cs" />
+    <Compile Include="Assets\Scripts\Framework\Interface\INetworkService.cs" />
+    <Compile Include="Assets\Scripts\Framework\Service\BaseGameService.cs" />
+    <Compile Include="Assets\Scripts\Framework\Service\EventRegisterService.cs" />
+    <Compile Include="Assets\Scripts\Util\Util.cs" />
+    <Compile Include="Assets\Scripts\Collision2D\CollisionHelper1.cs" />
+    <Compile Include="Assets\Scripts\NetWork\UDPService.cs" />
+    <Compile Include="Assets\Scripts\Logging\BaseLogger.cs" />
+    <Compile Include="Assets\Scripts\Util\JsonUtil.cs" />
+    <Compile Include="Assets\Scripts\Collision2D\CollisionSystem_Unity.cs" />
+    <Compile Include="Assets\Scripts\Util\ReflectionUtility.cs" />
+    <Compile Include="Assets\Scripts\Collision2D\Shape\CRay.cs" />
+    <Compile Include="Assets\Scripts\NetWork\NetTest.cs" />
+    <Compile Include="Assets\Scripts\NetWork\UDPChannel.cs" />
+    <Compile Include="Assets\Scripts\Math\LMath.cs" />
+    <Compile Include="Assets\Scripts\Logging\LogEventArgs.cs" />
+    <Compile Include="Assets\Scripts\Collision2D\QuadTree\BoundQuadTreeNode.cs" />
+    <Compile Include="Assets\Scripts\Framework\Helper\EEvent.cs" />
+    <Compile Include="Assets\Scripts\Util\LitJson\JsonMapper.cs" />
+    <Compile Include="Assets\Scripts\Collision2D\CollisionSystem.cs" />
+    <Compile Include="Assets\Scripts\Util\NativeUtil\NativePool.cs" />
+    <Compile Include="Assets\Scripts\Collision2D\Shape\CCircle.cs" />
+    <Compile Include="Assets\Scripts\Util\LitJson\JsonReader.cs" />
+    <Compile Include="Assets\Scripts\Framework\Helper\ResourceHelper.cs" />
+    <Compile Include="Assets\Scripts\Framework\Interface\IService.cs" />
+    <Compile Include="Assets\Scripts\Framework\Interface\IResourceService.cs" />
     <Compile Include="Assets\Test\CSharpTest.cs" />
-    <Compile Include="Assets\lockstep\Framework\Interface\IEventRegisterService.cs" />
-    <Compile Include="Assets\lockstep\Math\LUT\LUTSinCos.cs" />
-    <Compile Include="Assets\lockstep\Math\BaseType\LAxis3D.cs" />
-    <Compile Include="Assets\lockstep\Math\LUT\LUTAtan2.cs" />
-    <Compile Include="Assets\lockstep\Util\NetworkHelper.cs" />
-    <Compile Include="Assets\lockstep\Framework\ServiceContainer\ManagerContainer.cs" />
-    <Compile Include="Assets\lockstep\Util\NativeUtil\Buffer.cs" />
-    <Compile Include="Assets\lockstep\Framework\Helper\EventHelper.cs" />
-    <Compile Include="Assets\lockstep\Collision2D\Shape\CBaseShape.cs" />
-    <Compile Include="Assets\lockstep\Math\LUT\LUTAcos.cs" />
-    <Compile Include="Assets\lockstep\Util\LitJson\JsonWriter.cs" />
-    <Compile Include="Assets\lockstep\Util\LTimer.cs" />
-    <Compile Include="Assets\lockstep\Math\LRandom.cs" />
-    <Compile Include="Assets\lockstep\Logging\LogSeverity.cs" />
-    <Compile Include="Assets\lockstep\Framework\ServiceContainer\GameServiceContainer.cs" />
-    <Compile Include="Assets\lockstep\NetWork\IMessagePacker.cs" />
-    <Compile Include="Assets\lockstep\NetWork\NetBase.cs" />
-    <Compile Include="Assets\lockstep\Logging\Logger.cs" />
-    <Compile Include="Assets\lockstep\Collision2D\QuadTree\BoundQuadTree.cs" />
-    <Compile Include="Assets\lockstep\Math\BaseType\LVector3.cs" />
-    <Compile Include="Assets\lockstep\Collision2D\ColliderPrefab.cs" />
-    <Compile Include="Assets\lockstep\Math\BaseType\LMatrix33.cs" />
-    <Compile Include="Assets\lockstep\Util\NativeUtil\NativeHelper.cs" />
-    <Compile Include="Assets\lockstep\Util\LitJson\Lexer.cs" />
-    <Compile Include="Assets\lockstep\Framework\Service\ConstStateService.cs" />
-    <Compile Include="Assets\lockstep\Framework\ServiceContainer\BaseServiceContainer.cs" />
-    <Compile Include="Assets\lockstep\NetWork\NetHelper.cs" />
-    <Compile Include="Assets\lockstep\Collision2D\Shape\CSegment.cs" />
-    <Compile Include="Assets\lockstep\NetWork\Package\PackageParser.cs" />
-    <Compile Include="Assets\lockstep\Util\PathUtil.cs" />
-    <Compile Include="Assets\lockstep\ClientLogic\Launcher.cs" />
-    <Compile Include="Assets\lockstep\Framework\Interface\IConstStateService.cs" />
-    <Compile Include="Assets\lockstep\Framework\Interface\IServiceContainer.cs" />
-    <Compile Include="Assets\lockstep\Framework\Service\UIService.cs" />
-    <Compile Include="Assets\lockstep\Math\BaseType\LVector3Int.cs" />
-    <Compile Include="Assets\lockstep\Collision2D\Shape\CAABB.cs" />
-    <Compile Include="Assets\lockstep\Framework\ServiceContainer\UnityGameServiceContainer.cs" />
-    <Compile Include="Assets\lockstep\Math\BaseType\LAxis2D.cs" />
-    <Compile Include="Assets\lockstep\Util\Profiler.cs" />
-    <Compile Include="Assets\lockstep\Math\LMath_Vector.cs" />
-    <Compile Include="Assets\lockstep\Framework\Service\BaseService.cs" />
-    <Compile Include="Assets\lockstep\Util\LitJson\ParserToken.cs" />
-    <Compile Include="Assets\lockstep\Framework\Service\NetworkService.cs" />
-    <Compile Include="Assets\lockstep\Framework\Interface\ICommonStateService.cs" />
-    <Compile Include="Assets\lockstep\Framework\Interface\ILifeCycle.cs" />
-    <Compile Include="Assets\lockstep\Math\BaseType\LRect.cs" />
-    <Compile Include="Assets\lockstep\Collision2D\ICollisionSystem.cs" />
-    <Compile Include="Assets\lockstep\Collision2D\ColliderPart.cs" />
-    <Compile Include="Assets\lockstep\Math\BaseType\LQuaternion.cs" />
-    <Compile Include="Assets\lockstep\Util\Pool.cs" />
-    <Compile Include="Assets\lockstep\Math\PrimerLUT.cs" />
-    <Compile Include="Assets\lockstep\Math\LMathExtension2.cs" />
-    <Compile Include="Assets\lockstep\Framework\Service\BaseSystem.cs" />
-    <Compile Include="Assets\lockstep\Framework\Service\ResourceService.cs" />
+    <Compile Include="Assets\Scripts\Framework\Interface\IEventRegisterService.cs" />
+    <Compile Include="Assets\Scripts\Math\LUT\LUTSinCos.cs" />
+    <Compile Include="Assets\Scripts\Math\BaseType\LAxis3D.cs" />
+    <Compile Include="Assets\Scripts\Math\LUT\LUTAtan2.cs" />
+    <Compile Include="Assets\Scripts\Util\NetworkHelper.cs" />
+    <Compile Include="Assets\Scripts\Framework\ServiceContainer\ManagerContainer.cs" />
+    <Compile Include="Assets\Scripts\Util\NativeUtil\Buffer.cs" />
+    <Compile Include="Assets\Scripts\Framework\Helper\EventHelper.cs" />
+    <Compile Include="Assets\Scripts\Collision2D\Shape\CBaseShape.cs" />
+    <Compile Include="Assets\Scripts\Math\LUT\LUTAcos.cs" />
+    <Compile Include="Assets\Scripts\Util\LitJson\JsonWriter.cs" />
+    <Compile Include="Assets\Scripts\Util\LTimer.cs" />
+    <Compile Include="Assets\Scripts\Math\LRandom.cs" />
+    <Compile Include="Assets\Scripts\Logging\LogSeverity.cs" />
+    <Compile Include="Assets\Scripts\Framework\ServiceContainer\GameServiceContainer.cs" />
+    <Compile Include="Assets\Scripts\NetWork\IMessagePacker.cs" />
+    <Compile Include="Assets\Scripts\NetWork\NetBase.cs" />
+    <Compile Include="Assets\Scripts\Logging\Logger.cs" />
+    <Compile Include="Assets\Scripts\Collision2D\QuadTree\BoundQuadTree.cs" />
+    <Compile Include="Assets\Scripts\Math\BaseType\LVector3.cs" />
+    <Compile Include="Assets\Scripts\Collision2D\ColliderPrefab.cs" />
+    <Compile Include="Assets\Scripts\Math\BaseType\LMatrix33.cs" />
+    <Compile Include="Assets\Scripts\Util\NativeUtil\NativeHelper.cs" />
+    <Compile Include="Assets\Scripts\Util\LitJson\Lexer.cs" />
+    <Compile Include="Assets\Scripts\Framework\Service\ConstStateService.cs" />
+    <Compile Include="Assets\Scripts\Framework\ServiceContainer\BaseServiceContainer.cs" />
+    <Compile Include="Assets\Scripts\NetWork\NetHelper.cs" />
+    <Compile Include="Assets\Scripts\Collision2D\Shape\CSegment.cs" />
+    <Compile Include="Assets\Scripts\NetWork\Package\PackageParser.cs" />
+    <Compile Include="Assets\Scripts\Util\PathUtil.cs" />
+    <Compile Include="Assets\Scripts\ClientLogic\Launcher.cs" />
+    <Compile Include="Assets\Scripts\Framework\Interface\IConstStateService.cs" />
+    <Compile Include="Assets\Scripts\Framework\Interface\IServiceContainer.cs" />
+    <Compile Include="Assets\Scripts\Framework\Service\UIService.cs" />
+    <Compile Include="Assets\Scripts\Math\BaseType\LVector3Int.cs" />
+    <Compile Include="Assets\Scripts\Collision2D\Shape\CAABB.cs" />
+    <Compile Include="Assets\Scripts\Framework\ServiceContainer\UnityGameServiceContainer.cs" />
+    <Compile Include="Assets\Scripts\Math\BaseType\LAxis2D.cs" />
+    <Compile Include="Assets\Scripts\Util\Profiler.cs" />
+    <Compile Include="Assets\Scripts\Math\LMath_Vector.cs" />
+    <Compile Include="Assets\Scripts\Framework\Service\BaseService.cs" />
+    <Compile Include="Assets\Scripts\Util\LitJson\ParserToken.cs" />
+    <Compile Include="Assets\Scripts\Framework\Service\NetworkService.cs" />
+    <Compile Include="Assets\Scripts\Framework\Interface\ICommonStateService.cs" />
+    <Compile Include="Assets\Scripts\Framework\Interface\ILifeCycle.cs" />
+    <Compile Include="Assets\Scripts\Math\BaseType\LRect.cs" />
+    <Compile Include="Assets\Scripts\Collision2D\ICollisionSystem.cs" />
+    <Compile Include="Assets\Scripts\Collision2D\ColliderPart.cs" />
+    <Compile Include="Assets\Scripts\Math\BaseType\LQuaternion.cs" />
+    <Compile Include="Assets\Scripts\Util\Pool.cs" />
+    <Compile Include="Assets\Scripts\Math\PrimerLUT.cs" />
+    <Compile Include="Assets\Scripts\Math\LMathExtension2.cs" />
+    <Compile Include="Assets\Scripts\Framework\Service\BaseSystem.cs" />
+    <Compile Include="Assets\Scripts\Framework\Service\ResourceService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
@@ -174,8 +178,8 @@
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Mobile.cginc" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF SSD.shader" />
-    <None Include="Assets\lockstep\Proto\ProtoDLL\Google.Protobuf.dll" />
-    <None Include="Assets\lockstep\Proto\ProtoDLL\System.Buffers.dll" />
+    <None Include="Assets\Scripts\Proto\ProtoDLL\Google.Protobuf.dll" />
+    <None Include="Assets\Scripts\Proto\ProtoDLL\System.Buffers.dll" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface-Mobile.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface.shader" />
     <None Include="Assets\TextMesh Pro\Sprites\EmojiOne Attribution.txt" />
@@ -187,9 +191,9 @@
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Surface.cginc" />
     <None Include="Assets\GameAssets\Font\Chinese.txt" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
-    <None Include="Assets\lockstep\Proto\ProtoDLL\System.Runtime.CompilerServices.Unsafe.dll" />
+    <None Include="Assets\Scripts\Proto\ProtoDLL\System.Runtime.CompilerServices.Unsafe.dll" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Masking.shader" />
-    <None Include="Assets\lockstep\Proto\ProtoDLL\System.Memory.dll" />
+    <None Include="Assets\Scripts\Proto\ProtoDLL\System.Memory.dll" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF Overlay.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Mobile.shader" />
     <None Include="Assets\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />
@@ -444,13 +448,13 @@
       <HintPath>F:\Unity 2021.2.10f1c1\Editor\Data\Managed\UnityEngine\UnityEditor.UnityConnectModule.dll</HintPath>
     </Reference>
     <Reference Include="Google.Protobuf">
-      <HintPath>Assets\lockstep\Proto\ProtoDLL\Google.Protobuf.dll</HintPath>
+      <HintPath>Assets\Scripts\Proto\ProtoDLL\Google.Protobuf.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe">
-      <HintPath>Assets\lockstep\Proto\ProtoDLL\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <HintPath>Assets\Scripts\Proto\ProtoDLL\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Buffers">
-      <HintPath>Assets\lockstep\Proto\ProtoDLL\System.Buffers.dll</HintPath>
+      <HintPath>Assets\Scripts\Proto\ProtoDLL\System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Analytics.StandardEvents">
       <HintPath>Library\PackageCache\com.unity.analytics@3.6.12\AnalyticsStandardEvents\Unity.Analytics.StandardEvents.dll</HintPath>
@@ -462,7 +466,7 @@
       <HintPath>Library\PackageCache\com.unity.analytics@3.6.12\Unity.Analytics.Tracker.dll</HintPath>
     </Reference>
     <Reference Include="System.Memory">
-      <HintPath>Assets\lockstep\Proto\ProtoDLL\System.Memory.dll</HintPath>
+      <HintPath>Assets\Scripts\Proto\ProtoDLL\System.Memory.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>F:\Unity 2021.2.10f1c1\Editor\Data\UnityReferenceAssemblies\unity-4.8-api\mscorlib.dll</HintPath>
