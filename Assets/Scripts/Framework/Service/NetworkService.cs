@@ -9,7 +9,7 @@ using Lockstep.NetWork;
 public class NetworkService : BaseService,IMessagePacker,IMessageDispatcher
 {
 
-    const int BROADCAST_PORT = 10080;//监听的端口号
+    const int BROADCAST_PORT = 8877;//监听的端口号
     const string BROADCAST_IP = "255.255.255.255";//广播的地址 全局域网
 
     private NetworkProxy udpProxy;
