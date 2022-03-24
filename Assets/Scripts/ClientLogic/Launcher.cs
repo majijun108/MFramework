@@ -64,7 +64,7 @@ public class Launcher : ILifeCycle
     void _DoStart() 
     {
         var uiservice = _serviceContainer.GetService<UIService>();
-        uiservice.OpenWindow("HallWindow");
+        uiservice.OpenWindow("HallWindowCtrl");
     }
 
     public void DoUpdate(float deltaTime) 

@@ -4,7 +4,9 @@ using UnityEngine;
 
 public interface IUIView
 {
-    void InitTransform();
+    void InitTransform(Transform root);
+    void ChangeOrder();
     void Show();
     void Hide();
+    void Destroy();
 }

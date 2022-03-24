@@ -11,6 +11,7 @@ public enum UILayer
 
 public enum UIState
 {
+    INIT,
     LOADING,
     LOADED,
     SHOWING,
