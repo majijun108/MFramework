@@ -3,14 +3,23 @@ using System.Collections.Generic;
 
 public enum UILayer 
 {
-    Background,
-    Normal,
-    Notice,
-    Forward,
+    BACKGROUND,
+    NORMAL,
+    NOTICE,
+    FORWARD,
+}
+
+public enum UIState
+{
+    LOADING,
+    LOADED,
+    SHOWING,
+    HIDING,
+    DESTROYED
 }
 
 public interface IUIService:IService
 {
-    void OpenWindow(string winName, UILayer layer = UILayer.Normal);
+    void OpenWindow(string winName, object openParams = null);
     void CloseWindow(string winName);
 }

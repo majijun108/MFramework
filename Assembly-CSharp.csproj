@@ -54,10 +54,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Analyzer Include="G:\VS2022\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
-    <Analyzer Include="G:\MFramework\Assets\Scripts\Proto\ProtoDLL\System.Runtime.CompilerServices.Unsafe.dll" />
-    <Analyzer Include="G:\MFramework\Assets\Scripts\Proto\ProtoDLL\System.Buffers.dll" />
-    <Analyzer Include="G:\MFramework\Assets\Scripts\Proto\ProtoDLL\System.Memory.dll" />
-    <Analyzer Include="G:\MFramework\Assets\Scripts\Proto\ProtoDLL\Google.Protobuf.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Collision2D\QuadTree\QuadTreeExt.cs" />
@@ -73,6 +69,7 @@
     <Compile Include="Assets\Scripts\Util\LitJson\JsonData.cs" />
     <Compile Include="Assets\Scripts\Util\CoroutineHelper.cs" />
     <Compile Include="Assets\Scripts\Collision2D\CollisionHelper.cs" />
+    <Compile Include="Assets\Scripts\UI\AUICtrl.cs" />
     <Compile Include="Assets\Scripts\Util\LitJson\JsonMockWrapper.cs" />
     <Compile Include="Assets\Scripts\Framework\Interface\IUIService.cs" />
     <Compile Include="Assets\Scripts\Collision2D\ColliderProxy.cs" />
@@ -85,6 +82,7 @@
     <Compile Include="Assets\Scripts\Framework\Interface\ISimulatorService.cs" />
     <Compile Include="Assets\Scripts\Math\BaseType\LVector2.cs" />
     <Compile Include="Assets\Scripts\ClientLogic\GameManager.cs" />
+    <Compile Include="Assets\Scripts\UI\IUICtrl.cs" />
     <Compile Include="Assets\Scripts\Util\LitJson\IJsonWrapper.cs" />
     <Compile Include="Assets\Scripts\NetWork\IMessageDispatcher.cs" />
     <Compile Include="Assets\Scripts\NetWork\Package\CircleBuffer.cs" />
@@ -100,6 +98,7 @@
     <Compile Include="Assets\Scripts\Logging\BaseLogger.cs" />
     <Compile Include="Assets\Scripts\Util\JsonUtil.cs" />
     <Compile Include="Assets\Scripts\Collision2D\CollisionSystem_Unity.cs" />
+    <Compile Include="Assets\Scripts\UI\IUIView.cs" />
     <Compile Include="Assets\Scripts\Util\ReflectionUtility.cs" />
     <Compile Include="Assets\Scripts\Collision2D\Shape\CRay.cs" />
     <Compile Include="Assets\Scripts\NetWork\NetTest.cs" />
@@ -171,6 +170,7 @@
     <Compile Include="Assets\Scripts\Math\LMathExtension2.cs" />
     <Compile Include="Assets\Scripts\Framework\Service\BaseSystem.cs" />
     <Compile Include="Assets\Scripts\Framework\Service\ResourceService.cs" />
+    <Compile Include="Assets\Scripts\UI\UIInstanceProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
