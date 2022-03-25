@@ -8,14 +8,15 @@ public class UIService : BaseService//, IUIService
     public static UIService Instance;
     ResourceService _resourceService;
     Transform _uiRoot;
+    Transform[] m_LayerRoots = new Transform[(int)UILayer.Max];
 
     private Dictionary<string, BaseUICtrl> m_UICtrls = new Dictionary<string, BaseUICtrl>();
-    private Stack<BaseUICtrl> m_UIStack = new Stack<BaseUICtrl>();
-    private List<UIInfo> m_loadingInfos = new List<UIInfo>();
+    private Dictionary<string,UIInfo> m_loadingInfos = new Dictionary<string, UIInfo>();
+    private UILayerStack m_LayerStack;
 
     public override void DoStart()
     {
-        if(Instance != null)
+        if(Instance == null)
             Instance = this;
 
         base.DoStart();
@@ -27,6 +28,20 @@ public class UIService : BaseService//, IUIService
     {
         _uiRoot = GameObject.Find("Canvas").transform;
         UnityEngine.Object.DontDestroyOnLoad(_uiRoot);
+
+        int max = (int)UILayer.Max;
+        for (int i = 0; i < max; i++) 
+        {
+            GameObject go = new GameObject(((UILayer)i).ToString());
+            m_LayerRoots[i] = go.transform;
+        }
+
+        m_LayerStack = new UILayerStack(this);
+    }
+
+    public override void DoDestroy()
+    {
+        base.DoDestroy();
     }
 
     BaseUICtrl GetCtrl(string ctrl) 
@@ -43,11 +58,13 @@ public class UIService : BaseService//, IUIService
 
     Transform GetUIRoot(UILayer layer) 
     {
-        return _uiRoot;
+        int layerIndex = (int)layer;
+        if (layerIndex >= (int)UILayer.Max)
+            return _uiRoot;
+        return m_LayerRoots[layerIndex];
     }
 
-
-    public void OpenWindow(string ctrlName,object openParams = null,Transform parent = null)
+    public void OpenWindow(string ctrlName,object openParams = null)
     {
         BaseUICtrl ctrl = GetCtrl(ctrlName);
         if (ctrl == null)
@@ -58,9 +75,7 @@ public class UIService : BaseService//, IUIService
 
         if (ctrl.State == UIState.INIT || ctrl.State == UIState.DESTROYED) 
         {
-            var myParent = parent;
-            if(myParent == null)
-                myParent = GetUIRoot(ctrl.Layer);
+            var myParent = GetUIRoot(ctrl.Layer);
             ctrl.State = UIState.LOADING;
             LoadView(ctrl,openParams, myParent);
             return;
@@ -69,55 +84,83 @@ public class UIService : BaseService//, IUIService
         ShowUI(ctrl,openParams);
         ctrl.State = UIState.SHOWING;
     }
-    void LoadView(BaseUICtrl ctrl, object openParams = null, Transform parent = null)
+
+    public void LoadSubView(string ctrlName,Transform parent,BaseUICtrl parentCtrl ,object openParams = null) 
+    {
+        BaseUICtrl ctrl = GetCtrl(ctrlName);
+        if (ctrl.State > UIState.LOADING)
+            return;
+        LoadView(ctrl,openParams,parent,parentCtrl);
+    }
+
+    void LoadView(BaseUICtrl ctrl, object openParams = null, Transform parent = null,BaseUICtrl parentCtrl = null)
     {
         string winName = ctrl.GetViewName();
         if (winName == null)
             throw new Exception("ctrl has not view name");
 
-        int id = m_loadingInfos.Count;
-        m_loadingInfos.Add(new UIInfo()
+        string ctrlName = ctrl.Name;
+        m_loadingInfos.Add(ctrlName, new UIInfo()
         {
-            ID = id,
             CtrlName = ctrl.Name,
             Params = openParams,
-            Parent = parent
+            Parent = parent,
+            ParentCtrl = parentCtrl
         });
         _resourceService.LoadGameObjectAsync(winName, (go) =>
         {
-            OnViewLoaded(go, id);
+            OnViewLoaded(go, ctrlName);
         });
     }
 
-    void ReleaseUIInstance(GameObject go) 
+    bool CheckAvailable(GameObject go, string ctrlName) 
     {
-        _resourceService.ReleaseAsset(go);
-    }
-
-    void OnViewLoaded(GameObject go, int index)
-    {
-        if (index > m_loadingInfos.Count - 1)//可能是切换场景被清除了
+        if (!m_loadingInfos.ContainsKey(ctrlName)) 
         {
             ReleaseUIInstance(go);
-            return;
+            return false;
         }
-
-        var uiInfo = m_loadingInfos[index];
-        m_loadingInfos.RemoveAt(index);
-
-        BaseUICtrl ctrl = GetCtrl(uiInfo.CtrlName);//父物体已经不存在
-        if (uiInfo.Parent == null) 
+        var uiInfo = m_loadingInfos[ctrlName];
+        BaseUICtrl ctrl = GetCtrl(uiInfo.CtrlName);
+        if (uiInfo.Parent == null || (uiInfo.ParentCtrl != null && uiInfo.ParentCtrl.State > UIState.LOADING)) 
         {
             ctrl.State = UIState.INIT;
             ReleaseUIInstance(go);
+            return false;
+        }
+
+        if (ctrl.State > UIState.LOADING) 
+        {
+            ReleaseUIInstance(go);
+            return false;
+        }
+
+        return true;
+    }
+
+    void OnViewLoaded(GameObject go, string ctrlName)
+    {
+        if (!CheckAvailable(go, ctrlName))
+        {
+            if(m_loadingInfos.ContainsKey(ctrlName))
+                m_loadingInfos.Remove(ctrlName);
             return;
         }
+
+        var uiInfo = m_loadingInfos[ctrlName];
+        m_loadingInfos.Remove(ctrlName);
+        BaseUICtrl ctrl = GetCtrl(uiInfo.CtrlName);
 
         ctrl.State = UIState.LOADED;
         InitView(ctrl, go.transform,uiInfo.Parent);
 
         ctrl.State = UIState.SHOWING;
         ShowUI(ctrl, uiInfo.Params);
+
+        if (uiInfo.ParentCtrl != null) 
+        {
+            uiInfo.ParentCtrl.SubViewLoaded(ctrl,uiInfo.Params);
+        }
     }
 
     void InitView(BaseUICtrl ctrl,Transform root,Transform parent) 
@@ -143,6 +186,8 @@ public class UIService : BaseService//, IUIService
     void ShowUI(BaseUICtrl ctrl, object openParams = null) 
     {
         ctrl.Show(openParams);
+        if(ctrl.Layer == UILayer.NORMAL)
+            m_LayerStack.PushUI(ctrl);
     }
 
     public void CloseWindow(string winName)
@@ -153,13 +198,29 @@ public class UIService : BaseService//, IUIService
         if (ctrl.State != UIState.SHOWING)
             return;
         ctrl.Hide();
+        if (ctrl.Layer == UILayer.NORMAL) 
+        {
+            m_LayerStack.PopUI(ctrl);
+        }
+    }
+
+    public void CancelLoad(string ctrlName) 
+    {
+        if (!m_loadingInfos.ContainsKey(ctrlName))
+            return;
+        m_loadingInfos.Remove(ctrlName);
+    }
+
+    public void ReleaseUIInstance(GameObject go)
+    {
+        _resourceService.ReleaseAsset(go);
     }
 
     struct UIInfo 
     {
-        public int ID;
         public string CtrlName;
         public object Params;
         public Transform Parent;
+        public BaseUICtrl ParentCtrl;
     }
 }

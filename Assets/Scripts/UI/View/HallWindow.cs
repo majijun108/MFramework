@@ -2,30 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HallWindow : IUIView
+public class HallWindow : BaseUIView, ICanvas
 {
-    public void ChangeOrder()
+    private Canvas canvas;
+
+    public override void InitTransform(Transform root)
     {
-        throw new System.NotImplementedException();
+        base.InitTransform(root);
+        canvas = root.GetComponent<Canvas>();
+    }
+    public Canvas GetCanvas()
+    {
+        return canvas;
     }
 
-    public void Destroy()
+    public void SetCanvasActive(bool active)
     {
-        throw new System.NotImplementedException();
-    }
-
-    public void Hide()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void InitTransform(Transform root)
-    {
-        
-    }
-
-    public void Show()
-    {
-        
+        if(canvas != null)
+            UIUtil.SetActive(canvas, active);
     }
 }

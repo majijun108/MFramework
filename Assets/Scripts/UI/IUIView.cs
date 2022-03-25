@@ -5,8 +5,14 @@ using UnityEngine;
 public interface IUIView
 {
     void InitTransform(Transform root);
-    void ChangeOrder();
+    Transform GetSubViewRoot(string subName);
     void Show();
     void Hide();
     void Destroy();
+}
+
+public interface ICanvas 
+{
+    Canvas GetCanvas();
+    void SetCanvasActive(bool active);
 }
