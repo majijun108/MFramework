@@ -22,13 +22,12 @@ public class NetworkService : BaseService,IMessagePacker,IMessageDispatcher
         udpProxy.MessageDispatcher = this;
 
         udpProxy.Awake(new UDPService());
-        OnEnterHall();
     }
 
 
     //进入大厅的时候 开始监听广播 所有房间的
     private Session roomListener;
-    void OnEnterHall() 
+    void OnEvent_OnEnterHall() 
     {
         if (roomListener != null)
         {
@@ -40,7 +39,7 @@ public class NetworkService : BaseService,IMessagePacker,IMessageDispatcher
     }
 
     //离开大厅
-    void OnLeaveHall() 
+    void OnEvent_OnLeaveHall() 
     {
         if (roomListener != null) 
         {

@@ -34,7 +34,7 @@ public class EventRegisterService : IEventRegisterService
                 var eventName = methodName.Substring(ignorePrefixLen);
                 if (Enum.TryParse(eventName, out TEnum etype)) 
                 {
-                    var handle = EventHelper.CreateDelegateFromeMethodInfo<TDelegate>(obj, method);
+                    var handle = EventHelper.CreateDelegateFromMethodInfo<TDelegate>(obj, method);
                     callback(etype, handle);
                 }
             }

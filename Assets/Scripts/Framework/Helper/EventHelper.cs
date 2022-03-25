@@ -6,7 +6,7 @@ public class EventHelper
 {
     public delegate void GlobalEventHandler(object param);
 
-    public static T CreateDelegateFromeMethodInfo<T>(System.Object instance, MethodInfo method) where T :Delegate
+    public static T CreateDelegateFromMethodInfo<T>(System.Object instance, MethodInfo method) where T :Delegate
     {
         return Delegate.CreateDelegate(typeof(T), instance, method) as T;
     }
