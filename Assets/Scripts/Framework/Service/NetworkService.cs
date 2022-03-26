@@ -24,10 +24,17 @@ public class NetworkService : BaseService,IMessagePacker,IMessageDispatcher
         udpProxy.Awake(new UDPService());
     }
 
+    public override void OnApplicationQuit()
+    {
+        base.OnApplicationQuit();
+        udpProxy.Dispose();
+        udpProxy=null;
+    }
+
 
     //进入大厅的时候 开始监听广播 所有房间的
     private Session roomListener;
-    void OnEvent_OnEnterHall() 
+    void OnEvent_OnEnterHall(object param) 
     {
         if (roomListener != null)
         {
@@ -39,7 +46,7 @@ public class NetworkService : BaseService,IMessagePacker,IMessageDispatcher
     }
 
     //离开大厅
-    void OnEvent_OnLeaveHall() 
+    void OnEvent_OnLeaveHall(object param) 
     {
         if (roomListener != null) 
         {
