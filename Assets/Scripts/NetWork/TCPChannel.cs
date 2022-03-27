@@ -39,6 +39,8 @@ namespace Lockstep.NetWork
             sendBuffer.Write(BitConverter.GetBytes(dataLength), 0, 2);//写入长度
             sendBuffer.Write(BitConverter.GetBytes(opcode), 0, 1);//写入操作
             sendBuffer.Write(buffer, index, length);
+            if (isSending)
+                return;
             this.StartSend();
         }
 
