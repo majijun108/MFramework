@@ -40,6 +40,13 @@ namespace Lockstep.NetWork
         Connect,
         Accept,
     }
+
+    //一个会话有可能也是一个广播
+    public interface IBroadcast 
+    {
+        void Broadcast();
+    }
+
     public abstract class AChannel : NetBase 
     {
         public ChannelType ChannelType { get; }
