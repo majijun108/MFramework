@@ -1,0 +1,11 @@
+syntax = "proto3";
+package server_message;
+
+message RoomInfo
+{
+	string serverIP = 1;
+	int32 serverPort = 2;
+	string roomName = 3;
+	int32 playerCount = 4;
+	int32 maxCount = 5;
+}
