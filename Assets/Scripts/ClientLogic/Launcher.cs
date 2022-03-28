@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Google.Protobuf;
-using Protobuf;
 using System.IO;
 
 public class Launcher : ILifeCycle
