@@ -10,8 +10,8 @@ namespace Lockstep.NetWork
     public class NetBase : IDisposable
     {
         public long Id;
-        public bool IsDisposed;
-        public virtual void Dispose() { }
+        public bool IsDisposed = false;
+        public virtual void Dispose() { IsDisposed = true; }
     }
 
     public abstract class AService : NetBase 

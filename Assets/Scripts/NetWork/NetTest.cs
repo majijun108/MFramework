@@ -8,7 +8,7 @@ using System;
 using TMPro;
 using System.Linq;
 using Google.Protobuf;
-using Protobuf;
+using ServerMessage;
 
 class aa : IService
 {
@@ -19,23 +19,25 @@ public class NetTest : MonoBehaviour
     public Button cbtn;
     public TMP_Text logText;
 
-    UdpClient receiveServer;
+    UdpClient server;
     void Start()
     {
         cbtn.onClick.AddListener(OnCbtnClick);
 
-        receiveServer = new UdpClient(new IPEndPoint(IPAddress.Any, 7788));
+        server = new UdpClient(new IPEndPoint(IPAddress.Any, 7788));
         //receiveServer.Connect(IPAddress.Any, 7788);
         StartRecv();
     }
 
     async void StartRecv() 
     {
-        while (true) 
+        while (true)
         {
-            var steam = await receiveServer.ReceiveAsync();
-            Person p = Person.Parser.ParseFrom(steam.Buffer);
-            logText.text = p.Name + "/" + p.Age;
+            var steam = await server.ReceiveAsync();
+            //Person p = Person.Parser.ParseFrom(steam.Buffer);
+            //logText.text = p.Name + "/" + p.Age;
+            var sendByte = System.Text.Encoding.UTF8.GetBytes("服务器收到消息");
+            await server.SendAsync(sendByte, sendByte.Length,steam.RemoteEndPoint);
         }
     }
 
@@ -45,22 +47,34 @@ public class NetTest : MonoBehaviour
     }
 
     IPEndPoint broadIP = new IPEndPoint(IPAddress.Parse("255.255.255.255"), 7788);
+    UdpClient client;
     void SendCreate()
     {
-        string sendstr = "this is test,LOCAL IP->" + GetLocalIP();
-        Debug.LogError(sendstr);
-        UdpClient client = new UdpClient(new IPEndPoint(IPAddress.Any, 0));
-        
-
-        Person person = new Person();
-        person.Name = "name";
-        person.Age = 10;
-        byte[] sendbytes = person.ToByteArray();
-        client.Send(sendbytes,sendbytes.Length, broadIP);
+        using (UdpClient client = new UdpClient(new IPEndPoint(IPAddress.Any, 6677))) 
+        {
+            
+        }
+        //if (client == null)
+        //{
+        //    client = new UdpClient(new IPEndPoint(IPAddress.Any, 6677));
+        //    ClientStartRecv();
+        //}
+        //Person person = new Person();
+        //person.Name = "name";
+        //person.Age = 10;
+        //byte[] sendbytes = person.ToByteArray();
+        //client.Send(sendbytes, sendbytes.Length, broadIP);
     }
 
-
-
+    async void ClientStartRecv()
+    {
+        while (true)
+        {
+            var steam = await client.ReceiveAsync();
+            string msg = System.Text.Encoding.UTF8.GetString(steam.Buffer);
+            Debug.LogError("客户端收到消息/"+ msg);
+        }
+    }
 
     string GetLocalIP() 
     {
