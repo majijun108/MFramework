@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using MessageProto = Google.Protobuf.IMessage;
+using Google.Protobuf;
 
 namespace Lockstep.NetWork
 {
@@ -14,15 +16,29 @@ namespace Lockstep.NetWork
         public virtual void Dispose() { IsDisposed = true; }
     }
 
-    public abstract class AService : NetBase 
+    //要发送的信息的结构体
+    public struct MessageInfo
     {
-        public abstract Task<AChannel> AcceptChannel();
+        public byte OpCode;
+        public MessageProto Msg;
+        public IPEndPoint Remote;
+    }
 
-        public abstract AChannel ConnectChannel(IPEndPoint ipEndPoint);
-
-        public abstract void Remove(long channelId);
-
+    public abstract class NetWorkProxy : NetBase
+    {
+        //消息分发器
+        public IMessageDispatcher MessageDispatcher { get; set; }
+        //消息打包器
+        public IMessagePacker MessagePacker { get; set; }
+        public abstract void Send(byte opcode, MessageProto msg, IPEndPoint remote = null);
+        public virtual void OnReceive(Session session, byte opCode, MessageProto msg) { }
         public abstract void Update();
+    }
+
+    //一个会话有可能也是一个广播
+    public interface IBroadcast
+    {
+        void Broadcast(byte opcode, MessageProto msg);
     }
 
     public class IdGenerater
@@ -41,33 +57,26 @@ namespace Lockstep.NetWork
         Accept,
     }
 
-    //一个会话有可能也是一个广播
-    public interface IBroadcast 
-    {
-        void Broadcast();
-    }
-
     public abstract class AChannel : NetBase 
     {
         public ChannelType ChannelType { get; }
 
-        protected AService service;
+        protected NetWorkProxy m_NetProxy;
 
         public IPEndPoint RemoteAddress { get; protected set; }
 
-        protected AChannel(AService service, ChannelType channelType)
+        private bool m_enable = true;
+        public virtual bool Enable { get { return m_enable; } set{
+                m_enable = value;} }
+
+        protected AChannel(NetWorkProxy service, ChannelType channelType)
         {
             this.Id = IdGenerater.GenerateId();
             this.ChannelType = channelType;
-            this.service = service;
+            this.m_NetProxy = service;
         }
 
-        /// <summary>
-        /// 发送消息
-        /// </summary>
-        public abstract void Send(byte opcode, byte[] buffer, int index, int length);
-
-        public abstract void Send(byte opcode, byte[] buffer);
+        public abstract void Send(byte opcode, MessageProto msg, IPEndPoint remote = null);
 
         public abstract Task<Packet> RecvAsync();
 

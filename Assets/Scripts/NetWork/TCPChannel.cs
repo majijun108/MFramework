@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using MessageProto = Google.Protobuf.IMessage;
+using Google.Protobuf;
+
 
 namespace Lockstep.NetWork
 {
@@ -10,52 +13,48 @@ namespace Lockstep.NetWork
     public class TCPChannel : AChannel
     {
         private readonly TcpClient _tcpClient;
-        private NetworkStream _networkStream;
 
         private readonly CircleBuffer recvBuffer = new CircleBuffer();
         private readonly CircleBuffer sendBuffer = new CircleBuffer();
         private PackageParser packageParser;
         private bool isSending = false;
         private TaskCompletionSource<Packet> recvTask;//接受任务
+        private readonly Queue<MessageInfo> m_SendQueue = new Queue<MessageInfo>();
 
-        public TCPChannel(TCPService service,TcpClient client):base(service,ChannelType.Accept)
+        public TCPChannel(NetWorkProxy service,TcpClient client):base(service,ChannelType.Accept)
         {
             this._tcpClient = client;
             packageParser = new PackageParser(this.recvBuffer);
 
             IPEndPoint ip = (IPEndPoint)this._tcpClient.Client.RemoteEndPoint;
             this.RemoteAddress = ip;
-            _networkStream = client.GetStream();
 
             this.StartRecv();
         }
-        public override void Send(byte opcode,byte[] buffer, int index, int length)
-        {
-            if (3 + length > ushort.MaxValue)
-            {
-                throw new Exception("packet to send is to large,size=" + (3 + buffer.Length));
-            }
-            ushort dataLength = (ushort)(3 + length);
-            sendBuffer.Write(BitConverter.GetBytes(dataLength), 0, 2);//写入长度
-            sendBuffer.Write(BitConverter.GetBytes(opcode), 0, 1);//写入操作
-            sendBuffer.Write(buffer, index, length);
-            if (isSending)
-                return;
-            this.StartSend();
-        }
 
-        public override void Send(byte opcode,byte[] buffer)
+        public override void Send(byte opcode, MessageProto msg,IPEndPoint remote)
         {
-            this.Send(opcode, buffer, 0, buffer.Length);
+            lock (m_SendQueue) 
+            {
+                m_SendQueue.Enqueue(new MessageInfo() 
+                {
+                    OpCode = opcode,
+                    Msg = msg,
+                });
+
+                if (isSending)
+                    return;
+                this.StartSend();
+            }
         }
 
         public async void StartRecv() 
         {
-            if (IsDisposed)
-                return;
-            while (true) 
+            while (true)
             {
-                int n = await this.recvBuffer.WriteFromStreamAsync(_networkStream);//从流中写入内存
+                if (IsDisposed)
+                    return;
+                int n = await this.recvBuffer.WriteFromStreamAsync(_tcpClient.GetStream());//从流中写入内存
                 if (n == 0) 
                 {
                     continue;
@@ -72,12 +71,38 @@ namespace Lockstep.NetWork
             }
         }
 
+        private void PushMsgToBuffer() 
+        {
+            if (m_SendQueue.Count == 0)
+                return;
+            lock (m_SendQueue)
+            {
+                while (m_SendQueue.Count > 0)
+                {
+                    var sendInfo = m_SendQueue.Dequeue();
+                    byte[] msgByte = sendInfo.Msg.ToByteArray();
+                    if (msgByte.Length + 3 > ushort.MaxValue) //不要超过消息最大长度
+                    {
+                        continue;
+                    }
+                    ushort dataLength = (ushort)(3 + msgByte.Length);
+                    sendBuffer.Write(BitConverter.GetBytes(dataLength), 0, 2);//写入长度
+                    sendBuffer.Write(BitConverter.GetBytes(sendInfo.OpCode), 0, 1);//写入操作
+                    sendBuffer.Write(msgByte, 0, msgByte.Length);
+                    break;//每次循环写一个
+                }
+            }
+        }
+
         public async void StartSend() 
         {
             while (true)
             {
                 if (this.IsDisposed)
                     return;
+
+                PushMsgToBuffer();
+
                 long length = this.sendBuffer.Length;
                 if (length == 0)
                 {
@@ -86,7 +111,7 @@ namespace Lockstep.NetWork
                 }
 
                 this.isSending = true;
-                await this.sendBuffer.ReadToStreamAsync(_networkStream);
+                await this.sendBuffer.ReadToStreamAsync(_tcpClient.GetStream());
             }
         }
 
@@ -103,6 +128,16 @@ namespace Lockstep.NetWork
 
             recvTask = new TaskCompletionSource<Packet>();
             return recvTask.Task;
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            if (_tcpClient != null)
+            {
+                _tcpClient.Close();
+                _tcpClient.Dispose();
+            }
         }
     }
 }
