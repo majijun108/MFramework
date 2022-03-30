@@ -38,7 +38,7 @@ namespace Lockstep.NetWork
     //一个会话有可能也是一个广播
     public interface IBroadcast
     {
-        void Broadcast(byte opcode, MessageProto msg);
+        void Broadcast(byte opcode, MessageProto msg,int port);
     }
 
     public class IdGenerater

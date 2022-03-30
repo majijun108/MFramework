@@ -41,7 +41,7 @@ namespace Lockstep.NetWork
                 if (_proxy.MessagePacker == null)
                     return;
 
-                var msg = _proxy.MessagePacker.DeserializeFrom(packet.Bytes, Packet.DataIndex, packet.Size);
+                var msg = _proxy.MessagePacker.DeserializeFrom(packet.OpCode,packet.Bytes, Packet.DataIndex, packet.Size);
                 lock (m_receiveMsgs)
                 {
                     //_proxy.OnReceive(this, packet.OpCode, msg);

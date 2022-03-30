@@ -7,6 +7,12 @@ public class ClientMsgHandler : IMessageDispatcher
 {
     public void Dispatch(Session session, byte opcode, IMessage message)
     {
-        throw new NotImplementedException();
+        MsgType opType = (MsgType)opcode;
+        switch (opType)
+        {
+            case MsgType.C2S_ReqRoomInfo:
+                UnityEngine.Debug.LogError(message.ToString());
+                break;
+        }
     }
 }

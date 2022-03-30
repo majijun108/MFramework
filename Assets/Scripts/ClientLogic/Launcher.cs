@@ -9,6 +9,7 @@ public class Launcher : ILifeCycle
     public static Launcher Instance { get; private set; }
     private BaseServiceContainer _serviceContainer;
     private ManagerContainer _managerContainer;
+    private NetworkService m_NetworkService;
 
     public void DoAwake(IServiceContainer services)
     {
@@ -57,7 +58,7 @@ public class Launcher : ILifeCycle
 
     void _DoAwake() 
     {
-
+        m_NetworkService = _serviceContainer.GetService<NetworkService>();
     }
 
     void _DoStart() 
@@ -68,7 +69,7 @@ public class Launcher : ILifeCycle
 
     public void DoUpdate(float deltaTime) 
     {
-
+        m_NetworkService.DoUpdate(deltaTime);
     }
 
     public void DoDestroy()

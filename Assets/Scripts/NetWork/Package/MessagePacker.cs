@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Google.Protobuf;
 using Lockstep.NetWork;
+using ServerMessage;
 
 //消息解包和打包
 public class MessagePacker : IMessagePacker
@@ -19,13 +20,19 @@ public class MessagePacker : IMessagePacker
             return _messagePacker;
         }
     }
-    public IMessage DeserializeFrom(byte[] bytes, int startIndex, int count)
+    public IMessage DeserializeFrom(byte opcode, byte[] bytes, int startIndex, int count)
     {
-        throw new NotImplementedException();
+        MsgType code = (MsgType)opcode;
+        switch (code) 
+        {
+            case MsgType.C2S_ReqRoomInfo:
+                return C2S_Local.Parser.ParseFrom(bytes, startIndex, count);
+        }
+        return null;
     }
 
     public byte[] SerializeToByteArray(IMessage msg)
     {
-        throw new NotImplementedException();
+        return msg.ToByteArray();
     }
 }

@@ -65,7 +65,7 @@ namespace Lockstep.NetWork
         private readonly CircleBuffer _circleBuffer;
 
         private bool _isOK;
-        private ParserState _state = ParserState.PacketBody;
+        private ParserState _state = ParserState.PacketSize;
         private ushort _packetLength;
         private Packet _packet = new Packet(ushort.MaxValue);
 
@@ -84,7 +84,7 @@ namespace Lockstep.NetWork
             {
                 switch (this._state) 
                 {
-                    case ParserState.PacketBody:
+                    case ParserState.PacketSize:
                         if (this._circleBuffer.Length < 2)
                             finish = true;
                         else 
@@ -93,9 +93,9 @@ namespace Lockstep.NetWork
                             this._packetLength = this._packet.Length;//包的总大小
                             this._state = ParserState.PacketBody;
                         }
-                        break;
-                    case ParserState.PacketSize:
-                        if (this._circleBuffer.Length < this._packetLength)//还未接受完成
+                        continue;
+                    case ParserState.PacketBody:
+                        if (this._circleBuffer.Length < this._packetLength - 2)//还未接受完成
                             finish = true;
                         else 
                         {
@@ -105,7 +105,7 @@ namespace Lockstep.NetWork
                             this._state = ParserState.PacketSize;
                             finish = true;
                         }
-                        break;
+                        continue;
                 }
             }
 

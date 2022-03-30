@@ -5,12 +5,12 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using MessageProto = Google.Protobuf.IMessage;
-using Google.Protobuf;
+//using Google.Protobuf;
 
 namespace Lockstep.NetWork
 {
     //服务器和客户端一样
-    public class UDPNetProxy : NetWorkProxy
+    public class UDPNetProxy : NetWorkProxy,IBroadcast
     {
         private UDPChannel m_UdpChannel;
         private readonly Queue<MessageInfo> m_receiveMsgs = new Queue<MessageInfo>();
@@ -41,7 +41,7 @@ namespace Lockstep.NetWork
             if (this.MessagePacker == null)
                 return;
 
-            var msg = this.MessagePacker.DeserializeFrom(packet.Bytes, Packet.DataIndex, packet.Size);
+            var msg = this.MessagePacker.DeserializeFrom(packet.OpCode,packet.Bytes, Packet.DataIndex, packet.Size);
             lock (m_receiveMsgs)
             {
                 //_proxy.OnReceive(this, packet.OpCode, msg);
@@ -82,6 +82,17 @@ namespace Lockstep.NetWork
                 m_UdpChannel = null;
             }
             base.Dispose();
+        }
+
+        private IPEndPoint m_lastEndPoint;
+        //udp局域网广播
+        public void Broadcast(byte opcode, MessageProto msg, int remotePort)
+        {
+            if (m_lastEndPoint == null || m_lastEndPoint.Port != remotePort) 
+            {
+                m_lastEndPoint = NetHelper.GetIPEndPoint("255.255.255.255", remotePort);
+            }
+            this.Send(opcode,msg,m_lastEndPoint);
         }
     }
 }

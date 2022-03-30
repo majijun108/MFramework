@@ -89,6 +89,7 @@ namespace Lockstep.NetWork
                 {
                     Array.Copy(buffer, buffIndex, writeBuffer, Top, count);
                     Top += count;
+                    buffIndex += count;
                 }
                 else 
                 {
@@ -157,10 +158,10 @@ namespace Lockstep.NetWork
         {
             if (Length < 2)//长度小于2 不可能是一条完整的消息
                 throw new Exception("UDP Msg Error");
-            this.Read(buffer,0,2);
+            this.Read(buffer,0,3);
             ushort length = BitConverter.ToUInt16(buffer, 0);
-            int readLength = this.Read(buffer, 2, length - 2);
-            if (readLength != length) 
+            int readLength = this.Read(buffer, 3, length - 0b11);
+            if (readLength != length - 0b11) 
             {
                 throw new Exception("UDP Msg Error,length error");
             }

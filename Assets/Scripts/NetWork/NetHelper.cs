@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 
 namespace Lockstep.NetWork
 {
@@ -18,6 +19,21 @@ namespace Lockstep.NetWork
         public static IPEndPoint GetIPEndPoint(int port)
         {
             return new IPEndPoint(IPAddress.Any, port);
+        }
+
+        //获取本地IP
+        public static string GetLocalIP()
+        {
+            string address = string.Empty;
+            foreach (var item in Dns.GetHostEntry(Dns.GetHostName()).AddressList)
+            {
+                if (item.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    address = item.ToString();
+                    break;
+                }
+            }
+            return address;
         }
     }
 }
