@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using MessageProto = Google.Protobuf.IMessage;
 //using Google.Protobuf;
 
 namespace Lockstep.NetWork
@@ -53,7 +52,7 @@ namespace Lockstep.NetWork
             }
         }
 
-        public override void Send(byte opcode, MessageProto msg,IPEndPoint remote)
+        public override void Send(byte opcode, object msg,IPEndPoint remote)
         {
             if (IsDisposed || m_UdpChannel == null)
                 return;
@@ -86,7 +85,7 @@ namespace Lockstep.NetWork
 
         private IPEndPoint m_lastEndPoint;
         //udp局域网广播
-        public void Broadcast(byte opcode, MessageProto msg, int remotePort)
+        public void Broadcast(byte opcode, object msg, int remotePort)
         {
             if (m_lastEndPoint == null || m_lastEndPoint.Port != remotePort) 
             {

@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using MessageProto = Google.Protobuf.IMessage;
-using Google.Protobuf;
 
 namespace Lockstep.NetWork
 {
@@ -20,7 +18,7 @@ namespace Lockstep.NetWork
     public struct MessageInfo
     {
         public byte OpCode;
-        public MessageProto Msg;
+        public object Msg;
         public IPEndPoint Remote;
     }
 
@@ -30,15 +28,15 @@ namespace Lockstep.NetWork
         public IMessageDispatcher MessageDispatcher { get; set; }
         //消息打包器
         public IMessagePacker MessagePacker { get; set; }
-        public abstract void Send(byte opcode, MessageProto msg, IPEndPoint remote = null);
-        public virtual void OnReceive(Session session, byte opCode, MessageProto msg) { }
+        public abstract void Send(byte opcode, object msg, IPEndPoint remote = null);
+        public virtual void OnReceive(Session session, byte opCode, object msg) { }
         public abstract void Update();
     }
 
     //一个会话有可能也是一个广播
     public interface IBroadcast
     {
-        void Broadcast(byte opcode, MessageProto msg,int port);
+        void Broadcast(byte opcode, object msg,int port);
     }
 
     public class IdGenerater
@@ -76,7 +74,7 @@ namespace Lockstep.NetWork
             this.m_NetProxy = service;
         }
 
-        public abstract void Send(byte opcode, MessageProto msg, IPEndPoint remote = null);
+        public abstract void Send(byte opcode, object msg, IPEndPoint remote = null);
 
         public abstract Task<Packet> RecvAsync();
 

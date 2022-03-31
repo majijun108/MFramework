@@ -5,6 +5,6 @@ namespace Lockstep.NetWork
 {
     public interface IMessageDispatcher
     {
-        void Dispatch(Session session,byte opcode,Google.Protobuf.IMessage message);
+        void Dispatch(Session session,byte opcode,object message);
     }
 }

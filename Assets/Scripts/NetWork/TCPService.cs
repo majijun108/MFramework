@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using MessageProto = Google.Protobuf.IMessage;
-using Google.Protobuf;
 
 namespace Lockstep.NetWork
 {
@@ -44,7 +42,7 @@ namespace Lockstep.NetWork
             }
         }
 
-        public override void OnReceive(Session session,byte opCode,MessageProto msg) 
+        public override void OnReceive(Session session,byte opCode, object msg) 
         {
             if (IsDisposed)
                 return;
@@ -57,7 +55,7 @@ namespace Lockstep.NetWork
             this.MessageDispatcher.Dispatch(session, opCode, msg);
         }
 
-        public override void Send(byte opcode, MessageProto msg,IPEndPoint remote)
+        public override void Send(byte opcode, object msg,IPEndPoint remote)
         {
             if (m_sessions.Count == 0)
                 return;
@@ -69,7 +67,7 @@ namespace Lockstep.NetWork
             }
         }
 
-        public void Send(byte opcode, MessageProto msg, long sessionID) 
+        public void Send(byte opcode, object msg, long sessionID) 
         {
             if (!m_sessions.ContainsKey(sessionID))
                 return;
@@ -125,7 +123,7 @@ namespace Lockstep.NetWork
             m_Client.StartRecv();
         }
 
-        public override void OnReceive(Session session, byte opCode, MessageProto msg)
+        public override void OnReceive(Session session, byte opCode, object msg)
         {
             if (IsDisposed)
                 return;
@@ -138,7 +136,7 @@ namespace Lockstep.NetWork
             this.MessageDispatcher.Dispatch(session, opCode, msg);
         }
 
-        public override void Send(byte opcode,MessageProto msg,IPEndPoint remote)
+        public override void Send(byte opcode, object msg,IPEndPoint remote)
         {
             if (m_Client == null)
                 return;

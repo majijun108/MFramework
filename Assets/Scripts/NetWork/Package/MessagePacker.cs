@@ -20,7 +20,7 @@ public class MessagePacker : IMessagePacker
             return _messagePacker;
         }
     }
-    public IMessage DeserializeFrom(byte opcode, byte[] bytes, int startIndex, int count)
+    public object DeserializeFrom(byte opcode, byte[] bytes, int startIndex, int count)
     {
         MsgType code = (MsgType)opcode;
         switch (code) 
@@ -31,8 +31,9 @@ public class MessagePacker : IMessagePacker
         return null;
     }
 
-    public byte[] SerializeToByteArray(IMessage msg)
+    public byte[] SerializeToByteArray(object msg)
     {
-        return msg.ToByteArray();
+        var newmsg = msg as Google.Protobuf.IMessage;
+        return newmsg.ToByteArray();
     }
 }

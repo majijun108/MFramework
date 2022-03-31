@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using MessageProto = Google.Protobuf.IMessage;
-using Google.Protobuf;
 
 
 namespace Lockstep.NetWork
@@ -32,7 +30,7 @@ namespace Lockstep.NetWork
             this.StartRecv();
         }
 
-        public override void Send(byte opcode, MessageProto msg,IPEndPoint remote)
+        public override void Send(byte opcode, object msg,IPEndPoint remote)
         {
             lock (m_SendQueue) 
             {
@@ -80,7 +78,7 @@ namespace Lockstep.NetWork
                 while (m_SendQueue.Count > 0)
                 {
                     var sendInfo = m_SendQueue.Dequeue();
-                    byte[] msgByte = sendInfo.Msg.ToByteArray();
+                    byte[] msgByte = m_NetProxy.MessagePacker.SerializeToByteArray(sendInfo.Msg);//sendInfo.Msg.ToByteArray();
                     if (msgByte.Length + 3 > ushort.MaxValue) //不要超过消息最大长度
                     {
                         continue;

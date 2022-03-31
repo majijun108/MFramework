@@ -68,7 +68,7 @@ namespace Lockstep.NetWork
             }
         }
 
-        public void Send(byte opcode,MessageProto msg)
+        public void Send(byte opcode,object msg)
         {
             if (IsDisposed)
                 return;
