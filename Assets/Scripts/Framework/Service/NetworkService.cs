@@ -18,9 +18,11 @@ public class NetworkService : BaseGameService
     {
         if (m_broadCast == null)
         {
-            m_broadCast = new UDPNetProxy(NetHelper.GetIPEndPoint(BROADCAST_PORT));
-            m_broadCast.MessageDispatcher = m_clientMsgHandler;
-            m_broadCast.MessagePacker = MessagePacker.Instance;
+            m_broadCast = new UDPNetProxy(NetHelper.GetIPEndPoint(BROADCAST_PORT))
+            {
+                MessageDispatcher = m_clientMsgHandler,
+                MessagePacker = MessagePacker.Instance
+            };
         }
     }
 
@@ -35,12 +37,14 @@ public class NetworkService : BaseGameService
     }
 
 
-    void OnEvent_OnEnterHall(object param) 
+    void OnEvent_OnEnterHall(object param)
     {
-        C2S_Local myInfo = new C2S_Local();
-        myInfo.ClientIP = NetHelper.GetLocalIP();
-        myInfo.ClientPort = BROADCAST_PORT;
-        myInfo.PlayerName = "SB";
+        C2S_Local myInfo = new C2S_Local()
+        {
+            ClientIP = NetHelper.GetLocalIP(),
+            ClientPort = BROADCAST_PORT,
+            PlayerName = "SB"
+        };
 
         m_broadCast.Broadcast((byte)MsgType.C2S_ReqRoomInfo, myInfo, BROADCAST_PORT);
     }
