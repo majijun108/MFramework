@@ -71,45 +71,61 @@ namespace Lockstep.NetWork
         private byte[] curSendBuffer = new byte[ushort.MaxValue];
         public async void StartSend()
         {
-            while (true)
+            try
             {
-                if (this.IsDisposed)
-                    return;
-                IPEndPoint remote = PushMsgToBuffer();
-
-                long length = this.sendBuffer.Length;
-                if (length == 0)
+                while (true)
                 {
-                    this.isSending = false;
-                    return;
+                    if (this.IsDisposed)
+                        return;
+                    IPEndPoint remote = PushMsgToBuffer();
+
+                    long length = this.sendBuffer.Length;
+                    if (length == 0)
+                    {
+                        this.isSending = false;
+                        return;
+                    }
+
+                    this.isSending = true;
+
+                    int n = sendBuffer.ReadMsg(curSendBuffer);
+                    await _udpClient.SendAsync(curSendBuffer, n, remote);
                 }
-
-                this.isSending = true;
-
-                int n = sendBuffer.ReadMsg(curSendBuffer);
-                await _udpClient.SendAsync(curSendBuffer, n, remote);
+            }
+            catch (Exception ex) 
+            {
+                DebugService.Instance.LogError(ex.ToString());
             }
         }
 
         public async void StartRecv() 
         {
-            while (true) 
+            try
             {
-                if (IsDisposed)
-                    return;
-                var result = await this._udpClient.ReceiveAsync();//UDP没用粘包
-                if (result.Buffer.Length == 0)
-                    continue;
-                this.recvBuffer.Write(result.Buffer, 0, result.Buffer.Length);
-                if (recvTask == null) 
-                    continue;
-                bool isOK = this.packageParser.Parse();
-                if (isOK) 
+                while (true)
                 {
-                    var task = recvTask;
-                    recvTask = null;
-                    task.SetResult(this.packageParser.GetPacket());//将结果丢入任务中
+                    if (IsDisposed)
+                        return;
+                    var result = await this._udpClient.ReceiveAsync();//UDP没用粘包
+                    if (IsDisposed)
+                        return;
+                    if (result.Buffer.Length == 0)
+                        continue;
+                    this.recvBuffer.Write(result.Buffer, 0, result.Buffer.Length);
+                    if (recvTask == null)
+                        continue;
+                    bool isOK = this.packageParser.Parse();
+                    if (isOK)
+                    {
+                        var task = recvTask;
+                        recvTask = null;
+                        task.SetResult(this.packageParser.GetPacket());//将结果丢入任务中
+                    }
                 }
+            }
+            catch (Exception ex) 
+            {
+                DebugService.Instance.LogError(ex.ToString());
             }
         }
 
@@ -134,7 +150,6 @@ namespace Lockstep.NetWork
             this.Enable = false;
             if (_udpClient != null)
             {
-                _udpClient.Close();
                 _udpClient.Dispose();
             }
         }

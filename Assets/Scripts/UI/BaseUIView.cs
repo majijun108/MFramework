@@ -6,15 +6,46 @@ public abstract class BaseUIView : IUIView
 {
     protected Transform m_RootTransform;
 
-    public void Destroy()
+    private Dictionary<string, IViewComponent> m_Components = new Dictionary<string, IViewComponent>();
+
+    private List<IViewComponent> m_RemoveList = new List<IViewComponent>();
+    public virtual void Destroy()
     {
         if(m_RootTransform != null)
             UIService.Instance.ReleaseUIInstance(m_RootTransform.gameObject);
+        m_RemoveList.Clear();
+        foreach (var item in m_Components)
+        {
+            item.Value.OnDestroy();
+            if (item.Value is IInstance)
+            {
+                m_RemoveList.Add(item.Value);
+            }
+        }
+        foreach (var item in m_RemoveList)
+        {
+            m_Components.Remove(item.GetType().Name);
+        }
+        m_RemoveList.Clear();
     }
 
     public virtual Transform GetSubViewRoot(string subName) { return m_RootTransform; }
 
-    public void Hide()
+    public T GetOrAddComponent<T>(object obj = null) where T : IViewComponent, new()
+    {
+        string name = typeof(T).Name;
+        if (m_Components.ContainsKey(name))
+        {
+            return (T)m_Components[name];
+        }
+
+        var instance = new T();
+        instance.Awake(this);
+        m_Components[name] = instance;
+        return instance;
+    }
+
+    public virtual void Hide()
     {
         if (this is ICanvas canvas)
         {
@@ -22,6 +53,11 @@ public abstract class BaseUIView : IUIView
             return;
         }
         UIUtil.SetActive(m_RootTransform, false);
+
+        foreach (var item in m_Components)
+        {
+            item.Value.OnHide();
+        }
     }
 
     public virtual void InitTransform(Transform root) 
@@ -29,7 +65,7 @@ public abstract class BaseUIView : IUIView
         m_RootTransform = root;
     }
 
-    public void Show()
+    public virtual void Show()
     {
         if (this is ICanvas canvas) 
         {
@@ -41,6 +77,11 @@ public abstract class BaseUIView : IUIView
         if (m_RootTransform != null) 
         {
             m_RootTransform.SetAsLastSibling();
+        }
+
+        foreach (var item in m_Components)
+        {
+            item.Value.OnShow();
         }
     }
 }

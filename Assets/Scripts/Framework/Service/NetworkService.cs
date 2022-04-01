@@ -9,7 +9,7 @@ using ServerMessage;
 /// </summary>
 public class NetworkService : BaseGameService
 {
-    const int BROADCAST_PORT = 8912;//监听的端口号
+    const int BROADCAST_PORT = 8962;//监听的端口号
     private UDPNetProxy m_broadCast;
 
     public override void DoStart()
@@ -27,10 +27,12 @@ public class NetworkService : BaseGameService
     public void DoUpdate(float deltaTime) 
     {
         m_broadCast.Update();
-    } 
+    }
 
     public override void DoDestroy()
     {
+        m_broadCast.Dispose();
+        m_broadCast = null;
         base.DoDestroy();
     }
 
