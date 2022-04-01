@@ -7,13 +7,13 @@ public class EventRegisterService : IEventRegisterService
     public void RegisterEvent(object obj)
     {
         RegisterEvent<EEvent, EventHelper.GlobalEventHandler>("OnEvent_", "OnEvent_".Length,
-            EventHelper.AddListener, obj);
+            EventHelper.Instance.AddListener, obj);
     }
 
     public void UnregisterEvent(object obj)
     {
         RegisterEvent<EEvent, EventHelper.GlobalEventHandler>("OnEvent_", "OnEvent_".Length,
-            EventHelper.RemoveListener, obj);
+            EventHelper.Instance.RemoveListener, obj);
     }
 
     public void RegisterEvent<TEnum, TDelegate>(string prefix, int ignorePrefixLen, Action<TEnum, TDelegate> callback, object obj)

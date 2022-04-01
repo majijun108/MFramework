@@ -27,11 +27,11 @@ public class HallWindowCtrl : BaseUICtrl
 
     public override void OnHide()
     {
-        EventHelper.Trigger(EEvent.OnLeaveHall);
+        EventHelper.Instance.Trigger(EEvent.OnLeaveHall);
     }
 
     public override void OnShow(object openParam)
     {
-        EventHelper.Trigger(EEvent.OnEnterHall);
+        EventHelper.Instance.Trigger(EEvent.OnEnterHall);
     }
 }

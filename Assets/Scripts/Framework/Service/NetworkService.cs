@@ -10,8 +10,6 @@ using ServerMessage;
 public class NetworkService : BaseGameService
 {
     const int BROADCAST_PORT = 8912;//监听的端口号
-
-    private readonly ClientMsgHandler m_clientMsgHandler = new ClientMsgHandler();
     private UDPNetProxy m_broadCast;
 
     public override void DoStart()
@@ -20,7 +18,7 @@ public class NetworkService : BaseGameService
         {
             m_broadCast = new UDPNetProxy(NetHelper.GetIPEndPoint(BROADCAST_PORT))
             {
-                MessageDispatcher = m_clientMsgHandler,
+                MessageDispatcher = ClientMsgHandler.Instance,
                 MessagePacker = MessagePacker.Instance
             };
         }
@@ -37,7 +35,7 @@ public class NetworkService : BaseGameService
     }
 
 
-    void OnEvent_OnEnterHall(object param)
+    void OnEvent_OnEnterHall(EEvent type,object param)
     {
         C2S_Local myInfo = new C2S_Local()
         {
@@ -50,7 +48,7 @@ public class NetworkService : BaseGameService
     }
 
     //离开大厅
-    void OnEvent_OnLeaveHall(object param) 
+    void OnEvent_OnLeaveHall(EEvent type,object param) 
     {
         
     }

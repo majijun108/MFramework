@@ -21,7 +21,7 @@ public abstract class BaseSingleService<T> : BaseService where T : class
         get 
         {
             if (m_Instance == null)
-                throw new Exception("cannot get instance before awake");
+                DebugService.Instance.LogError("cannot get instance before awake");
             return m_Instance;  
         }
     }
