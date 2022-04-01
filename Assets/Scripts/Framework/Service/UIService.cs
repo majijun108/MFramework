@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class UIService : BaseService//, IUIService
+public class UIService : BaseSingleService<UIService>//, IUIService
 {
-    public static UIService Instance;
+    
     ResourceService _resourceService;
     Transform _uiRoot;
     Transform[] m_LayerRoots = new Transform[(int)UILayer.Max];
@@ -16,9 +16,6 @@ public class UIService : BaseService//, IUIService
 
     public override void DoStart()
     {
-        if(Instance == null)
-            Instance = this;
-
         base.DoStart();
         _resourceService = GetService<ResourceService>();
         _DoStart();

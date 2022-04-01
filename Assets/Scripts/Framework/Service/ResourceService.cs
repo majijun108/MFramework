@@ -5,16 +5,10 @@ using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using Lockstep.Logging;
 
-public class ResourceService:IResourceService
+public class ResourceService:BaseSingleService<ResourceService>,IResourceService
 {
 
     private Dictionary<int,AsyncOperationHandle> m_loadedAssets = new Dictionary<int,AsyncOperationHandle>();
-
-    public static ResourceService Instance { get; private set; }
-    public ResourceService() 
-    {
-        Instance = this;
-    }
 
     public void LoadAssetAsync<T>(string path, Action<T> callback) where T :UnityEngine.Object
     {

@@ -11,3 +11,24 @@ public abstract class BaseGameService : BaseService
         base.InitReference(container);
     }
 }
+
+//需要单例化的service
+public abstract class BaseSingleService<T> : BaseService where T : class
+{
+    private static T m_Instance;
+    public static T Instance 
+    {
+        get 
+        {
+            if (m_Instance == null)
+                throw new Exception("cannot get instance before awake");
+            return m_Instance;  
+        }
+    }
+
+    public override void DoAwake(IServiceContainer services)
+    {
+        base.DoAwake(services);
+        m_Instance = this as T;
+    }
+}
