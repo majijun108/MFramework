@@ -24,6 +24,11 @@ public abstract class BaseUICtrl
         OnCreate();
     }
 
+    protected T GetView<T>() where T : class, IUIView
+    {
+        return View as T;
+    }
+
     public T GetOrAddComponent<T>(object obj = null) where T :IUIComponent,new()
     {
         string name = typeof(T).Name;

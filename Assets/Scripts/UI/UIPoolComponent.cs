@@ -4,13 +4,15 @@ using UnityEngine;
 
 public class UIPoolComponent : IViewComponent
 {
+    private Transform m_Parent;
     private Transform m_Prefab;
     private Queue<Transform> m_UnusePool = new Queue<Transform>();
     private Queue<Transform> m_UsingPool = new Queue<Transform>();
 
-    public void RegisterArchetype(Transform mtype)
+    public void RegisterArchetype(Transform mtype,Transform parent)
     {
         m_Prefab = mtype;
+        m_Parent = parent;
         UIUtil.SetActive(mtype, false);
     }
 
@@ -22,7 +24,7 @@ public class UIPoolComponent : IViewComponent
             UIUtil.SetActive(mtrans, true);
             return mtrans;
         }
-        var trans = UIUtil.Instantiate(m_Prefab);
+        var trans = UIUtil.Instantiate(m_Prefab,m_Parent);
         UIUtil.SetActive(trans, true);
         return trans;
     }

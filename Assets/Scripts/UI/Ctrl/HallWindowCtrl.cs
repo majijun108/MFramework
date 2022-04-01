@@ -33,5 +33,11 @@ public class HallWindowCtrl : BaseUICtrl
     public override void OnShow(object openParam)
     {
         EventHelper.Instance.Trigger(EEvent.OnEnterHall);
+        GetView<HallWindow>().RefreshScroll(new List<ServerMessage.C2S_RoomInfo> { 
+        new ServerMessage.C2S_RoomInfo(){
+            RoomName = "ROOM_NAME",
+            MaxCount = 10,
+            PlayerCount = 1
+        } });
     }
 }

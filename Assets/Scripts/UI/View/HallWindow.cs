@@ -23,7 +23,8 @@ public class HallWindow : BaseUIView, ICanvas
         UIUtil.SetActive(m_roomItem, false);
 
         m_ItemPool = GetOrAddComponent<UIPoolComponent>(this);
-        m_ItemPool.RegisterArchetype(m_roomItem);
+        Transform parent = UIUtil.GetTransform(m_RootTransform, "RoomScroll/Viewport/Content");
+        m_ItemPool.RegisterArchetype(m_roomItem, parent);
     }
 
     public override void Show()
