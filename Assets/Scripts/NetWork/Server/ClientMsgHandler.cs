@@ -22,15 +22,15 @@ public class ClientMsgHandler : BaseEventHandle<MsgType, ClientMsgHandler.Global
     public void Dispatch(Session session, byte opcode, object message)
     {
         MsgType opType = (MsgType)opcode;
-        switch (opType)
-        {
-            case MsgType.C2S_ReqRoomInfo:
-                C2S_Local msg = message as C2S_Local;
-                DebugService.Instance.LogError(msg.ToString());
-                break;
-        }
-
-        if(message != null)
+        //switch (opType)
+        //{
+        //    case MsgType.C2S_ReqRoomInfo:
+        //        C2S_Local msg = message as C2S_Local;
+        //        DebugService.Instance.LogError(msg.ToString());
+        //        break;
+        //}
+        DebugService.Instance.LogError(message.ToString());
+        if (message != null)
             Trigger(opType, message);
     }
 }

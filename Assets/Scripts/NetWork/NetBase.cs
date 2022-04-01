@@ -24,6 +24,7 @@ namespace Lockstep.NetWork
 
     public abstract class NetWorkProxy : NetBase
     {
+        public IPEndPoint LocalIPEndPoint { get; protected set; }
         //消息分发器
         public IMessageDispatcher MessageDispatcher { get; set; }
         //消息打包器

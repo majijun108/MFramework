@@ -5,18 +5,18 @@ using UnityEngine;
 
 public class DebugService : BaseSingleService<DebugService>, IDebugService
 {
-    public void Log(string message)
+    public void Log(params string[] message)
     {
-        Debug.Log(message);
+        Debug.Log(UIUtil.StringConcat(message));
     }
 
-    public void LogError(string message)
+    public void LogError(params string[] message)
     {
-        Debug.LogError(message);
+        Debug.LogError(UIUtil.StringConcat(message));
     }
 
-    public void LogWarning(string message)
+    public void LogWarning(params string[] message)
     {
-        Debug.LogWarning(message);
+        Debug.LogWarning(UIUtil.StringConcat(message));
     }
 }

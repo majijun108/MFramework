@@ -46,9 +46,9 @@ public class HallWindow : BaseUIView, ICanvas
             return;
         C2S_RoomInfo info = m_roomList[index];
         var nameText = UIUtil.GetTransform(trans,"Name").GetComponent<TMP_Text>();
-        nameText.text = info.RoomName;
+        UIUtil.SetText(nameText, info.RoomName);
         var countText = UIUtil.GetTransform(trans, "Count").GetComponent<TMP_Text>();
-        countText.text = UIUtil.StringConcat(info.PlayerCount.ToString(),"/",info.MaxCount.ToString());
+        UIUtil.SetText(countText,UIUtil.StringConcat(info.PlayerCount.ToString(),"/",info.MaxCount.ToString()));
     }
 
     void OnCreateClick() 

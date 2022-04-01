@@ -1,3 +1,4 @@
+using ServerMessage;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -30,14 +31,16 @@ public class HallWindowCtrl : BaseUICtrl
         EventHelper.Instance.Trigger(EEvent.OnLeaveHall);
     }
 
+    void OnGetRoomInfo(MsgType type, object param)
+    {
+        C2S_RoomInfo roomInfo = (C2S_RoomInfo)param;
+        GetView<HallWindow>().RefreshScroll(new List<ServerMessage.C2S_RoomInfo> {
+        roomInfo});
+    }
+
     public override void OnShow(object openParam)
     {
+        ClientMsgHandler.Instance.AddListener(MsgType.S2C_RoomInfo, OnGetRoomInfo);
         EventHelper.Instance.Trigger(EEvent.OnEnterHall);
-        GetView<HallWindow>().RefreshScroll(new List<ServerMessage.C2S_RoomInfo> { 
-        new ServerMessage.C2S_RoomInfo(){
-            RoomName = "ROOM_NAME",
-            MaxCount = 10,
-            PlayerCount = 1
-        } });
     }
 }

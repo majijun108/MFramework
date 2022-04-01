@@ -17,6 +17,7 @@ namespace Lockstep.NetWork
         public UDPNetProxy(IPEndPoint localIP) 
         {
             m_UdpChannel = new UDPChannel(this,localIP);
+            LocalIPEndPoint = localIP;
             StartReceive();
         }
 

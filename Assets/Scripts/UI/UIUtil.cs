@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -42,9 +43,10 @@ public class UIUtil
         return newgo;
     }
 
+    static Queue<Transform> findQueue = new Queue<Transform>();
     public static Transform GetTransform(Transform trans,string path) 
     {
-        Queue<Transform> findQueue = new Queue<Transform>();
+        findQueue.Clear();
         findQueue.Enqueue(trans);
         Transform item;
         while (findQueue.Count > 0) 
@@ -72,5 +74,12 @@ public class UIUtil
             stringBuilder.Append(str[i]);
         }
         return stringBuilder.ToString();
+    }
+
+    public static void SetText(TMP_Text text, string str) 
+    {
+        if (text.text == str)
+            return;
+        text.text = str;
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public interface IDebugService:IService
 {
-    void Log(string message);
-    void LogWarning(string message);
-    void LogError(string message);
+    void Log(params string[] message);
+    void LogWarning(params string[] message);
+    void LogError(params string[] message);
 }

@@ -7,10 +7,11 @@ using ServerMessage;
 /// <summary>
 /// 直接面向unity了 如果是服务器 重写这个
 /// </summary>
-public class NetworkService : BaseGameService
+public class NetworkService : BaseSingleService<NetworkService>,INetworkService
 {
-    const int BROADCAST_PORT = 8962;//监听的端口号
+    public int BROADCAST_PORT = 8962;//监听的端口号
     private UDPNetProxy m_broadCast;
+    private RoomManager m_roomManager = new RoomManager();
 
     public override void DoStart()
     {
@@ -22,6 +23,8 @@ public class NetworkService : BaseGameService
                 MessagePacker = MessagePacker.Instance
             };
         }
+        m_roomManager.Init(this);
+        m_roomManager.CreateRoom(BROADCAST_PORT + 1, 2);
     }
 
     public void DoUpdate(float deltaTime) 
