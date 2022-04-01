@@ -115,7 +115,7 @@ namespace Lockstep.NetWork
             m_TcpClient.Connect(remote);
             if (!m_TcpClient.Connected) 
             {
-                throw new Exception("tcp client connet failed");
+                DebugService.Instance.LogError("tcp client connet failed");
             }
             var channel = new TCPChannel(this, m_TcpClient);
             m_Client = new Session() { Id = IdGenerater.GenerateId() };

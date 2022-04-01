@@ -31,9 +31,9 @@ public class NetworkService : BaseGameService
         m_broadCast.Update();
     } 
 
-    public override void OnApplicationQuit()
+    public override void DoDestroy()
     {
-        base.OnApplicationQuit();
+        base.DoDestroy();
     }
 
 

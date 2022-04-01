@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Google.Protobuf;
 using Lockstep.NetWork;
 using ServerMessage;
+using MessageProto = Google.Protobuf.IMessage;
 
 //消息解包和打包
 public class MessagePacker : IMessagePacker
@@ -20,6 +18,8 @@ public class MessagePacker : IMessagePacker
             return _messagePacker;
         }
     }
+
+    //注意解包和拆包是放到另外线程执行的
     public object DeserializeFrom(byte opcode, byte[] bytes, int startIndex, int count)
     {
         MsgType code = (MsgType)opcode;
@@ -33,7 +33,7 @@ public class MessagePacker : IMessagePacker
 
     public byte[] SerializeToByteArray(object msg)
     {
-        var newmsg = msg as Google.Protobuf.IMessage;
+        var newmsg = msg as MessageProto;
         return newmsg.ToByteArray();
     }
 }

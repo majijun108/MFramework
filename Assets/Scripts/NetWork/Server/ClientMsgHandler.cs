@@ -13,7 +13,7 @@ public class ClientMsgHandler : IMessageDispatcher
         {
             case MsgType.C2S_ReqRoomInfo:
                 C2S_Local msg = message as C2S_Local;
-                UnityEngine.Debug.LogError(msg.ToString());
+                DebugService.Instance.LogError(msg.ToString());
                 break;
         }
     }
