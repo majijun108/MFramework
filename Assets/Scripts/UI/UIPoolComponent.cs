@@ -41,9 +41,9 @@ public class UIPoolComponent : IViewComponent
 
     void Clear() 
     {
-        while (m_UnusePool.Count > 0)
+        while (m_UsingPool.Count > 0)
         {
-            Return(m_UnusePool.Dequeue());
+            Return(m_UsingPool.Dequeue());
         }
     }
 
