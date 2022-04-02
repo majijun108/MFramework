@@ -8,14 +8,18 @@ public abstract class BaseServiceContainer : IServiceContainer
 
     public virtual void RegisterService(IService service, bool overwrite = true) 
     {
+        //var interfaceTypes = service.GetType().FindInterfaces((type, criteria) => type.GetInterfaces().Any(t => t == typeof(IService)),
+        //    service).ToArray();
+        //foreach (var interfaceType in interfaceTypes)
+        //{
+            
+        //}
         var interfaceType = service.GetType();
-        if (!_allServices.ContainsKey(interfaceType)) 
+        if (!_allServices.ContainsKey(interfaceType))
         {
             _allServices.Add(interfaceType, service);
-            return;
         }
-
-        if (overwrite)
+        else if (overwrite)
             _allServices[interfaceType] = service;
     }
 

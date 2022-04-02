@@ -19,23 +19,23 @@ public abstract class BaseService : IService, ILifeCycle
     {
     }
 
-    protected IServiceContainer _serviceContainer;
+    protected IServiceContainer m_ServiceContainer;
 
-    protected ICommonStateService _commonStateService;
-    protected IConstStateService _constStateService;
+    protected ICommonStateService m_CommonStateService;
+    protected IConstStateService m_ConstStateService;
     //禁止单例 所有service通过桥接传入
     public virtual void InitReference(IServiceContainer container) 
     {
-        _serviceContainer = container;
+        m_ServiceContainer = container;
 
         //通用的service直接引用
-        _commonStateService = GetService<ICommonStateService>();
-        _constStateService = GetService<IConstStateService>();
+        m_CommonStateService = GetService<CommonStateService>();
+        m_ConstStateService = GetService<ConstStateService>();
     }
 
     protected T GetService<T>() where T : IService 
     {
-        return _serviceContainer.GetService<T>();
+        return m_ServiceContainer.GetService<T>();
     }
 
 }

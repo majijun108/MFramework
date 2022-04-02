@@ -24,7 +24,7 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
             };
         }
         m_roomManager.Init(this);
-        m_roomManager.CreateRoom(BROADCAST_PORT + 1, 2);
+        m_roomManager.CreateRoom(BROADCAST_PORT + 1, m_ConstStateService.RoomMaxCount);
     }
 
     public void DoUpdate(float deltaTime) 

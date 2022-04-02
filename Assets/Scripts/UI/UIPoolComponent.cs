@@ -26,6 +26,7 @@ public class UIPoolComponent : IViewComponent
         }
         var trans = UIUtil.Instantiate(m_Prefab,m_Parent);
         UIUtil.SetActive(trans, true);
+        m_UsingPool.Enqueue(trans);
         return trans;
     }
 
