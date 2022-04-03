@@ -12,10 +12,9 @@ public class HallWindow : BaseUIView, ICanvas
     Transform m_roomItem;
     UIPoolComponent m_ItemPool;
 
-    public override void InitTransform(Transform root)
+    public override void OnCreate()
     {
-        base.InitTransform(root);
-        canvas = root.GetComponent<Canvas>();
+        canvas = m_RootTransform.GetComponent<Canvas>();
 
         UIUtil.GetTransform(m_RootTransform,"Btns/CreateBtn").GetComponent<Button>().onClick.AddListener(OnCreateClick);
         UIUtil.GetTransform(m_RootTransform,"Btns/EnterBtn").GetComponent<Button>().onClick.AddListener(OnCreateClick);
@@ -27,9 +26,9 @@ public class HallWindow : BaseUIView, ICanvas
         m_ItemPool.RegisterArchetype(m_roomItem, parent);
     }
 
-    public override void Show()
+    public override void OnShow()
     {
-        base.Show();
+        
     }
 
     private List<C2S_RoomInfo> m_roomList;
@@ -71,5 +70,15 @@ public class HallWindow : BaseUIView, ICanvas
     {
         if(canvas != null)
             UIUtil.SetActive(canvas, active);
+    }
+
+    public override void OnHide()
+    {
+        
+    }
+
+    public override void OnDestroy()
+    {
+        
     }
 }

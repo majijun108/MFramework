@@ -40,7 +40,7 @@ public class HallWindowCtrl : BaseUICtrl
 
     public override void OnShow(object openParam)
     {
-        ClientMsgHandler.Instance.AddListener(MsgType.S2C_RoomInfo, OnGetRoomInfo);
+        this.RegisterNetHandler(MsgType.S2C_RoomInfo, OnGetRoomInfo);
         EventHelper.Instance.Trigger(EEvent.OnEnterHall);
     }
 }

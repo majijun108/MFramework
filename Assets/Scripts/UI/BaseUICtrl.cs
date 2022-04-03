@@ -11,11 +11,11 @@ public abstract class BaseUICtrl
 
     private Dictionary<string,BaseUICtrl> m_SubCtrl = new Dictionary<string, BaseUICtrl>();
     private Dictionary<string,IUIComponent> m_Components = new Dictionary<string,IUIComponent>();
+    private UIEventComponent m_EventComponent;
 
-    private UIInstanceProvider m_InstanceProvider;
     public BaseUICtrl() 
     {
-        m_InstanceProvider = GetOrAddComponent<UIInstanceProvider>();
+        m_EventComponent = GetOrAddComponent<UIEventComponent>();
     }
 
     public void InitView(IUIView view) 
@@ -128,6 +128,26 @@ public abstract class BaseUICtrl
             m_Components.Remove(item.GetType().Name);
         }
         m_RemoveList.Clear();
+    }
+
+    public void RegisterEventHandler(EEvent type,EventHelper.GlobalEventHandler handler) 
+    {
+        if (m_EventComponent == null) 
+        {
+            DebugService.Instance.LogError("m_EventComponent is nil");
+            return;
+        }
+        m_EventComponent.RegisterEventHandler(type,handler);
+    }
+
+    public void RegisterNetHandler(MsgType type, ClientMsgHandler.GlobalNetMsgHandler handler) 
+    {
+        if (m_EventComponent == null)
+        {
+            DebugService.Instance.LogError("m_EventComponent is nil");
+            return;
+        }
+        m_EventComponent.RegisterNetHandler(type,handler);
     }
 
     public abstract Type GetViewType();

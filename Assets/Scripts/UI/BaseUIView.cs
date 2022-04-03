@@ -27,6 +27,7 @@ public abstract class BaseUIView : IUIView
             m_Components.Remove(item.GetType().Name);
         }
         m_RemoveList.Clear();
+        OnDestroy();
     }
 
     public virtual Transform GetSubViewRoot(string subName) { return m_RootTransform; }
@@ -58,11 +59,13 @@ public abstract class BaseUIView : IUIView
         {
             item.Value.OnHide();
         }
+        OnHide();
     }
 
     public virtual void InitTransform(Transform root) 
     {
         m_RootTransform = root;
+        OnCreate();
     }
 
     public virtual void Show()
@@ -83,5 +86,11 @@ public abstract class BaseUIView : IUIView
         {
             item.Value.OnShow();
         }
+        OnShow();
     }
+
+    public abstract void OnCreate();
+    public abstract void OnShow();
+    public abstract void OnHide();
+    public abstract void OnDestroy();
 }
