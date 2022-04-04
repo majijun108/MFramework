@@ -4,19 +4,18 @@ using UnityEngine;
 using Lockstep.NetWork;
 using ServerMessage;
 
-public class RoomManager:IMessageDispatcher
+public class RoomManager : IMessageDispatcher
 {
     class Room
     {
         public UDPNetProxy RoomProxy;
-        public int PlayerCount;
-        public int MaxCount;
-        public Room(UDPNetProxy roomNet,int maxCount) 
+        public RoomInfo Info;
+        public Room(UDPNetProxy roomNet, RoomInfo info)
         {
             RoomProxy = roomNet;
-            this.MaxCount = maxCount;
+            Info = info;
         }
-        public void Dispose() 
+        public void Dispose()
         {
             RoomProxy.Dispose();
             RoomProxy = null;
@@ -24,56 +23,65 @@ public class RoomManager:IMessageDispatcher
     }
 
     NetworkService m_Network;
-    public void Init(NetworkService service) 
+    public void Init(NetworkService service)
     {
         m_Network = service;
-        ClientMsgHandler.Instance.AddListener(MsgType.C2S_ReqRoomInfo, OnReqRoomInfo);
     }
 
 
     Room room;
     //创建房间
-    public bool CreateRoom(int startPort,int maxCount) 
+    public bool CreateRoom(int startPort, int maxCount, string roomName)
     {
         if (room != null)
             return false;
         int port = NetHelper.FindAvailablePort(startPort);
-        var roomProxy = new UDPNetProxy(NetHelper.GetIPEndPoint(startPort)) 
+        var roomProxy = new UDPNetProxy(NetHelper.GetIPEndPoint(startPort))
         {
             MessagePacker = MessagePacker.Instance,
             MessageDispatcher = this
         };
-        
-        room = new Room(roomProxy, maxCount);
-        room.PlayerCount = 1;
 
-        C2S_RoomInfo roomInfo = new C2S_RoomInfo()
+        RoomInfo roomInfo = new RoomInfo()
         {
             ServerIP = NetHelper.GetLocalIP(),
             ServerPort = port,
-            RoomName = "test",
-            PlayerCount = room.PlayerCount,
-            MaxCount = room.MaxCount
+            RoomName = roomName,
+            MaxCount = maxCount
         };
-        room.RoomProxy.Broadcast((byte)MsgType.S2C_RoomInfo, roomInfo,m_Network.BROADCAST_PORT);
+
+        room = new Room(roomProxy, roomInfo);
 
         return true;
     }
 
-    void OnReqRoomInfo(MsgType type, object param)
+    //广播房间信息
+    public void BroadcastRoomInfo(PlayerInfo other = null)
     {
         if (room == null)
             return;
-        C2S_Local local = (C2S_Local)param;
-        C2S_RoomInfo roomInfo = new C2S_RoomInfo()
+        if (other == null)
         {
-            ServerIP = NetHelper.GetLocalIP(),
-            ServerPort = room.RoomProxy.LocalIPEndPoint.Port,
-            RoomName = "test",
-            PlayerCount = room.PlayerCount,
-            MaxCount = room.MaxCount
-        };
-        room.RoomProxy.Send((byte)MsgType.S2C_RoomInfo, roomInfo,NetHelper.GetIPEndPoint(local.ClientIP,local.ClientPort));
+            room.RoomProxy.Broadcast((byte)MsgType.S2C_RoomInfo,
+                room.Info, m_Network.BROADCAST_PORT);
+        }
+        else 
+        {
+            room.RoomProxy.Send((byte)MsgType.S2C_RoomInfo, room.Info,
+                NetHelper.GetIPEndPoint(other.ClientIP, other.ClientPort));
+        }
+    }
+
+    //玩家加入房间
+    public void PlayerEnter(PlayerInfo info)
+    {
+        if (info == null || room == null)
+            return;
+        if (room.Info.Players.Count >= room.Info.MaxCount)
+            return;
+        room.Info.Players.Add(info);
+        //添加自己进房间
+        //room.Info.Players.Add();
     }
 
     public void CloseRoom() 

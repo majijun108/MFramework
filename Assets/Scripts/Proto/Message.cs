@@ -24,32 +24,33 @@ namespace ServerMessage {
     static MessageReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "Cg1tZXNzYWdlLnByb3RvEg5zZXJ2ZXJfbWVzc2FnZSJtCgxDMlNfUm9vbUlu",
-            "Zm8SEAoIc2VydmVySVAYASABKAkSEgoKc2VydmVyUG9ydBgCIAEoBRIQCghy",
-            "b29tTmFtZRgDIAEoCRITCgtwbGF5ZXJDb3VudBgEIAEoBRIQCghtYXhDb3Vu",
-            "dBgFIAEoBSJFCglDMlNfTG9jYWwSEAoIY2xpZW50SVAYASABKAkSEgoKY2xp",
-            "ZW50UG9ydBgCIAEoBRISCgpwbGF5ZXJOYW1lGAMgASgJYgZwcm90bzM="));
+            "Cg1tZXNzYWdlLnByb3RvEg5zZXJ2ZXJfbWVzc2FnZSKBAQoIUm9vbUluZm8S",
+            "EAoIc2VydmVySVAYASABKAkSEgoKc2VydmVyUG9ydBgCIAEoBRIQCghyb29t",
+            "TmFtZRgDIAEoCRIQCghtYXhDb3VudBgEIAEoBRIrCgdwbGF5ZXJzGAUgAygL",
+            "Mhouc2VydmVyX21lc3NhZ2UuUGxheWVySW5mbyJGCgpQbGF5ZXJJbmZvEhAK",
+            "CGNsaWVudElQGAEgASgJEhIKCmNsaWVudFBvcnQYAiABKAUSEgoKcGxheWVy",
+            "TmFtZRgDIAEoCWIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::ServerMessage.C2S_RoomInfo), global::ServerMessage.C2S_RoomInfo.Parser, new[]{ "ServerIP", "ServerPort", "RoomName", "PlayerCount", "MaxCount" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::ServerMessage.C2S_Local), global::ServerMessage.C2S_Local.Parser, new[]{ "ClientIP", "ClientPort", "PlayerName" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::ServerMessage.RoomInfo), global::ServerMessage.RoomInfo.Parser, new[]{ "ServerIP", "ServerPort", "RoomName", "MaxCount", "Players" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::ServerMessage.PlayerInfo), global::ServerMessage.PlayerInfo.Parser, new[]{ "ClientIP", "ClientPort", "PlayerName" }, null, null, null, null)
           }));
     }
     #endregion
 
   }
   #region Messages
-  public sealed partial class C2S_RoomInfo : pb::IMessage<C2S_RoomInfo>
+  public sealed partial class RoomInfo : pb::IMessage<RoomInfo>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
   #endif
   {
-    private static readonly pb::MessageParser<C2S_RoomInfo> _parser = new pb::MessageParser<C2S_RoomInfo>(() => new C2S_RoomInfo());
+    private static readonly pb::MessageParser<RoomInfo> _parser = new pb::MessageParser<RoomInfo>(() => new RoomInfo());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<C2S_RoomInfo> Parser { get { return _parser; } }
+    public static pb::MessageParser<RoomInfo> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -65,7 +66,7 @@ namespace ServerMessage {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public C2S_RoomInfo() {
+    public RoomInfo() {
       OnConstruction();
     }
 
@@ -73,19 +74,19 @@ namespace ServerMessage {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public C2S_RoomInfo(C2S_RoomInfo other) : this() {
+    public RoomInfo(RoomInfo other) : this() {
       serverIP_ = other.serverIP_;
       serverPort_ = other.serverPort_;
       roomName_ = other.roomName_;
-      playerCount_ = other.playerCount_;
       maxCount_ = other.maxCount_;
+      players_ = other.players_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public C2S_RoomInfo Clone() {
-      return new C2S_RoomInfo(this);
+    public RoomInfo Clone() {
+      return new RoomInfo(this);
     }
 
     /// <summary>Field number for the "serverIP" field.</summary>
@@ -124,20 +125,8 @@ namespace ServerMessage {
       }
     }
 
-    /// <summary>Field number for the "playerCount" field.</summary>
-    public const int PlayerCountFieldNumber = 4;
-    private int playerCount_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int PlayerCount {
-      get { return playerCount_; }
-      set {
-        playerCount_ = value;
-      }
-    }
-
     /// <summary>Field number for the "maxCount" field.</summary>
-    public const int MaxCountFieldNumber = 5;
+    public const int MaxCountFieldNumber = 4;
     private int maxCount_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -148,15 +137,26 @@ namespace ServerMessage {
       }
     }
 
+    /// <summary>Field number for the "players" field.</summary>
+    public const int PlayersFieldNumber = 5;
+    private static readonly pb::FieldCodec<global::ServerMessage.PlayerInfo> _repeated_players_codec
+        = pb::FieldCodec.ForMessage(42, global::ServerMessage.PlayerInfo.Parser);
+    private readonly pbc::RepeatedField<global::ServerMessage.PlayerInfo> players_ = new pbc::RepeatedField<global::ServerMessage.PlayerInfo>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override bool Equals(object other) {
-      return Equals(other as C2S_RoomInfo);
+    public pbc::RepeatedField<global::ServerMessage.PlayerInfo> Players {
+      get { return players_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(C2S_RoomInfo other) {
+    public override bool Equals(object other) {
+      return Equals(other as RoomInfo);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(RoomInfo other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -166,8 +166,8 @@ namespace ServerMessage {
       if (ServerIP != other.ServerIP) return false;
       if (ServerPort != other.ServerPort) return false;
       if (RoomName != other.RoomName) return false;
-      if (PlayerCount != other.PlayerCount) return false;
       if (MaxCount != other.MaxCount) return false;
+      if(!players_.Equals(other.players_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -178,8 +178,8 @@ namespace ServerMessage {
       if (ServerIP.Length != 0) hash ^= ServerIP.GetHashCode();
       if (ServerPort != 0) hash ^= ServerPort.GetHashCode();
       if (RoomName.Length != 0) hash ^= RoomName.GetHashCode();
-      if (PlayerCount != 0) hash ^= PlayerCount.GetHashCode();
       if (MaxCount != 0) hash ^= MaxCount.GetHashCode();
+      hash ^= players_.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -210,14 +210,11 @@ namespace ServerMessage {
         output.WriteRawTag(26);
         output.WriteString(RoomName);
       }
-      if (PlayerCount != 0) {
-        output.WriteRawTag(32);
-        output.WriteInt32(PlayerCount);
-      }
       if (MaxCount != 0) {
-        output.WriteRawTag(40);
+        output.WriteRawTag(32);
         output.WriteInt32(MaxCount);
       }
+      players_.WriteTo(output, _repeated_players_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -240,14 +237,11 @@ namespace ServerMessage {
         output.WriteRawTag(26);
         output.WriteString(RoomName);
       }
-      if (PlayerCount != 0) {
-        output.WriteRawTag(32);
-        output.WriteInt32(PlayerCount);
-      }
       if (MaxCount != 0) {
-        output.WriteRawTag(40);
+        output.WriteRawTag(32);
         output.WriteInt32(MaxCount);
       }
+      players_.WriteTo(ref output, _repeated_players_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -267,12 +261,10 @@ namespace ServerMessage {
       if (RoomName.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(RoomName);
       }
-      if (PlayerCount != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(PlayerCount);
-      }
       if (MaxCount != 0) {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(MaxCount);
       }
+      size += players_.CalculateSize(_repeated_players_codec);
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -281,7 +273,7 @@ namespace ServerMessage {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(C2S_RoomInfo other) {
+    public void MergeFrom(RoomInfo other) {
       if (other == null) {
         return;
       }
@@ -294,12 +286,10 @@ namespace ServerMessage {
       if (other.RoomName.Length != 0) {
         RoomName = other.RoomName;
       }
-      if (other.PlayerCount != 0) {
-        PlayerCount = other.PlayerCount;
-      }
       if (other.MaxCount != 0) {
         MaxCount = other.MaxCount;
       }
+      players_.Add(other.players_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -328,11 +318,11 @@ namespace ServerMessage {
             break;
           }
           case 32: {
-            PlayerCount = input.ReadInt32();
+            MaxCount = input.ReadInt32();
             break;
           }
-          case 40: {
-            MaxCount = input.ReadInt32();
+          case 42: {
+            players_.AddEntriesFrom(input, _repeated_players_codec);
             break;
           }
         }
@@ -363,11 +353,11 @@ namespace ServerMessage {
             break;
           }
           case 32: {
-            PlayerCount = input.ReadInt32();
+            MaxCount = input.ReadInt32();
             break;
           }
-          case 40: {
-            MaxCount = input.ReadInt32();
+          case 42: {
+            players_.AddEntriesFrom(ref input, _repeated_players_codec);
             break;
           }
         }
@@ -377,16 +367,16 @@ namespace ServerMessage {
 
   }
 
-  public sealed partial class C2S_Local : pb::IMessage<C2S_Local>
+  public sealed partial class PlayerInfo : pb::IMessage<PlayerInfo>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
   #endif
   {
-    private static readonly pb::MessageParser<C2S_Local> _parser = new pb::MessageParser<C2S_Local>(() => new C2S_Local());
+    private static readonly pb::MessageParser<PlayerInfo> _parser = new pb::MessageParser<PlayerInfo>(() => new PlayerInfo());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<C2S_Local> Parser { get { return _parser; } }
+    public static pb::MessageParser<PlayerInfo> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -402,7 +392,7 @@ namespace ServerMessage {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public C2S_Local() {
+    public PlayerInfo() {
       OnConstruction();
     }
 
@@ -410,7 +400,7 @@ namespace ServerMessage {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public C2S_Local(C2S_Local other) : this() {
+    public PlayerInfo(PlayerInfo other) : this() {
       clientIP_ = other.clientIP_;
       clientPort_ = other.clientPort_;
       playerName_ = other.playerName_;
@@ -419,8 +409,8 @@ namespace ServerMessage {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public C2S_Local Clone() {
-      return new C2S_Local(this);
+    public PlayerInfo Clone() {
+      return new PlayerInfo(this);
     }
 
     /// <summary>Field number for the "clientIP" field.</summary>
@@ -462,12 +452,12 @@ namespace ServerMessage {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
-      return Equals(other as C2S_Local);
+      return Equals(other as PlayerInfo);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(C2S_Local other) {
+    public bool Equals(PlayerInfo other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -566,7 +556,7 @@ namespace ServerMessage {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(C2S_Local other) {
+    public void MergeFrom(PlayerInfo other) {
       if (other == null) {
         return;
       }

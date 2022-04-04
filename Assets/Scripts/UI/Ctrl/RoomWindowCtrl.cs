@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ServerMessage;
 
 public class RoomWindowCtrl : BaseUICtrl
 {
@@ -30,11 +31,11 @@ public class RoomWindowCtrl : BaseUICtrl
         
     }
 
-    private ServerMessage.C2S_RoomInfo roomInfo;
+    private ServerMessage.RoomInfo roomInfo;
 
     public override void OnShow(object openParam)
     {
-        roomInfo = (ServerMessage.C2S_RoomInfo)openParam;
+        roomInfo = (ServerMessage.RoomInfo)openParam;
         if (roomInfo == null)
             return;
         

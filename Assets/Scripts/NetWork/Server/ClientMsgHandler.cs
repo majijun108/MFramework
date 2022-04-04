@@ -19,6 +19,11 @@ public class ClientMsgHandler : BaseEventHandle<MsgType, ClientMsgHandler.Global
         }
     }
 
+    private UDPNetProxy m_Client;
+
+
+
+
     public void Dispatch(Session session, byte opcode, object message)
     {
         MsgType opType = (MsgType)opcode;

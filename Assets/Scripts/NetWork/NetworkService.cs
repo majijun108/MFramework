@@ -24,29 +24,49 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
             };
         }
         m_roomManager.Init(this);
-        m_roomManager.CreateRoom(BROADCAST_PORT + 1, m_ConstStateService.RoomMaxCount);
+
+        ClientMsgHandler.Instance.AddListener(MsgType.C2S_ReqRoomInfo, OnReqRoomInfo);
+    }
+
+    //玩家请求房间信息
+    void OnReqRoomInfo(MsgType type, object param)
+    {
+        PlayerInfo local = (PlayerInfo)param;
+        m_roomManager.BroadcastRoomInfo(local);
     }
 
     public void DoUpdate(float deltaTime) 
     {
         m_broadCast.Update();
+        m_roomManager.Update();
     }
+
+    public bool CreateRoom() 
+    {
+        var success = m_roomManager.CreateRoom(BROADCAST_PORT + 1,
+            m_ConstStateService.RoomMaxCount, m_ConstStateService.PlayerName);
+        if (!success)
+            return false;
+
+        return true;
+    }
+
 
     public override void DoDestroy()
     {
         m_broadCast.Dispose();
         m_broadCast = null;
         base.DoDestroy();
+        ClientMsgHandler.Instance.RemoveListener(MsgType.C2S_ReqRoomInfo, OnReqRoomInfo);
     }
-
 
     void OnEvent_OnEnterHall(EEvent type,object param)
     {
-        C2S_Local myInfo = new C2S_Local()
+        PlayerInfo myInfo = new PlayerInfo()
         {
             ClientIP = NetHelper.GetLocalIP(),
             ClientPort = BROADCAST_PORT,
-            PlayerName = "SB"
+            PlayerName = m_ConstStateService.PlayerName
         };
 
         m_broadCast.Broadcast((byte)MsgType.C2S_ReqRoomInfo, myInfo, BROADCAST_PORT);

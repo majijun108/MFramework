@@ -26,9 +26,9 @@ public class MessagePacker : IMessagePacker
         switch (code) 
         {
             case MsgType.C2S_ReqRoomInfo:
-                return C2S_Local.Parser.ParseFrom(bytes, startIndex, count);
+                return PlayerInfo.Parser.ParseFrom(bytes, startIndex, count);
             case MsgType.S2C_RoomInfo:
-                return C2S_RoomInfo.Parser.ParseFrom(bytes, startIndex, count);
+                return RoomInfo.Parser.ParseFrom(bytes, startIndex, count);
         }
         return null;
     }
