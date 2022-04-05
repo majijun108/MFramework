@@ -59,9 +59,8 @@ public abstract class BaseUIView : IUIView
         if (this is ICanvas canvas)
         {
             canvas.SetCanvasActive(false);
-            return;
-        }
-        UIUtil.SetActive(m_RootTransform, false);
+        }else
+            UIUtil.SetActive(m_RootTransform, false);
 
         foreach (var item in m_Components)
         {

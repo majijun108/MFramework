@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Lockstep.NetWork
@@ -18,13 +19,15 @@ namespace Lockstep.NetWork
         private bool isSending = false;
         private TaskCompletionSource<Packet> recvTask;//接受任务
         private readonly Queue<MessageInfo> m_SendQueue = new Queue<MessageInfo>();
+        private IPEndPoint m_localIP;
 
         public UDPChannel(NetWorkProxy service,IPEndPoint localIP):base(service,ChannelType.Accept)
         {
             this._udpClient = new UdpClient(localIP);
+            m_localIP = localIP;
             packageParser = new PackageParser(this.recvBuffer);
 
-            this.StartRecv();
+            this.StartRecvAsync();
         }
 
         public override void Send(byte opcode, object msg,IPEndPoint remote)
@@ -40,7 +43,7 @@ namespace Lockstep.NetWork
 
                 if (isSending)
                     return;
-                this.StartSend();
+                this.StartSendAsync();
             }
         }
 
@@ -69,7 +72,8 @@ namespace Lockstep.NetWork
         }
 
         private byte[] curSendBuffer = new byte[ushort.MaxValue];
-        public async void StartSend()
+        private Task<int> m_sendTask;
+        public async void StartSendAsync()
         {
             try
             {
@@ -89,7 +93,8 @@ namespace Lockstep.NetWork
                     this.isSending = true;
 
                     int n = sendBuffer.ReadMsg(curSendBuffer);
-                    await _udpClient.SendAsync(curSendBuffer, n, remote);
+                    m_sendTask = _udpClient.SendAsync(curSendBuffer, n, remote);
+                    await m_sendTask;
                 }
             }
             catch (Exception ex) 
@@ -98,7 +103,8 @@ namespace Lockstep.NetWork
             }
         }
 
-        public async void StartRecv() 
+        private Task<UdpReceiveResult> m_ReceiveTask;
+        public async void StartRecvAsync() 
         {
             try
             {
@@ -106,9 +112,14 @@ namespace Lockstep.NetWork
                 {
                     if (IsDisposed)
                         return;
-                    var result = await this._udpClient.ReceiveAsync();//UDP没用粘包
+                    m_ReceiveTask = _udpClient.ReceiveAsync();
+                    var result = await m_ReceiveTask;
                     if (IsDisposed)
+                    {
+                        _udpClient.Close();
+                        _udpClient.Dispose();
                         return;
+                    }
                     if (result.Buffer.Length == 0)
                         continue;
                     this.recvBuffer.Write(result.Buffer, 0, result.Buffer.Length);
@@ -148,9 +159,12 @@ namespace Lockstep.NetWork
         {
             base.Dispose();
             this.Enable = false;
-            if (_udpClient != null)
+            //强制发送一条消息 让task关闭
+            if (_udpClient != null) 
             {
-                _udpClient.Dispose();
+                m_localIP.Address = IPAddress.Parse(NetHelper.GetLocalIP());
+                byte[] data = new byte[1];
+                this._udpClient.Send(data, 1, m_localIP);
             }
         }
     }

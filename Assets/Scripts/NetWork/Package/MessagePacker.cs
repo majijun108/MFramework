@@ -25,16 +25,22 @@ public class MessagePacker : IMessagePacker
         MsgType code = (MsgType)opcode;
         switch (code) 
         {
-            case MsgType.C2S_ReqRoomInfo:
-                return PlayerInfo.Parser.ParseFrom(bytes, startIndex, count);
             case MsgType.S2C_RoomInfo:
+            case MsgType.S2C_JoinRoom:
+            case MsgType.S2C_ExitRoom:
                 return RoomInfo.Parser.ParseFrom(bytes, startIndex, count);
+            case MsgType.C2S_ReqRoomInfo:
+            case MsgType.C2S_ReqJoinRoom:
+            case MsgType.C2S_ReqExitRoom:
+                return PlayerInfo.Parser.ParseFrom(bytes, startIndex, count);
         }
         return null;
     }
 
     public byte[] SerializeToByteArray(object msg)
     {
+        if (msg == null)
+            return new byte[0];
         var newmsg = msg as MessageProto;
         return newmsg.ToByteArray();
     }

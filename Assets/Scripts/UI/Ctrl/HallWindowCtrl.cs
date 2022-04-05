@@ -83,7 +83,7 @@ public class HallWindowCtrl : BaseUICtrl
 
     public void OnCreateClick() 
     {
-        DebugService.Instance.LogError("test on create click");
+        NetworkService.Instance.CreateRoom();
     }
 
     public void OnJoinClick() 

@@ -13,6 +13,7 @@ namespace Lockstep.NetWork
     {
         private UDPChannel m_UdpChannel;
         private readonly Queue<MessageInfo> m_receiveMsgs = new Queue<MessageInfo>();
+        private IPEndPoint m_remote;
 
         public UDPNetProxy(IPEndPoint localIP) 
         {
@@ -32,6 +33,16 @@ namespace Lockstep.NetWork
                     return;
                 OnRecv(packet);
             }
+        }
+
+        public void Connect(string ip, int port) 
+        {
+            m_remote = NetHelper.GetIPEndPoint(ip, port);
+        }
+
+        public void DisConnect() 
+        {
+            m_remote = null;
         }
 
         private void OnRecv(Packet packet)
@@ -60,6 +71,15 @@ namespace Lockstep.NetWork
             m_UdpChannel.Send(opcode, msg, remote);
         }
 
+        public void Send(byte opcode, object msg)
+        {
+            if (IsDisposed || m_UdpChannel == null)
+                return;
+            if (m_remote == null)
+                return;
+            m_UdpChannel.Send(opcode, msg, m_remote);
+        }
+
         public override void Update()
         {
             if (IsDisposed)
@@ -76,12 +96,12 @@ namespace Lockstep.NetWork
 
         public override void Dispose()
         {
+            base.Dispose();
             if (m_UdpChannel != null)
             {
                 m_UdpChannel.Dispose();
                 m_UdpChannel = null;
             }
-            base.Dispose();
         }
 
         private IPEndPoint m_lastEndPoint;
