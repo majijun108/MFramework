@@ -100,7 +100,7 @@ public class HallWindow : BaseUIView, ICanvas
 
     public override void OnHide()
     {
-        
+        m_SelectIndex = -1;
     }
 
     public override void OnDestroy()

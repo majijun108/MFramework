@@ -54,6 +54,7 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
 
         m_roomManager.PlayerEnter(m_PlayerInfo);
         S2C_OnJoinRoom(MsgType.S2C_JoinRoom,roomInfo);
+        m_roomManager.BroadcastRoomInfo();
         return true;
     }
 

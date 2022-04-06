@@ -7,6 +7,8 @@ using UnityEngine.UI;
 
 public class HallWindowCtrl : BaseUICtrl
 {
+
+    private int m_selectIndex = -1;
     public override string GetViewName()
     {
         return "HallWindow";
@@ -78,7 +80,7 @@ public class HallWindowCtrl : BaseUICtrl
 
     void OnItemClick(int index) 
     {
-
+        m_selectIndex = index;
     }
 
     public void OnCreateClick() 
@@ -88,6 +90,9 @@ public class HallWindowCtrl : BaseUICtrl
 
     public void OnJoinClick() 
     {
-
+        if (m_selectIndex < 0 || m_selectIndex >= m_AllRooms.Count)
+            return;
+        var data = m_AllRooms[m_selectIndex];
+        NetworkService.Instance.C2S_ReqEnterRoom(data);
     }
 }

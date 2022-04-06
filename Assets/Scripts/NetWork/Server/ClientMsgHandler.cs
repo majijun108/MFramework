@@ -1,4 +1,5 @@
-﻿using System;
+﻿//#define USE_MSG_LOG
+using System;
 using System.Collections.Generic;
 using Google.Protobuf;
 using Lockstep.NetWork;
@@ -34,7 +35,9 @@ public class ClientMsgHandler : BaseEventHandle<MsgType, ClientMsgHandler.Global
         //        DebugService.Instance.LogError(msg.ToString());
         //        break;
         //}
-        DebugService.Instance.LogError(message.ToString());
+#if USE_MSG_LOG
+        DebugService.Instance.LogError(opType+"/"+message.ToString());
+#endif
         if (message != null)
             Trigger(opType, message);
     }
