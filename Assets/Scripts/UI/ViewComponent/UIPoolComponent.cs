@@ -22,6 +22,7 @@ public class UIPoolComponent : IViewComponent
         {
             var mtrans = m_UnusePool.Dequeue();
             UIUtil.SetActive(mtrans, true);
+            m_UsingPool.Enqueue(mtrans);
             return mtrans;
         }
         var trans = UIUtil.Instantiate(m_Prefab,m_Parent);
@@ -56,5 +57,11 @@ public class UIPoolComponent : IViewComponent
             Transform item = Get();
             cb(item,i);
         }
+    }
+
+    public override void OnHide()
+    {
+        base.OnHide();
+        Clear();
     }
 }
