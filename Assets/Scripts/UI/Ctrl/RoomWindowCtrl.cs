@@ -59,7 +59,7 @@ public class RoomWindowCtrl : BaseUICtrl
             players.Add(item);
         }
         m_Window.RefreshRoomScroll(players);
-        m_Window.SetStartBtnActive(NetworkService.Instance.IsServer());
+        m_Window.SetStartBtnActive(NetworkService.Instance.IsMainPlayer(roomInfo.Players[0]));
     }
 
 

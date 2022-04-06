@@ -15,6 +15,7 @@ public class Launcher : ILifeCycle
     {
         if(Instance != null) return;
         Instance = this;
+        GlobalUtils.StartServices();
 
         _managerContainer = new ManagerContainer();
         _serviceContainer = (BaseServiceContainer)services;
@@ -69,6 +70,7 @@ public class Launcher : ILifeCycle
 
     public void DoUpdate(float deltaTime) 
     {
+        GlobalUtils.UpdateServices();
         m_NetworkService.DoUpdate(deltaTime);
     }
 

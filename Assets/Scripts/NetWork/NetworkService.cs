@@ -34,8 +34,8 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
         }
         m_roomManager.Init(this);
 
-        ClientMsgHandler.Instance.AddListener(MsgType.S2C_JoinRoom, S2C_OnJoinRoom);
-        ClientMsgHandler.Instance.AddListener(MsgType.S2C_ExitRoom, S2C_OnExitRoom);
+        ClientMsgHandler.Instance.AddListener(MsgType.S2C_JoinRoom, On_S2C_OnJoinRoom);
+        ClientMsgHandler.Instance.AddListener(MsgType.S2C_ExitRoom, On_S2C_OnExitRoom);
     }
 
     public void DoUpdate(float deltaTime) 
@@ -45,17 +45,18 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
     }
 
     //创建房间 并且将自己加入房间
-    public bool CreateRoom() 
+    public void CreateRoomAndEnter() 
     {
-        var roomInfo = m_roomManager.CreateRoom(BROADCAST_PORT + 1,
+        m_roomManager.CreateRoomAndStart(BROADCAST_PORT + 1,
             m_ConstStateService.RoomMaxCount, m_ConstStateService.PlayerName);
-        if (roomInfo==null)
-            return false;
+    }
 
-        m_roomManager.PlayerEnter(m_PlayerInfo);
-        S2C_OnJoinRoom(MsgType.S2C_JoinRoom,roomInfo);
-        m_roomManager.BroadcastRoomInfo();
-        return true;
+    //向某一个IP发送一条信息
+    public void C2C_SendMsg(MsgType msgType, object msg,IPEndPoint remote) 
+    {
+        if (m_Client == null)
+            return;
+        m_Client.Send((byte)msgType, msg, remote);
     }
 
     //开始游戏
@@ -65,14 +66,20 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
     }
 
     //向服务器请求加入房间
-    public void C2S_ReqEnterRoom(RoomInfo room) 
+    public void C2S_ReqEnterRoom(string serverIP,int serverPort) 
     {
         m_Client.Send((byte)MsgType.C2S_ReqJoinRoom, m_PlayerInfo,
-            NetHelper.GetIPEndPoint(room.ServerIP, room.ServerPort));
+            NetHelper.GetIPEndPoint(serverIP, serverPort));
+    }
+
+    public void C2S_ReqEnterRoom(IPEndPoint server)
+    {
+        m_Client.Send((byte)MsgType.C2S_ReqJoinRoom, m_PlayerInfo,
+            server);
     }
 
     //接受服务器加入房间
-    public void S2C_OnJoinRoom(MsgType type,object obj) 
+    public void On_S2C_OnJoinRoom(MsgType type,object obj) 
     {
         if (obj == null)
             return;
@@ -91,7 +98,8 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
         m_Client.Send((byte)MsgType.C2S_ReqExitRoom, m_PlayerInfo);
     }
 
-    public void S2C_OnExitRoom(MsgType type, object obj) 
+    //收到退出房间
+    public void On_S2C_OnExitRoom(MsgType type, object obj) 
     {
         if (m_roomInfo == null || m_PlayerInfo == null)
             return;
@@ -109,10 +117,12 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
         return m_roomInfo;
     }
 
-    //是否同时也是服务器
-    public bool IsServer() 
+    //是否是主机
+    public bool IsMainPlayer(PlayerInfo mainPlayer) 
     {
-        return m_roomManager.IsServer();
+        if (mainPlayer == null)
+            return false;
+        return mainPlayer.ClientIP == m_PlayerInfo.ClientIP && mainPlayer.ClientPort == m_PlayerInfo.ClientPort;
     }
 
 
@@ -124,8 +134,8 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
         m_PlayerInfo = null;
         base.DoDestroy();
         m_roomManager.OnDestroy();
-        ClientMsgHandler.Instance.RemoveListener(MsgType.S2C_ExitRoom, S2C_OnExitRoom);
-        ClientMsgHandler.Instance.RemoveListener(MsgType.S2C_JoinRoom, S2C_OnJoinRoom);
+        ClientMsgHandler.Instance.RemoveListener(MsgType.S2C_ExitRoom, On_S2C_OnExitRoom);
+        ClientMsgHandler.Instance.RemoveListener(MsgType.S2C_JoinRoom, On_S2C_OnJoinRoom);
     }
 
     void OnEvent_OnEnterHall(EEvent type,object param)

@@ -85,7 +85,7 @@ public class HallWindowCtrl : BaseUICtrl
 
     public void OnCreateClick() 
     {
-        NetworkService.Instance.CreateRoom();
+        NetworkService.Instance.CreateRoomAndEnter();
     }
 
     public void OnJoinClick() 
@@ -93,6 +93,6 @@ public class HallWindowCtrl : BaseUICtrl
         if (m_selectIndex < 0 || m_selectIndex >= m_AllRooms.Count)
             return;
         var data = m_AllRooms[m_selectIndex];
-        NetworkService.Instance.C2S_ReqEnterRoom(data);
+        NetworkService.Instance.C2S_ReqEnterRoom(data.ServerIP,data.ServerPort);
     }
 }
