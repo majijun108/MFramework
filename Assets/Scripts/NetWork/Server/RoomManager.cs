@@ -63,6 +63,14 @@ public class RoomManager : IMessageDispatcher
         return roomInfo;
     }
 
+    public void StartGame() 
+    {
+        if (room == null)
+            return;
+        if (room.Info.Players.Count < room.Info.MaxCount)
+            return;
+    }
+
     //广播房间信息
     public void BroadcastRoomInfo(PlayerInfo other = null)
     {

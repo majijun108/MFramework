@@ -58,6 +58,12 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
         return true;
     }
 
+    //开始游戏
+    public void StartGame() 
+    {
+        m_roomManager.StartGame();
+    }
+
     //向服务器请求加入房间
     public void C2S_ReqEnterRoom(RoomInfo room) 
     {

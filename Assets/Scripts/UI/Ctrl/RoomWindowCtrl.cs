@@ -70,6 +70,6 @@ public class RoomWindowCtrl : BaseUICtrl
 
     void OnStartBtnClick() 
     {
-
+        NetworkService.Instance.StartGame();
     }
 }

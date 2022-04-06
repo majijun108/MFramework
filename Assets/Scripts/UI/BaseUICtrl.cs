@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public abstract class BaseUICtrl
 {
     public UIState State { get; set; } = UIState.INIT;
-    public UILayer Layer { get; set; }
+    public UILayer Layer { get; set; } = UILayer.NORMAL;
     public string Name { get; set; }
 
     public IUIView View { get; private set; }

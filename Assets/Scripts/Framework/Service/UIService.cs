@@ -30,6 +30,13 @@ public class UIService : BaseSingleService<UIService>//, IUIService
         for (int i = 0; i < max; i++) 
         {
             GameObject go = new GameObject(((UILayer)i).ToString());
+            RectTransform rectTrans = go.AddComponent<RectTransform>();
+            go.transform.SetParent(_uiRoot);
+            go.transform.localScale = Vector3.one;
+            rectTrans.anchorMin = Vector3.zero;
+            rectTrans.anchorMax = Vector3.one;
+            rectTrans.offsetMin = Vector3.zero;
+            rectTrans.offsetMax = Vector3.zero;
             m_LayerRoots[i] = go.transform;
         }
 
@@ -168,7 +175,7 @@ public class UIService : BaseSingleService<UIService>//, IUIService
             throw new Exception("view is null type,ctrlname:"+ctrl.Name);
 
         root.name = ctrl.GetViewName();
-        root.transform.SetParent(_uiRoot);
+        root.transform.SetParent(parent);
         root.transform.localScale = Vector3.one;
         RectTransform rect = root.transform as RectTransform;
         rect.anchorMin = Vector3.zero;
