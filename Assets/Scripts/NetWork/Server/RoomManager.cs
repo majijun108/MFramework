@@ -27,17 +27,13 @@ public class RoomManager
     //玩家请求房间信息
     void OnReqRoomInfo(MsgType type, object param)
     {
-        PlayerInfo local = (PlayerInfo)param;
         if (m_Room == null || m_Room.IsDisposed)
             return;
-        RoomInfo roomInfo = new RoomInfo()
+        m_Room.PushCommand(new ServerCmdInfo()
         {
-            ServerIP = m_serverIP,
-            ServerPort = m_serverPort,
-            RoomName = m_serverName
-        };
-        m_Network.C2C_SendMsg(MsgType.S2C_RoomInfo, roomInfo,
-                NetHelper.GetIPEndPoint(local.ClientIP, local.ClientPort));
+            type = SERVER_CMD_TYPE.SEND_ROOMINFO,
+            obj = param
+        });
     }
 
     //创建房间

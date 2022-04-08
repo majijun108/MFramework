@@ -6,6 +6,15 @@ using System.Threading.Tasks;
 
 namespace Server
 {
+    public enum SERVER_CMD_TYPE 
+    {
+        SEND_ROOMINFO,//向玩家发送房间信息
+    }
+    public struct ServerCmdInfo 
+    {
+        public SERVER_CMD_TYPE type;
+        public object obj;
+    }
     //服务器房间 跑在另外的线程
     public class ServerRoom:IMessageDispatcher
     {
@@ -20,6 +29,8 @@ namespace Server
 
         private int m_frameDelta;//每帧的时间
         private DateTime m_startTime;
+
+        private Queue<ServerCmdInfo> m_cmdQueue = new Queue<ServerCmdInfo>();
 
         public ServerRoom(int startPort, int maxCount, string roomName,int broadPort,ref string serverIP,ref int serverPort) 
         {
@@ -58,6 +69,15 @@ namespace Server
             Run();
         }
 
+        //向服务器push指令 会在异步调用
+        public void PushCommand(ServerCmdInfo info) 
+        {
+            lock (m_cmdQueue) 
+            {
+                m_cmdQueue.Enqueue(info);
+            }
+        }
+
         //创建完房间 广播服务器
         private void BroadcastRoomInfo()
         {
@@ -78,10 +98,37 @@ namespace Server
             }
         }
 
+        //解析主线程push过来的指令
+        void ExcuteCmd() 
+        {
+            if (m_cmdQueue.Count <= 0)
+                return;
+            lock (m_cmdQueue)
+            {
+                while (m_cmdQueue.Count > 0)
+                {
+                    var cmd = m_cmdQueue.Dequeue();
+                    switch (cmd.type) 
+                    {
+                        case SERVER_CMD_TYPE.SEND_ROOMINFO:
+                            PlayerInfo player = cmd.obj as PlayerInfo;
+                            if (player != null && m_roomInfo != null)
+                            {
+                                m_Server.Send((byte)MsgType.S2C_RoomInfo, m_roomInfo
+                                    , NetHelper.GetIPEndPoint(player.ClientIP, player.ClientPort));
+                            }
+                            continue;
+                    }
+                }
+            }
+        }
 
         void Tick() 
         {
-            m_Server?.Update();
+            if (m_Server == null || m_Server.IsDisposed)
+                return;
+            ExcuteCmd();
+            m_Server.Update();
         }
 
         int GetPlayerIndex(PlayerInfo player)
