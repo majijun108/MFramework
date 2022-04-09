@@ -15,6 +15,11 @@ public class DebugService : BaseSingleService<DebugService>, IDebugService
         Debug.LogError(UIUtil.StringConcat(message));
     }
 
+    public void LogError(Exception e)
+    {
+        Debug.LogError(e.ToString());
+    }
+
     public void LogWarning(params string[] message)
     {
         Debug.LogWarning(UIUtil.StringConcat(message));

@@ -7,13 +7,13 @@ public class GlobalUtils
     public static void StartServices()
     {
         LTime.DoStart();
-        //CoroutineHelper.DoStart();
+        CoroutineHelper.DoStart();
     }
 
     public static void UpdateServices()
     {
         LTime.DoUpdate();
-        //CoroutineHelper.DoUpdate();
+        CoroutineHelper.DoUpdate();
     }
 
     public static void ExecuteCmd(string shellName, string workingDir)

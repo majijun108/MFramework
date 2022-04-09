@@ -4,6 +4,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using Lockstep.Logging;
+using UnityEngine.ResourceManagement.ResourceProviders;
 
 public class ResourceService:BaseSingleService<ResourceService>,IResourceService
 {
@@ -36,6 +37,12 @@ public class ResourceService:BaseSingleService<ResourceService>,IResourceService
             m_loadedAssets[handle.Result.GetInstanceID()] = handle;
             callback(handle.Result);
         };
+    }
+
+    //加载场景
+    public void LoadSceneAsync(string sceneName,UnityEngine.SceneManagement.LoadSceneMode mode) 
+    {
+        var hadle = Addressables.LoadSceneAsync(sceneName, mode);
     }
 
     public void ReleaseAsset(UnityEngine.Object obj)
