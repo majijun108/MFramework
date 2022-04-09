@@ -68,9 +68,11 @@ public class HallWindowCtrl : BaseUICtrl
         this.RegisterNetHandler(MsgType.S2C_RoomInfo, OnGetRoomInfo);
         EventHelper.Instance.Trigger(EEvent.OnEnterHall);
 
-        m_Window.RegisterUIEvent<Button>("Btns/CreateBtn", new UnityEngine.Events.UnityAction(OnCreateClick));
-        m_Window.RegisterUIEvent<Button>("Btns/EnterBtn", new UnityEngine.Events.UnityAction(OnJoinClick));
+        m_Window.RegisterUIEvent<ButtonEvent<UIBtnClickRegister>>("Btns/CreateBtn", new UnityEngine.Events.UnityAction(OnCreateClick));
+        m_Window.RegisterUIEvent<ButtonEvent<UIBtnClickRegister>>("Btns/EnterBtn", new UnityEngine.Events.UnityAction(OnJoinClick));
         m_Window.RegisterUIEventBuffer("OnItemClick", new Action<int>(OnItemClick));
+
+        m_Window.RegisterUIEvent<InputEvent<UIInputValueChangeRegister>>("InputName", new UnityEngine.Events.UnityAction<string>(OnInputValueChange));
     }
 
     public override void OnHide()
@@ -94,5 +96,11 @@ public class HallWindowCtrl : BaseUICtrl
             return;
         var data = m_AllRooms[m_selectIndex];
         NetworkService.Instance.C2S_ReqEnterRoom(data.ServerIP,data.ServerPort);
+    }
+
+    private string m_currentName;
+    public void OnInputValueChange(string value) 
+    {
+        m_currentName = value;
     }
 }

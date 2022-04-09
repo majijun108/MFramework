@@ -89,7 +89,7 @@ public abstract class BaseUIView : IUIView
         OnDestroy();
     }
 
-    public void RegisterUIEvent<T>(string path, System.Delegate cb = null) 
+    public void RegisterUIEvent<T>(string path, System.Delegate cb = null) where T : BaseUIEvent, new()
     {
         var clickComp = GetOrAddComponent<UIClickComponent>();
         if(clickComp != null)

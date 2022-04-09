@@ -43,9 +43,9 @@ public class RoomWindowCtrl : BaseUICtrl
         if (roomInfo == null)
             return;
 
-        m_Window.RegisterUIEvent<Button>("Btns/ExitBtn", 
+        m_Window.RegisterUIEvent<ButtonEvent<UIBtnClickRegister>>("Btns/ExitBtn", 
             new UnityEngine.Events.UnityAction(OnExitBtnClick));
-        m_Window.RegisterUIEvent<Button>("Btns/StartBtn",
+        m_Window.RegisterUIEvent<ButtonEvent<UIBtnClickRegister>>("Btns/StartBtn",
             new UnityEngine.Events.UnityAction(OnStartBtnClick));
 
         UpdateView();
