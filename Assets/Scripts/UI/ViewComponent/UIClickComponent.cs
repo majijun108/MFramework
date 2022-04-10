@@ -45,8 +45,13 @@ public abstract class BaseUIEvent
     public UnityEngine.Object MainObj { get; set; }
 
     protected IUIEventRegister m_register;
-    public abstract IUIEventRegister MRegister { get; }
+    public IUIEventRegister MRegister
+    {
+        get
+        { if (m_register == null) m_register = GetInstance(); return m_register; }
+    }
     public abstract void InitComponent(Transform root, string path);
+    public abstract IUIEventRegister GetInstance();
     public void Register(Delegate cb = null) 
     {
         MRegister.Register(MainObj, cb);
@@ -55,8 +60,9 @@ public abstract class BaseUIEvent
 
 public class ButtonEvent<T> : BaseUIEvent where T : IUIEventRegister, new()
 {
-    public override IUIEventRegister MRegister { get 
-        { if (m_register == null) m_register = new T();return m_register; } 
+    public override IUIEventRegister GetInstance()
+    {
+        return new T();
     }
 
     public override void InitComponent(Transform root,string path)
@@ -70,10 +76,9 @@ public class ButtonEvent<T> : BaseUIEvent where T : IUIEventRegister, new()
 
 public class InputEvent<T> : BaseUIEvent where T : IUIEventRegister, new()
 {
-    public override IUIEventRegister MRegister
+    public override IUIEventRegister GetInstance()
     {
-        get
-        { if (m_register == null) m_register = new T(); return m_register; }
+        return new T();
     }
 
     public override void InitComponent(Transform root, string path)

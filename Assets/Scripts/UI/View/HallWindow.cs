@@ -12,6 +12,7 @@ public class HallWindow : BaseUIView, ICanvas
 
     Transform m_roomItem;
     UIPoolComponent m_ItemPool;
+    TMPro.TMP_InputField m_InputField;
 
     public override void OnCreate()
     {
@@ -19,6 +20,7 @@ public class HallWindow : BaseUIView, ICanvas
 
         m_roomItem = UIUtil.GetTransform(m_RootTransform,"RoomItem");
         UIUtil.SetActive(m_roomItem, false);
+        m_InputField = UIUtil.GetTransform(m_RootTransform, "InputName").GetComponent<TMP_InputField>();
 
         m_ItemPool = GetOrAddComponent<UIPoolComponent>(this);
         Transform parent = UIUtil.GetTransform(m_RootTransform, "RoomScroll/Viewport/Content");
@@ -38,6 +40,12 @@ public class HallWindow : BaseUIView, ICanvas
         m_ItemPool.Refresh(dataList.Count, UpdateItem);
         m_roomList = null;
     }
+
+    public void SetInputName(string name) 
+    {
+        m_InputField.text = name;
+    }
+
 
     void UpdateItem(Transform trans,int index) 
     {

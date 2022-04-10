@@ -7,8 +7,6 @@ using UnityEngine.UI;
 
 public class HallWindowCtrl : BaseUICtrl
 {
-
-    private int m_selectIndex = -1;
     public override string GetViewName()
     {
         return "HallWindow";
@@ -26,8 +24,11 @@ public class HallWindowCtrl : BaseUICtrl
 
     public override void OnDestroy()
     {
-        
+
     }
+
+    private int m_selectIndex = -1;
+    private string m_currentName;
 
     private List<RoomInfo> m_AllRooms = new List<RoomInfo>();
     private HallWindow m_Window;
@@ -73,6 +74,9 @@ public class HallWindowCtrl : BaseUICtrl
         m_Window.RegisterUIEventBuffer("OnItemClick", new Action<int>(OnItemClick));
 
         m_Window.RegisterUIEvent<InputEvent<UIInputValueChangeRegister>>("InputName", new UnityEngine.Events.UnityAction<string>(OnInputValueChange));
+
+        m_currentName = ConstStateService.Instance.PlayerName;
+        m_Window.SetInputName(m_currentName);
     }
 
     public override void OnHide()
@@ -97,10 +101,12 @@ public class HallWindowCtrl : BaseUICtrl
         var data = m_AllRooms[m_selectIndex];
         NetworkService.Instance.C2S_ReqEnterRoom(data.ServerIP,data.ServerPort);
     }
-
-    private string m_currentName;
     public void OnInputValueChange(string value) 
     {
         m_currentName = value;
+        if (!string.IsNullOrEmpty(m_currentName)) 
+        {
+            ConstStateService.Instance.PlayerName = m_currentName;
+        }
     }
 }
