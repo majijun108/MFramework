@@ -32,6 +32,8 @@ namespace Server
 
         private Queue<ServerCmdInfo> m_cmdQueue = new Queue<ServerCmdInfo>();
 
+        static int roomID = 1;
+
         public ServerRoom(int startPort, int maxCount, string roomName,int broadPort,ref string serverIP,ref int serverPort) 
         {
             m_broadcastPort = broadPort;
@@ -47,7 +49,8 @@ namespace Server
                 ServerIP = NetHelper.GetLocalIP(),
                 ServerPort = port,
                 RoomName = roomName,
-                MaxCount = maxCount
+                MaxCount = maxCount,
+                RoomID = roomID++
             };
             m_frameDelta = 1000 / FrameRate;
             m_startTime = DateTime.Now;
@@ -62,7 +65,7 @@ namespace Server
 
             //添加主机信息
             m_roomInfo.Players.Add(mainPlayer);
-            m_Server.Send((byte)MsgType.S2C_JoinRoom, m_roomInfo,
+            m_Server.Send((byte)MsgType.S2C_UpdateRoomInfo, m_roomInfo,
                 NetHelper.GetIPEndPoint(mainPlayer.ClientIP, mainPlayer.ClientPort));
             BroadcastRoomInfo();
 
@@ -144,44 +147,10 @@ namespace Server
             return -1;
         }
 
-        //客户端请求加入房间
-        void OnC2S_ReqJoinRoom(PlayerInfo player)
-        {
-            if (player == null || m_roomInfo == null)
-                return;
-            if (m_roomInfo.Players.Count >= m_roomInfo.MaxCount)
-                return;
-            int index = GetPlayerIndex(player);
-            if (index >= 0)
-                return;
-            m_roomInfo.Players.Add(player);
-            m_Server.Send((byte)MsgType.S2C_JoinRoom, m_roomInfo,
-                NetHelper.GetIPEndPoint(player.ClientIP, player.ClientPort));
-        }
-
-        //客户端请求退出房间
-        void OnC2S_ReqExitRoom(PlayerInfo player)
-        {
-            if (player == null || m_roomInfo == null)
-                return;
-            int index = GetPlayerIndex(player);
-            if (index == -1)
-                return;
-
-            if (IsMainPlayer(player))
-            {
-                CloseRoom();
-                return;
-            }
-            m_roomInfo.Players.RemoveAt(index);
-            m_Server.Send((byte)MsgType.S2C_ExitRoom, m_roomInfo,
-                NetHelper.GetIPEndPoint(player.ClientIP, player.ClientPort));
-        }
-
         //关闭房间
         public void CloseRoom()
         {
-            Broadcast(MsgType.S2C_ExitRoom, m_roomInfo);
+            Broadcast(MsgType.S2C_CloseRoom, m_roomInfo);
             this.Dispose();
         }
 
@@ -216,6 +185,55 @@ namespace Server
             m_roomInfo = null;
         }
 
+
+
+        //客户端请求加入房间
+        void OnC2S_ReqJoinRoom(PlayerInfo player)
+        {
+            if (player == null || m_roomInfo == null)
+                return;
+            if (m_roomInfo.Players.Count >= m_roomInfo.MaxCount)
+                return;
+            int index = GetPlayerIndex(player);
+            if (index >= 0)
+                return;
+            m_roomInfo.Players.Add(player);
+            Broadcast(MsgType.S2C_UpdateRoomInfo, m_roomInfo);
+        }
+
+        //客户端请求退出房间
+        void OnC2S_ReqExitRoom(PlayerInfo player)
+        {
+            if (player == null || m_roomInfo == null)
+                return;
+            int index = GetPlayerIndex(player);
+            if (index == -1)
+                return;
+
+            if (IsMainPlayer(player))
+            {
+                CloseRoom();
+                return;
+            }
+            m_roomInfo.Players.RemoveAt(index);
+            m_Server.Send((byte)MsgType.S2C_ExitRoom, m_roomInfo,
+                NetHelper.GetIPEndPoint(player.ClientIP, player.ClientPort));
+            Broadcast(MsgType.S2C_UpdateRoomInfo, m_roomInfo);
+        }
+
+        //请求开始游戏
+        void On_C2S_ReqStartGame(PlayerInfo player) 
+        {
+            if (m_roomInfo == null)
+                return;
+            int index = GetPlayerIndex(player);
+            if (index == -1)
+                return;
+            if (m_roomInfo.Players.Count < m_roomInfo.MaxCount)
+                return;
+            Broadcast(MsgType.S2C_StartGame, m_roomInfo);
+        }
+
         public void Dispatch(Session session, byte opcode, object message)
         {
             MsgType opType = (MsgType)opcode;
@@ -226,6 +244,9 @@ namespace Server
                     break;
                 case MsgType.C2S_ReqExitRoom://请求退出房间
                     OnC2S_ReqExitRoom(message as PlayerInfo);
+                    break;
+                case MsgType.C2S_ReqStartGame://请求开始游戏
+                    On_C2S_ReqStartGame(message as PlayerInfo);
                     break;
             }
         }

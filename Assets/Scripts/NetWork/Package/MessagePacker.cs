@@ -26,12 +26,15 @@ public class MessagePacker : IMessagePacker
         switch (code) 
         {
             case MsgType.S2C_RoomInfo:
-            case MsgType.S2C_JoinRoom:
+            case MsgType.S2C_CloseRoom:
             case MsgType.S2C_ExitRoom:
+            case MsgType.S2C_StartGame:
+            case MsgType.S2C_UpdateRoomInfo:
                 return RoomInfo.Parser.ParseFrom(bytes, startIndex, count);
             case MsgType.C2S_ReqRoomInfo:
             case MsgType.C2S_ReqJoinRoom:
             case MsgType.C2S_ReqExitRoom:
+            case MsgType.C2S_ReqStartGame:
                 return PlayerInfo.Parser.ParseFrom(bytes, startIndex, count);
         }
         return null;

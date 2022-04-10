@@ -34,8 +34,10 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
         }
         m_roomManager.Init(this);
 
-        ClientMsgHandler.Instance.AddListener(MsgType.S2C_JoinRoom, On_S2C_OnJoinRoom);
+        ClientMsgHandler.Instance.AddListener(MsgType.S2C_UpdateRoomInfo, On_S2C_UpdateRoom);
         ClientMsgHandler.Instance.AddListener(MsgType.S2C_ExitRoom, On_S2C_OnExitRoom);
+        ClientMsgHandler.Instance.AddListener(MsgType.S2C_CloseRoom, On_S2C_OnClosetRoom);
+        ClientMsgHandler.Instance.AddListener(MsgType.S2C_StartGame, On_S2C_StartGame);
     }
 
     public void DoUpdate(float deltaTime) 
@@ -59,12 +61,6 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
         m_Client.Send((byte)msgType, msg, remote);
     }
 
-    //开始游戏
-    public void StartGame() 
-    {
-        m_roomManager.StartGame();
-    }
-
     //向服务器请求加入房间
     public void C2S_ReqEnterRoom(string serverIP,int serverPort) 
     {
@@ -72,30 +68,50 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
             NetHelper.GetIPEndPoint(serverIP, serverPort));
     }
 
-    public void C2S_ReqEnterRoom(IPEndPoint server)
-    {
-        m_Client.Send((byte)MsgType.C2S_ReqJoinRoom, m_PlayerInfo,
-            server);
-    }
-
-    //接受服务器加入房间
-    public void On_S2C_OnJoinRoom(MsgType type,object obj) 
-    {
-        if (obj == null)
-            return;
-        RoomInfo room = (RoomInfo)obj;
-        m_roomInfo = room;
-        m_Client.Connect(room.ServerIP,room.ServerPort);
-        UIService.Instance.CloseWindow("HallWindowCtrl");
-        UIService.Instance.OpenWindow("RoomWindowCtrl");
-    }
-
     //请求退出房间
-    public void C2S_ReqExitRoom() 
+    public void C2S_ReqExitRoom()
     {
         if (m_roomInfo == null || m_PlayerInfo == null)
             return;
         m_Client.Send((byte)MsgType.C2S_ReqExitRoom, m_PlayerInfo);
+    }
+
+    //请求开始游戏
+    public void C2S_StartGame()
+    {
+        m_Client.Send((byte)MsgType.C2S_ReqStartGame, m_PlayerInfo);
+    }
+
+
+
+    bool IsInRoom(RoomInfo room)
+    {
+        if (m_PlayerInfo == null)
+            return false;
+        for (int i = 0; i < room.Players.Count; i++)
+        {
+            var player = room.Players[i];
+            if (player.ClientIP == m_PlayerInfo.ClientIP && player.ClientPort == m_PlayerInfo.ClientPort)
+                return true;
+        }
+        return false;
+    }
+    //更新房间消息
+    public void On_S2C_UpdateRoom(MsgType type,object obj) 
+    {
+        if (obj == null)
+            return;
+        RoomInfo room = (RoomInfo)obj;
+        if (m_roomInfo != null && m_roomInfo.RoomID == room.RoomID) //更新房间信息
+        {
+            m_roomInfo = room;
+            EventHelper.Instance.Trigger(EEvent.UpdateRoomInfo, m_roomInfo);
+            return;
+        }
+        m_roomInfo = room;
+        m_Client.Connect(room.ServerIP,room.ServerPort);
+        UIService.Instance.CloseWindow("HallWindowCtrl");
+        UIService.Instance.OpenWindow("RoomWindowCtrl");
     }
 
     //收到退出房间
@@ -104,13 +120,40 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
         if (m_roomInfo == null || m_PlayerInfo == null)
             return;
         RoomInfo room = obj as RoomInfo;
-        if (room.ServerIP != m_roomInfo.ServerIP || room.ServerPort != m_roomInfo.ServerPort)
+        if (room.RoomID != m_roomInfo.RoomID)
             return;
+
         m_roomInfo = null;
         m_Client.DisConnect();
         UIService.Instance.CloseWindow("RoomWindowCtrl");
         UIService.Instance.OpenWindow("HallWindowCtrl");
     }
+
+    public void On_S2C_StartGame(MsgType type, object obj) 
+    {
+        if (m_roomInfo == null || m_PlayerInfo == null)
+            return;
+        RoomInfo room = obj as RoomInfo;
+        if (room.RoomID != m_roomInfo.RoomID)
+            return;
+        UIService.Instance.CloseWindow("RoomWindowCtrl");
+        //TODO开始loading
+    }
+
+    public void On_S2C_OnClosetRoom(MsgType type, object obj) 
+    {
+        if (m_roomInfo == null || m_PlayerInfo == null)
+            return;
+        RoomInfo room = obj as RoomInfo;
+        if (room.RoomID != m_roomInfo.RoomID)
+            return;
+
+        m_roomInfo = null;
+        m_Client.DisConnect();
+        UIService.Instance.CloseWindow("RoomWindowCtrl");
+        UIService.Instance.OpenWindow("HallWindowCtrl");
+    }
+
 
     public RoomInfo GetCurrentRoom() 
     {
@@ -135,18 +178,13 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
         base.DoDestroy();
         m_roomManager.OnDestroy();
         ClientMsgHandler.Instance.RemoveListener(MsgType.S2C_ExitRoom, On_S2C_OnExitRoom);
-        ClientMsgHandler.Instance.RemoveListener(MsgType.S2C_JoinRoom, On_S2C_OnJoinRoom);
+        ClientMsgHandler.Instance.RemoveListener(MsgType.S2C_UpdateRoomInfo, On_S2C_UpdateRoom);
+        ClientMsgHandler.Instance.RemoveListener(MsgType.S2C_StartGame, On_S2C_StartGame);
     }
 
     void OnEvent_OnEnterHall(EEvent type,object param)
     {
         m_Client.Broadcast((byte)MsgType.C2S_ReqRoomInfo, m_PlayerInfo, BROADCAST_PORT);
-    }
-
-    //离开大厅
-    void OnEvent_OnLeaveHall(EEvent type,object param) 
-    {
-        
     }
 }
 

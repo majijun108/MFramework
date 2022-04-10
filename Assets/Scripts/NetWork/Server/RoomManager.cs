@@ -10,7 +10,6 @@ public class RoomManager
 {
 
     NetworkService m_Network;
-    bool m_IsGaming = false;//是否正在战斗中
     ServerRoom m_Room;
     string m_serverIP;//当前服务器的IP
     int m_serverPort;//当前服务器的端口
@@ -59,11 +58,6 @@ public class RoomManager
         if (m_Room != null && m_Room.IsDisposed == false)
             return null;
         return m_serverAddress;
-    }
-
-    public void StartGame() 
-    {
-        
     }
 
     public void Update()

@@ -49,6 +49,13 @@ public class RoomWindowCtrl : BaseUICtrl
             new UnityEngine.Events.UnityAction(OnStartBtnClick));
 
         UpdateView();
+        RegisterEventHandler(EEvent.UpdateRoomInfo, OnUpdateRoom);
+    }
+
+    void OnUpdateRoom(EEvent eEvent, object obj) 
+    {
+        roomInfo = (RoomInfo)obj;
+        UpdateView();
     }
 
     void UpdateView() 
@@ -70,6 +77,6 @@ public class RoomWindowCtrl : BaseUICtrl
 
     void OnStartBtnClick() 
     {
-        NetworkService.Instance.StartGame();
+        NetworkService.Instance.C2S_StartGame();
     }
 }

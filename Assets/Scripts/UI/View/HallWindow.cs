@@ -70,7 +70,7 @@ public class HallWindow : BaseUIView, ICanvas
     private Transform m_SelectTrans;
     void UpdateSelect(Transform trans, int index) 
     {
-        var newSelect = UIUtil.GetTransform(m_SelectTrans, "Select");
+        var newSelect = UIUtil.GetTransform(trans, "Select");
         UIUtil.SetActive(newSelect, index == m_SelectIndex);
         if (m_SelectIndex == index)
             m_SelectTrans = trans;
