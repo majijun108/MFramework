@@ -8,6 +8,7 @@ message RoomInfo
 	string roomName = 3;
 	int32 maxCount = 4;
 	repeated PlayerInfo players = 5;
+	int32 roomID = 6;
 }
 
 message PlayerInfo

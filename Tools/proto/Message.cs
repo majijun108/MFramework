@@ -24,16 +24,16 @@ namespace ServerMessage {
     static MessageReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "Cg1tZXNzYWdlLnByb3RvEg5zZXJ2ZXJfbWVzc2FnZSKBAQoIUm9vbUluZm8S",
+            "Cg1tZXNzYWdlLnByb3RvEg5zZXJ2ZXJfbWVzc2FnZSKRAQoIUm9vbUluZm8S",
             "EAoIc2VydmVySVAYASABKAkSEgoKc2VydmVyUG9ydBgCIAEoBRIQCghyb29t",
             "TmFtZRgDIAEoCRIQCghtYXhDb3VudBgEIAEoBRIrCgdwbGF5ZXJzGAUgAygL",
-            "Mhouc2VydmVyX21lc3NhZ2UuUGxheWVySW5mbyJGCgpQbGF5ZXJJbmZvEhAK",
-            "CGNsaWVudElQGAEgASgJEhIKCmNsaWVudFBvcnQYAiABKAUSEgoKcGxheWVy",
-            "TmFtZRgDIAEoCWIGcHJvdG8z"));
+            "Mhouc2VydmVyX21lc3NhZ2UuUGxheWVySW5mbxIOCgZyb29tSUQYBiABKAUi",
+            "RgoKUGxheWVySW5mbxIQCghjbGllbnRJUBgBIAEoCRISCgpjbGllbnRQb3J0",
+            "GAIgASgFEhIKCnBsYXllck5hbWUYAyABKAliBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::ServerMessage.RoomInfo), global::ServerMessage.RoomInfo.Parser, new[]{ "ServerIP", "ServerPort", "RoomName", "MaxCount", "Players" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::ServerMessage.RoomInfo), global::ServerMessage.RoomInfo.Parser, new[]{ "ServerIP", "ServerPort", "RoomName", "MaxCount", "Players", "RoomID" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::ServerMessage.PlayerInfo), global::ServerMessage.PlayerInfo.Parser, new[]{ "ClientIP", "ClientPort", "PlayerName" }, null, null, null, null)
           }));
     }
@@ -80,6 +80,7 @@ namespace ServerMessage {
       roomName_ = other.roomName_;
       maxCount_ = other.maxCount_;
       players_ = other.players_.Clone();
+      roomID_ = other.roomID_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -148,6 +149,18 @@ namespace ServerMessage {
       get { return players_; }
     }
 
+    /// <summary>Field number for the "roomID" field.</summary>
+    public const int RoomIDFieldNumber = 6;
+    private int roomID_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int RoomID {
+      get { return roomID_; }
+      set {
+        roomID_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -168,6 +181,7 @@ namespace ServerMessage {
       if (RoomName != other.RoomName) return false;
       if (MaxCount != other.MaxCount) return false;
       if(!players_.Equals(other.players_)) return false;
+      if (RoomID != other.RoomID) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -180,6 +194,7 @@ namespace ServerMessage {
       if (RoomName.Length != 0) hash ^= RoomName.GetHashCode();
       if (MaxCount != 0) hash ^= MaxCount.GetHashCode();
       hash ^= players_.GetHashCode();
+      if (RoomID != 0) hash ^= RoomID.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -215,6 +230,10 @@ namespace ServerMessage {
         output.WriteInt32(MaxCount);
       }
       players_.WriteTo(output, _repeated_players_codec);
+      if (RoomID != 0) {
+        output.WriteRawTag(48);
+        output.WriteInt32(RoomID);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -242,6 +261,10 @@ namespace ServerMessage {
         output.WriteInt32(MaxCount);
       }
       players_.WriteTo(ref output, _repeated_players_codec);
+      if (RoomID != 0) {
+        output.WriteRawTag(48);
+        output.WriteInt32(RoomID);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -265,6 +288,9 @@ namespace ServerMessage {
         size += 1 + pb::CodedOutputStream.ComputeInt32Size(MaxCount);
       }
       size += players_.CalculateSize(_repeated_players_codec);
+      if (RoomID != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(RoomID);
+      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -290,6 +316,9 @@ namespace ServerMessage {
         MaxCount = other.MaxCount;
       }
       players_.Add(other.players_);
+      if (other.RoomID != 0) {
+        RoomID = other.RoomID;
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -325,6 +354,10 @@ namespace ServerMessage {
             players_.AddEntriesFrom(input, _repeated_players_codec);
             break;
           }
+          case 48: {
+            RoomID = input.ReadInt32();
+            break;
+          }
         }
       }
     #endif
@@ -358,6 +391,10 @@ namespace ServerMessage {
           }
           case 42: {
             players_.AddEntriesFrom(ref input, _repeated_players_codec);
+            break;
+          }
+          case 48: {
+            RoomID = input.ReadInt32();
             break;
           }
         }
