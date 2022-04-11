@@ -30,7 +30,8 @@ namespace Server
 
         private UDPNetProxy m_Server;
         private RoomInfo m_roomInfo;
-        private int m_broadcastPort;//广播的端口号
+        private int m_broadcastMinPort;//广播的端口号
+        private int m_broadcastMaxPort;//广播的端口号
         private string m_mainPlayerIP;//主机的IP
         private int m_mainPlayerPort;//主机的端口
 
@@ -40,14 +41,18 @@ namespace Server
 
         private Queue<ServerCmdInfo> m_cmdQueue = new Queue<ServerCmdInfo>();
         private RoomState m_roomState;
+        private int m_curPlayerID = 1;
 
         static int roomID = 1;
 
-        public ServerRoom(int startPort, int maxCount, string roomName,int broadPort,ref string serverIP,ref int serverPort) 
+        public bool IsDisposed { get { return m_roomState == RoomState.Disposed; } }
+
+        public ServerRoom(int startPort, int maxCount, string roomName,int broadMin,int broadMax,ref string serverIP,ref int serverPort) 
         {
-            m_broadcastPort = broadPort;
+            m_broadcastMinPort = broadMin;
+            m_broadcastMaxPort = broadMax;
             int port = NetHelper.FindAvailablePort(startPort);
-            m_Server = new UDPNetProxy(NetHelper.GetIPEndPoint(startPort))
+            m_Server = new UDPNetProxy(NetHelper.GetIPEndPoint(port))
             {
                 MessagePacker = MessagePacker.Instance,
                 MessageDispatcher = this
@@ -74,9 +79,13 @@ namespace Server
             m_mainPlayerPort = mainPlayer.ClientPort;
 
             //添加主机信息
+            mainPlayer.PlayerID = m_curPlayerID++;
             m_roomInfo.Players.Add(mainPlayer);
             m_Server.Send((byte)MsgType.S2C_UpdateRoomInfo, m_roomInfo,
                 NetHelper.GetIPEndPoint(mainPlayer.ClientIP, mainPlayer.ClientPort));
+            if (m_roomInfo.Players.Count == m_roomInfo.MaxCount)
+                m_roomState = RoomState.WaitingForBattle;
+
             BroadcastRoomInfo();
 
             Run();
@@ -110,7 +119,7 @@ namespace Server
             if (m_roomInfo == null)
                 return;
             m_Server.Broadcast((byte)MsgType.S2C_RoomInfo, m_roomInfo,
-                    m_broadcastPort);
+                    m_broadcastMinPort,m_broadcastMaxPort);
         }
 
 
@@ -257,6 +266,7 @@ namespace Server
             int index = GetPlayerIndex(player);
             if (index >= 0)
                 return;
+            player.PlayerID = m_curPlayerID++;
             m_roomInfo.Players.Add(player);
             Broadcast(MsgType.S2C_UpdateRoomInfo, m_roomInfo);
 

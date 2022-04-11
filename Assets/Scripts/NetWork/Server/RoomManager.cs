@@ -36,20 +36,14 @@ public class RoomManager
     }
 
     //创建房间
-    public void CreateRoomAndStart(int startPort, int maxCount, string roomName)
+    public void CreateRoomAndStart(int startPort, int maxCount, string roomName,int broadMin,int broadMax,PlayerInfo mainPlayer)
     {
         if (m_Room != null && m_Room.IsDisposed == false)
             return;
-        m_Room = new ServerRoom(startPort,maxCount, roomName, m_Network.BROADCAST_PORT,ref m_serverIP,ref m_serverPort);
+        m_Room = new ServerRoom(startPort,maxCount, roomName,broadMin,broadMax,ref m_serverIP,ref m_serverPort);
         m_serverAddress = NetHelper.GetIPEndPoint(m_serverIP, m_serverPort);
         m_serverName = roomName;
 
-        PlayerInfo mainPlayer = new PlayerInfo()
-        {
-            ClientIP = NetHelper.GetLocalIP(),
-            ClientPort = m_Network.BROADCAST_PORT,
-            PlayerName = roomName
-        };
         m_Room.Start(mainPlayer);//房间开始 加入主机的信息
     }
 

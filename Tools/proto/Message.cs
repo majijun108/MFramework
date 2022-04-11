@@ -28,13 +28,14 @@ namespace ServerMessage {
             "EAoIc2VydmVySVAYASABKAkSEgoKc2VydmVyUG9ydBgCIAEoBRIQCghyb29t",
             "TmFtZRgDIAEoCRIQCghtYXhDb3VudBgEIAEoBRIrCgdwbGF5ZXJzGAUgAygL",
             "Mhouc2VydmVyX21lc3NhZ2UuUGxheWVySW5mbxIOCgZyb29tSUQYBiABKAUi",
-            "RgoKUGxheWVySW5mbxIQCghjbGllbnRJUBgBIAEoCRISCgpjbGllbnRQb3J0",
-            "GAIgASgFEhIKCnBsYXllck5hbWUYAyABKAliBnByb3RvMw=="));
+            "WAoKUGxheWVySW5mbxIQCghwbGF5ZXJJRBgBIAEoBRIQCghjbGllbnRJUBgC",
+            "IAEoCRISCgpjbGllbnRQb3J0GAMgASgFEhIKCnBsYXllck5hbWUYBCABKAli",
+            "BnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::ServerMessage.RoomInfo), global::ServerMessage.RoomInfo.Parser, new[]{ "ServerIP", "ServerPort", "RoomName", "MaxCount", "Players", "RoomID" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::ServerMessage.PlayerInfo), global::ServerMessage.PlayerInfo.Parser, new[]{ "ClientIP", "ClientPort", "PlayerName" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::ServerMessage.PlayerInfo), global::ServerMessage.PlayerInfo.Parser, new[]{ "PlayerID", "ClientIP", "ClientPort", "PlayerName" }, null, null, null, null)
           }));
     }
     #endregion
@@ -438,6 +439,7 @@ namespace ServerMessage {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public PlayerInfo(PlayerInfo other) : this() {
+      playerID_ = other.playerID_;
       clientIP_ = other.clientIP_;
       clientPort_ = other.clientPort_;
       playerName_ = other.playerName_;
@@ -450,8 +452,20 @@ namespace ServerMessage {
       return new PlayerInfo(this);
     }
 
+    /// <summary>Field number for the "playerID" field.</summary>
+    public const int PlayerIDFieldNumber = 1;
+    private int playerID_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int PlayerID {
+      get { return playerID_; }
+      set {
+        playerID_ = value;
+      }
+    }
+
     /// <summary>Field number for the "clientIP" field.</summary>
-    public const int ClientIPFieldNumber = 1;
+    public const int ClientIPFieldNumber = 2;
     private string clientIP_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -463,7 +477,7 @@ namespace ServerMessage {
     }
 
     /// <summary>Field number for the "clientPort" field.</summary>
-    public const int ClientPortFieldNumber = 2;
+    public const int ClientPortFieldNumber = 3;
     private int clientPort_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -475,7 +489,7 @@ namespace ServerMessage {
     }
 
     /// <summary>Field number for the "playerName" field.</summary>
-    public const int PlayerNameFieldNumber = 3;
+    public const int PlayerNameFieldNumber = 4;
     private string playerName_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -501,6 +515,7 @@ namespace ServerMessage {
       if (ReferenceEquals(other, this)) {
         return true;
       }
+      if (PlayerID != other.PlayerID) return false;
       if (ClientIP != other.ClientIP) return false;
       if (ClientPort != other.ClientPort) return false;
       if (PlayerName != other.PlayerName) return false;
@@ -511,6 +526,7 @@ namespace ServerMessage {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
+      if (PlayerID != 0) hash ^= PlayerID.GetHashCode();
       if (ClientIP.Length != 0) hash ^= ClientIP.GetHashCode();
       if (ClientPort != 0) hash ^= ClientPort.GetHashCode();
       if (PlayerName.Length != 0) hash ^= PlayerName.GetHashCode();
@@ -532,16 +548,20 @@ namespace ServerMessage {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
+      if (PlayerID != 0) {
+        output.WriteRawTag(8);
+        output.WriteInt32(PlayerID);
+      }
       if (ClientIP.Length != 0) {
-        output.WriteRawTag(10);
+        output.WriteRawTag(18);
         output.WriteString(ClientIP);
       }
       if (ClientPort != 0) {
-        output.WriteRawTag(16);
+        output.WriteRawTag(24);
         output.WriteInt32(ClientPort);
       }
       if (PlayerName.Length != 0) {
-        output.WriteRawTag(26);
+        output.WriteRawTag(34);
         output.WriteString(PlayerName);
       }
       if (_unknownFields != null) {
@@ -554,16 +574,20 @@ namespace ServerMessage {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (PlayerID != 0) {
+        output.WriteRawTag(8);
+        output.WriteInt32(PlayerID);
+      }
       if (ClientIP.Length != 0) {
-        output.WriteRawTag(10);
+        output.WriteRawTag(18);
         output.WriteString(ClientIP);
       }
       if (ClientPort != 0) {
-        output.WriteRawTag(16);
+        output.WriteRawTag(24);
         output.WriteInt32(ClientPort);
       }
       if (PlayerName.Length != 0) {
-        output.WriteRawTag(26);
+        output.WriteRawTag(34);
         output.WriteString(PlayerName);
       }
       if (_unknownFields != null) {
@@ -576,6 +600,9 @@ namespace ServerMessage {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
+      if (PlayerID != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(PlayerID);
+      }
       if (ClientIP.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(ClientIP);
       }
@@ -596,6 +623,9 @@ namespace ServerMessage {
     public void MergeFrom(PlayerInfo other) {
       if (other == null) {
         return;
+      }
+      if (other.PlayerID != 0) {
+        PlayerID = other.PlayerID;
       }
       if (other.ClientIP.Length != 0) {
         ClientIP = other.ClientIP;
@@ -621,15 +651,19 @@ namespace ServerMessage {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 10: {
+          case 8: {
+            PlayerID = input.ReadInt32();
+            break;
+          }
+          case 18: {
             ClientIP = input.ReadString();
             break;
           }
-          case 16: {
+          case 24: {
             ClientPort = input.ReadInt32();
             break;
           }
-          case 26: {
+          case 34: {
             PlayerName = input.ReadString();
             break;
           }
@@ -648,15 +682,19 @@ namespace ServerMessage {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
-          case 10: {
+          case 8: {
+            PlayerID = input.ReadInt32();
+            break;
+          }
+          case 18: {
             ClientIP = input.ReadString();
             break;
           }
-          case 16: {
+          case 24: {
             ClientPort = input.ReadInt32();
             break;
           }
-          case 26: {
+          case 34: {
             PlayerName = input.ReadString();
             break;
           }

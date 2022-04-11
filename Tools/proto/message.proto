@@ -13,7 +13,8 @@ message RoomInfo
 
 message PlayerInfo
 {
-	string clientIP = 1;
-	int32 clientPort = 2;
-	string playerName = 3;
+	int32 playerID = 1;
+	string clientIP = 2;
+	int32 clientPort = 3;
+	string playerName = 4;
 }

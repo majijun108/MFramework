@@ -114,5 +114,14 @@ namespace Lockstep.NetWork
             }
             this.Send(opcode,msg,m_lastEndPoint);
         }
+
+        //向一个端口段 广播
+        public void Broadcast(byte opcode, object msg, int remoteMinPort,int remoteMaxPort) 
+        {
+            for (int i = remoteMinPort; i < remoteMaxPort; i++) 
+            {
+                Broadcast(opcode, msg, i);
+            }
+        }
     }
 }

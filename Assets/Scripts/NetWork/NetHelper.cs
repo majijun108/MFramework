@@ -38,7 +38,7 @@ namespace Lockstep.NetWork
             return address;
         }
 
-        public static int FindAvailablePort(int startPort)
+        public static int FindAvailablePort(int startPort,int maxPort = -1)
         {
             if (Application.platform == RuntimePlatform.IPhonePlayer)
             {
@@ -47,6 +47,9 @@ namespace Lockstep.NetWork
 
             try
             {
+                if (maxPort == -1)
+                    maxPort = IPEndPoint.MaxPort;
+
                 //获取本地计算机的网络连接和通信统计数据的信息
                 //部分安卓没有该权限
                 IPGlobalProperties ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
@@ -72,7 +75,7 @@ namespace Lockstep.NetWork
                     allPorts.Add(conn.LocalEndPoint.Port);
                 }
 
-                while (allPorts.Contains(startPort) && startPort < IPEndPoint.MaxPort)
+                while (allPorts.Contains(startPort) && startPort < maxPort)
                 {
                     startPort++;
                 }

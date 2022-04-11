@@ -10,17 +10,26 @@ using ServerMessage;
 /// </summary>
 public class NetworkService : BaseSingleService<NetworkService>,INetworkService
 {
-    public int BROADCAST_PORT = 8962;//监听的端口号
+    public const int BROADCAST_MIN_PORT = 9000;//监听的最小端口号
+    public const int BROADCAST_MAX_PORT = 9010;//监听的最大端口号
     private UDPNetProxy m_Client;
     private PlayerInfo m_PlayerInfo;
     private RoomManager m_roomManager = new RoomManager();
     private RoomInfo m_roomInfo;//当前加入的房间信息
+    private int m_playerID = -1;
+
+    //获取可用的端口号
+    int GetUseablePort() 
+    {
+        return NetHelper.FindAvailablePort(BROADCAST_MIN_PORT, BROADCAST_MAX_PORT);
+    }
 
     public override void DoStart()
     {
         if (m_Client == null)
         {
-            m_Client = new UDPNetProxy(NetHelper.GetIPEndPoint(BROADCAST_PORT))
+            int usePort = GetUseablePort();
+            m_Client = new UDPNetProxy(NetHelper.GetIPEndPoint(usePort))
             {
                 MessageDispatcher = ClientMsgHandler.Instance,
                 MessagePacker = MessagePacker.Instance
@@ -28,7 +37,7 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
             m_PlayerInfo = new PlayerInfo()
             {
                 ClientIP = NetHelper.GetLocalIP(),
-                ClientPort = BROADCAST_PORT,
+                ClientPort = usePort,
                 PlayerName = m_ConstStateService.PlayerName,
             };
         }
@@ -49,8 +58,9 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
     //创建房间 并且将自己加入房间
     public void CreateRoomAndEnter() 
     {
-        m_roomManager.CreateRoomAndStart(BROADCAST_PORT + 1,
-            m_ConstStateService.RoomMaxCount, m_ConstStateService.PlayerName);
+        m_PlayerInfo.PlayerName = m_ConstStateService.PlayerName;
+        m_roomManager.CreateRoomAndStart(BROADCAST_MAX_PORT + 1,
+            m_ConstStateService.RoomMaxCount, m_ConstStateService.PlayerName,BROADCAST_MIN_PORT,BROADCAST_MAX_PORT, m_PlayerInfo);
     }
 
     //向某一个IP发送一条信息
@@ -84,17 +94,17 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
 
 
 
-    bool IsInRoom(RoomInfo room)
+    int GetPlayerID(RoomInfo room)
     {
         if (m_PlayerInfo == null)
-            return false;
+            return -1;
         for (int i = 0; i < room.Players.Count; i++)
         {
             var player = room.Players[i];
             if (player.ClientIP == m_PlayerInfo.ClientIP && player.ClientPort == m_PlayerInfo.ClientPort)
-                return true;
+                return player.PlayerID;
         }
-        return false;
+        return -1;
     }
     //更新房间消息
     public void On_S2C_UpdateRoom(MsgType type,object obj) 
@@ -105,6 +115,7 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
         if (m_roomInfo != null && m_roomInfo.RoomID == room.RoomID) //更新房间信息
         {
             m_roomInfo = room;
+            m_playerID = GetPlayerID(room);
             EventHelper.Instance.Trigger(EEvent.UpdateRoomInfo, m_roomInfo);
             return;
         }
@@ -124,6 +135,7 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
             return;
 
         m_roomInfo = null;
+        m_playerID = -1;
         m_Client.DisConnect();
         UIService.Instance.CloseWindow("RoomWindowCtrl");
         UIService.Instance.OpenWindow("HallWindowCtrl");
@@ -149,6 +161,7 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
             return;
 
         m_roomInfo = null;
+        m_playerID = -1;
         m_Client.DisConnect();
         UIService.Instance.CloseWindow("RoomWindowCtrl");
         UIService.Instance.OpenWindow("HallWindowCtrl");
@@ -175,6 +188,7 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
         m_Client = null;
         m_roomInfo = null;
         m_PlayerInfo = null;
+        m_playerID = -1;
         base.DoDestroy();
         m_roomManager.OnDestroy();
         ClientMsgHandler.Instance.RemoveListener(MsgType.S2C_ExitRoom, On_S2C_OnExitRoom);
@@ -184,7 +198,7 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
 
     void OnEvent_OnEnterHall(EEvent type,object param)
     {
-        m_Client.Broadcast((byte)MsgType.C2S_ReqRoomInfo, m_PlayerInfo, BROADCAST_PORT);
+        m_Client.Broadcast((byte)MsgType.C2S_ReqRoomInfo, m_PlayerInfo,BROADCAST_MIN_PORT,BROADCAST_MAX_PORT);
     }
 }
 
