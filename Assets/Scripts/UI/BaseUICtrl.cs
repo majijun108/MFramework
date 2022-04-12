@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public abstract class BaseUICtrl
 {
     public UIState State { get; set; } = UIState.INIT;
-    public UILayer Layer { get; set; } = UILayer.NORMAL;
+    public virtual UILayer Layer { get; set; } = UILayer.NORMAL;
     public string Name { get; set; }
 
     public IUIView View { get; private set; }
@@ -152,10 +152,10 @@ public abstract class BaseUICtrl
 
     public abstract Type GetViewType();
     public abstract string GetViewName();
-    public abstract void OnCreate();
+    public virtual void OnCreate() { }
     public abstract void OnShow(object openParam);
     public virtual void OnSubViewLoaded(string subName, object openParams = null) { }
 
     public abstract void OnHide();
-    public abstract void OnDestroy();
+    public virtual void OnDestroy() { }
 }

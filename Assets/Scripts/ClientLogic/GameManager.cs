@@ -10,6 +10,8 @@ public class GameManager:MonoBehaviour
 
     private void Awake()
     {
+        DontDestroyOnLoad(this);
+
         _serviceContainer = new UnityGameServiceContainer();
 
         launcher.DoAwake(_serviceContainer);

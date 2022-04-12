@@ -34,9 +34,10 @@ public class LoadingService:BaseSingleService<LoadingService>
 
     public void LoadingScene(string sceneName,Action onSuccess) 
     {
-        if (m_state != LOADING_STATE.LOADED)
+        if (m_state == LOADING_STATE.LOADING)
             return;
-        ResourceService.Instance.ReleaseScene(m_loadingHandle);
+        if(m_state == LOADING_STATE.LOADED)
+            ResourceService.Instance.ReleaseScene(m_loadingHandle);
 
         m_loadingSceneName = sceneName;
         m_onLoadingSuccess = onSuccess;
@@ -51,6 +52,7 @@ public class LoadingService:BaseSingleService<LoadingService>
     IEnumerator LoadingProcess() 
     {
         //显示UI
+        UIService.Instance.OpenWindow("LoadingWindowCtrl");
         yield return null;
         while (!m_loadingHandle.IsDone) 
         {
@@ -59,7 +61,6 @@ public class LoadingService:BaseSingleService<LoadingService>
             EventHelper.Instance.Trigger(EEvent.LoadingSceneState, m_loadingState);
             yield return null;
         }
-
         //加载地图数据
         m_loadingState.state = LoadingState.STATE_TYPE.MAP_INFO;
         EventHelper.Instance.Trigger(EEvent.LoadingSceneState, m_loadingState);
@@ -80,5 +81,6 @@ public class LoadingService:BaseSingleService<LoadingService>
         m_loadingState.state = LoadingState.STATE_TYPE.ALL_READY;
         EventHelper.Instance.Trigger(EEvent.LoadingSceneState, m_loadingState);
         //关闭UI
+        UIService.Instance.CloseWindow("LoadingWindowCtrl");
     }
 }

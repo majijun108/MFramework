@@ -110,7 +110,7 @@ public abstract class BaseUIView : IUIView
         return null;
     }
     public abstract void OnCreate();
-    public abstract void OnShow();
-    public abstract void OnHide();
+    public virtual void OnShow() { }
+    public virtual void OnHide() { }
     public abstract void OnDestroy();
 }
