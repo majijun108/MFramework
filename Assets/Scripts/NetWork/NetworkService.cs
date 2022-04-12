@@ -92,6 +92,12 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
         m_Client.Send((byte)MsgType.C2S_ReqStartGame, m_PlayerInfo);
     }
 
+    //客户端准备完毕 可以开始战斗
+    public void C2S_ClientReady() 
+    {
+
+    }
+
 
 
     int GetPlayerID(RoomInfo room)
@@ -148,8 +154,13 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
         RoomInfo room = obj as RoomInfo;
         if (room.RoomID != m_roomInfo.RoomID)
             return;
+        m_roomInfo = room;
         UIService.Instance.CloseWindow("RoomWindowCtrl");
-        //TODO开始loading
+
+        LoadingService.Instance.LoadingScene("GameScene", () => 
+        {
+            C2S_ClientReady();
+        });
     }
 
     public void On_S2C_OnClosetRoom(MsgType type, object obj) 

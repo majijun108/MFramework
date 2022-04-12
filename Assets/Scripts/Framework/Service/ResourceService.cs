@@ -40,9 +40,9 @@ public class ResourceService:BaseSingleService<ResourceService>,IResourceService
     }
 
     //加载场景
-    public void LoadSceneAsync(string sceneName,UnityEngine.SceneManagement.LoadSceneMode mode) 
+    public AsyncOperationHandle LoadSceneAsync(string sceneName,UnityEngine.SceneManagement.LoadSceneMode mode) 
     {
-        var hadle = Addressables.LoadSceneAsync(sceneName, mode);
+        return Addressables.LoadSceneAsync(sceneName, mode);
     }
 
     public void ReleaseAsset(UnityEngine.Object obj)
@@ -54,5 +54,12 @@ public class ResourceService:BaseSingleService<ResourceService>,IResourceService
             Addressables.Release(handle);
             m_loadedAssets.Remove(insId);
         }
+    }
+
+    public void ReleaseScene(AsyncOperationHandle handle) 
+    {
+        if (!handle.IsDone)
+            return;
+        Addressables.Release(handle);
     }
 }

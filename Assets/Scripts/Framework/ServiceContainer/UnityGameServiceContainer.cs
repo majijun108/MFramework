@@ -10,5 +10,6 @@ public class UnityGameServiceContainer:GameServiceContainer
         RegisterService(new UIService());
         RegisterService(new ResourceService());
         RegisterService(new DebugService());
+        RegisterService(new LoadingService());
     }
 }
