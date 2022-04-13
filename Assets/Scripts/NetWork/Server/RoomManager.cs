@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Lockstep.NetWork;
-using ServerMessage;
 using Server;
 using System.Net;
 

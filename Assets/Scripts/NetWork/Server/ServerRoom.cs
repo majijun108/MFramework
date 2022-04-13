@@ -1,5 +1,4 @@
 ﻿using Lockstep.NetWork;
-using ServerMessage;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -64,7 +63,8 @@ namespace Server
                 ServerPort = port,
                 RoomName = roomName,
                 MaxCount = maxCount,
-                RoomID = roomID++
+                RoomID = roomID++,
+                Players = new List<PlayerInfo>()
             };
             m_frameDelta = 1000 / FrameRate;
             serverIP = NetHelper.GetLocalIP();

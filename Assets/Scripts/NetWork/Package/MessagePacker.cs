@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Google.Protobuf;
 using Lockstep.NetWork;
-using ServerMessage;
-using MessageProto = Google.Protobuf.IMessage;
 
 //消息解包和打包
 public class MessagePacker : IMessagePacker
@@ -30,21 +27,35 @@ public class MessagePacker : IMessagePacker
             case MsgType.S2C_ExitRoom:
             case MsgType.S2C_StartGame:
             case MsgType.S2C_UpdateRoomInfo:
-                return RoomInfo.Parser.ParseFrom(bytes, startIndex, count);
+                return BaseFormater.FromBytes<RoomInfo>(bytes, startIndex, count);
             case MsgType.C2S_ReqRoomInfo:
             case MsgType.C2S_ReqJoinRoom:
             case MsgType.C2S_ReqExitRoom:
             case MsgType.C2S_ReqStartGame:
-                return PlayerInfo.Parser.ParseFrom(bytes, startIndex, count);
+                return BaseFormater.FromBytes<PlayerInfo>(bytes,startIndex, count);
         }
         return null;
     }
 
-    public byte[] SerializeToByteArray(object msg)
+    public byte[] SerializeToByteArray(byte opCode,object msg)
     {
         if (msg == null)
             return new byte[0];
-        var newmsg = msg as MessageProto;
-        return newmsg.ToByteArray();
+        MsgType code = (MsgType)opCode;
+        switch (code)
+        {
+            case MsgType.S2C_RoomInfo:
+            case MsgType.S2C_CloseRoom:
+            case MsgType.S2C_ExitRoom:
+            case MsgType.S2C_StartGame:
+            case MsgType.S2C_UpdateRoomInfo:
+                return (msg as RoomInfo).ToBytes();
+            case MsgType.C2S_ReqRoomInfo:
+            case MsgType.C2S_ReqJoinRoom:
+            case MsgType.C2S_ReqExitRoom:
+            case MsgType.C2S_ReqStartGame:
+                return (msg as PlayerInfo).ToBytes();
+        }
+        return null;
     }
 }

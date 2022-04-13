@@ -1,9 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using ServerMessage;
-using UnityEngine.UI;
 
 public class RoomWindowCtrl : BaseUICtrl
 {
@@ -32,7 +29,7 @@ public class RoomWindowCtrl : BaseUICtrl
         
     }
 
-    private ServerMessage.RoomInfo roomInfo;
+    private RoomInfo roomInfo;
     private List<PlayerInfo> players = new List<PlayerInfo>();
     private RoomWindow m_Window;
 

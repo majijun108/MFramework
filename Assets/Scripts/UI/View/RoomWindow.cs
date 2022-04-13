@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using ServerMessage;
 using TMPro;
 
 public class RoomWindow : BaseUIView,ICanvas

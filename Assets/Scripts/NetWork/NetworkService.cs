@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Net;
 using Google.Protobuf;
 using Lockstep.NetWork;
-using ServerMessage;
 
 /// <summary>
 /// 直接面向unity了 如果是服务器 重写这个

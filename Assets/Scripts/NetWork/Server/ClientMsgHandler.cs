@@ -1,9 +1,7 @@
 ﻿//#define USE_MSG_LOG
 using System;
 using System.Collections.Generic;
-using Google.Protobuf;
 using Lockstep.NetWork;
-using ServerMessage;
 
 public class ClientMsgHandler : BaseEventHandle<MsgType, ClientMsgHandler.GlobalNetMsgHandler>, IMessageDispatcher
 {
@@ -19,11 +17,6 @@ public class ClientMsgHandler : BaseEventHandle<MsgType, ClientMsgHandler.Global
             return m_Instance;
         }
     }
-
-    private UDPNetProxy m_Client;
-
-
-
 
     public void Dispatch(Session session, byte opcode, object message)
     {

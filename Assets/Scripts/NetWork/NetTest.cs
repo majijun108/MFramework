@@ -6,14 +6,7 @@ using System.Net.Sockets;
 using System.Net;
 using System;
 using TMPro;
-using System.Linq;
-using Google.Protobuf;
-using ServerMessage;
 
-class aa : IService
-{
-
-}
 public class NetTest : MonoBehaviour
 {
     public Button cbtn;
