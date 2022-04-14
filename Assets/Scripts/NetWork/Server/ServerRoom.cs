@@ -40,9 +40,13 @@ namespace Server
 
         private Queue<ServerCmdInfo> m_cmdQueue = new Queue<ServerCmdInfo>();
         private RoomState m_roomState;
-        private int m_curPlayerID = 1;
+        private int m_curPlayerID = 0;
+        private Dictionary<int,int> m_playerID2Index = new Dictionary<int,int>();//角色ID和数组种索引的对应关系
+        private int m_MaxPlayerCount;
 
         static int roomID = 1;
+
+        private List<Msg_FrameInfo> m_allHistoryFrames = new List<Msg_FrameInfo>();//所有的历史帧
 
         public bool IsDisposed { get { return m_roomState == RoomState.Disposed; } }
 
@@ -66,10 +70,15 @@ namespace Server
                 RoomID = roomID++,
                 Players = new List<PlayerInfo>()
             };
+            m_MaxPlayerCount = maxCount;
             m_frameDelta = 1000 / FrameRate;
             serverIP = NetHelper.GetLocalIP();
             serverPort = port;
+
             m_readyPlayer.Clear();
+            m_allHistoryFrames.Clear();
+            m_playerID2Index.Clear();
+
             m_roomState = RoomState.WaitingForPlayer;
         }
 
@@ -81,6 +90,8 @@ namespace Server
             //添加主机信息
             mainPlayer.PlayerID = m_curPlayerID++;
             m_roomInfo.Players.Add(mainPlayer);
+            m_playerID2Index[mainPlayer.PlayerID] = m_roomInfo.Players.Count - 1;
+
             m_Server.Send((byte)MsgType.S2C_UpdateRoomInfo, m_roomInfo,
                 NetHelper.GetIPEndPoint(mainPlayer.ClientIP, mainPlayer.ClientPort));
             if (m_roomInfo.Players.Count == m_roomInfo.MaxCount)
@@ -167,12 +178,14 @@ namespace Server
         {
             if (m_roomInfo == null)
                 return -1;
-            for (int i = 0; i < m_roomInfo.Players.Count; i++)
-            {
-                var p = m_roomInfo.Players[i];
-                if (p.ClientIP == player.ClientIP && p.ClientPort == player.ClientPort)
-                    return i;
-            }
+            //for (int i = 0; i < m_roomInfo.Players.Count; i++)
+            //{
+            //    var p = m_roomInfo.Players[i];
+            //    if (p.ClientIP == player.ClientIP && p.ClientPort == player.ClientPort)
+            //        return i;
+            //}
+            if (m_playerID2Index.ContainsKey(player.PlayerID))
+                return m_playerID2Index[player.PlayerID];
             return -1;
         }
 
@@ -226,6 +239,7 @@ namespace Server
             m_Server = null;
             m_roomInfo = null;
             m_readyPlayer.Clear();
+            m_playerID2Index.Clear();
             m_readyPlayer = null;
         }
 
@@ -268,6 +282,8 @@ namespace Server
                 return;
             player.PlayerID = m_curPlayerID++;
             m_roomInfo.Players.Add(player);
+            m_playerID2Index[player.PlayerID] = m_roomInfo.Players.Count - 1;
+
             Broadcast(MsgType.S2C_UpdateRoomInfo, m_roomInfo);
 
             if (m_roomInfo.Players.Count == m_roomInfo.MaxCount)
@@ -285,7 +301,10 @@ namespace Server
                 CloseRoom();
                 return;
             }
+
             m_roomInfo.Players.RemoveAt(index);
+            m_playerID2Index.Remove(player.PlayerID);
+
             m_Server.Send((byte)MsgType.S2C_ExitRoom, m_roomInfo,
                 NetHelper.GetIPEndPoint(player.ClientIP, player.ClientPort));
             Broadcast(MsgType.S2C_UpdateRoomInfo, m_roomInfo);
@@ -324,6 +343,43 @@ namespace Server
             }
         }
 
+        Msg_FrameInfo GetOrCreateFrame(int tick) 
+        {
+            var frameCount = m_allHistoryFrames.Count;
+            if (frameCount <= tick) 
+            {
+                var count = tick - frameCount + 1;
+                for (int i = 0; i < count; i++)
+                {
+                    m_allHistoryFrames.Add(null);
+                }
+            }
+
+            if (m_allHistoryFrames[tick] == null) 
+            {
+                m_allHistoryFrames[tick] = new Msg_FrameInfo() { Tick = tick };
+            }
+
+            var frame = m_allHistoryFrames[tick];
+            if (frame.Inputs == null) 
+            {
+                frame.Inputs = new Msg_PlayerInput[m_MaxPlayerCount];
+            }
+            return frame;
+        }
+
+        //收到客户端操作
+        void On_C2S_PlayerInput(Msg_PlayerInput input) 
+        {
+            if (m_roomState != RoomState.InBattle)
+                return;
+            if (input.Tick < m_Tick)
+                return;
+
+            var frame = GetOrCreateFrame(input.Tick);
+            frame.Inputs[input.PlayerID] = input;
+        }
+
         public void Dispatch(Session session, byte opcode, object message)
         {
             MsgType opType = (MsgType)opcode;
@@ -340,6 +396,9 @@ namespace Server
                     break;
                 case MsgType.C2S_ClientReady://客户端发送准备完毕
                     On_C2S_ClientReady(message as PlayerInfo);
+                    break;
+                case MsgType.C2S_PlayerInput://收到客户端操作
+                    On_C2S_PlayerInput(message as Msg_PlayerInput);
                     break;
             }
         }

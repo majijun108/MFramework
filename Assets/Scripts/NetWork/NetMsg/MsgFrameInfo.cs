@@ -2,7 +2,23 @@
 using System;
 using System.Collections.Generic;
 
-public class Msg_FrameInfo : BaseFormater
+public class Msg_MultiFrameInfo : BaseFormater
+{
+    public int StartTick;
+    public Msg_FrameInfo[] Frames;
+
+    public override void Deserialize(Deserializer reader)
+    {
+        
+    }
+
+    public override void Serialize(Serializer writer)
+    {
+        
+    }
+}
+
+public class Msg_FrameInfo: BaseFormater
 {
     public int Tick;
     public Msg_PlayerInput[] Inputs;
