@@ -263,7 +263,9 @@ namespace Server
                 return;
             while (m_Tick < m_tickSinceGameStart) 
             {
-
+                var frame = GetOrCreateFrame(m_Tick);
+                Broadcast(MsgType.S2C_Msg_FrameInfo, frame);
+                m_Tick++;
             }
         }
         #endregion

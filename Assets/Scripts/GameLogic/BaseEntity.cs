@@ -2,17 +2,33 @@
 using System;
 using System.Collections.Generic;
 
-public interface IEntity { }
+public interface IEntity 
+{
+}
 
 public abstract class BaseEntity :IRecyclable,IEntity
 {
     protected List<BaseComponent> m_allComponents;
+    protected Dictionary<Type,BaseComponent> m_type2Components;
+
+    protected World m_World { get; set; }
+
+    public int ID { get; private set; }
 
     protected void RegisterComponent(BaseComponent component) 
     {
-        if(m_allComponents == null)
+        if (m_allComponents == null)
+        {
             m_allComponents = new List<BaseComponent>();
+            m_type2Components = new Dictionary<Type,BaseComponent>();
+        }
+        var type = component.GetType();
+        if(m_type2Components.ContainsKey(type)) 
+        {
+            return;
+        }
         m_allComponents.Add(component);
+        m_type2Components[type] = component;
         component.BindEntity(this);
     }
 
@@ -20,6 +36,17 @@ public abstract class BaseEntity :IRecyclable,IEntity
     {
         var comp = ObjectPool.Get<T>();
         RegisterComponent(comp);
+    }
+
+    public BaseEntity() 
+    {
+        RegisterComponent<LTransform>();
+    }
+
+    public void BindWorld(World world, int id) 
+    {
+        m_World = world;
+        ID = id;
     }
 
     public virtual void DoAwake() 

@@ -9,5 +9,6 @@ public class GameServiceContainer : BaseServiceContainer
         RegisterService(new CommonStateService());
         RegisterService(new ConstStateService());
         RegisterService(new EventRegisterService());
+        RegisterService(new SimulatorService());
     }
 }

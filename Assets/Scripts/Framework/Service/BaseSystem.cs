@@ -3,8 +3,12 @@ using System;
 using System.Collections.Generic;
 
 //战斗中的系统
-public class BaseSystem:BaseGameService
+public abstract class BaseSystem:BaseGameService
 {
     public bool Enable = true;
+
+    protected World m_World;
+
+    public BaseSystem(World world) { m_World = world; }
     public virtual void DoUpdate(LFloat deltaTime) { }
 }

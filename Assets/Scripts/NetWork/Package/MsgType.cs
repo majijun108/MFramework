@@ -24,6 +24,7 @@ public enum MsgType
     S2C_StartBattle,//开始战斗
 
     C2S_PlayerInput,//客户端->服务器 操作信息
+    S2C_Msg_FrameInfo,//服务器->客户端 帧信息
 
     Count,
     Max = 255//最大个数 byte
