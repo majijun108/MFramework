@@ -23,6 +23,7 @@ public abstract class BaseService : IService, ILifeCycle
 
     protected ICommonStateService m_CommonStateService;
     protected IConstStateService m_ConstStateService;
+    protected ISimulatorService m_SimulatorService;
     //禁止单例 所有service通过桥接传入
     public virtual void InitReference(IServiceContainer container) 
     {
@@ -31,6 +32,7 @@ public abstract class BaseService : IService, ILifeCycle
         //通用的service直接引用
         m_CommonStateService = GetService<CommonStateService>();
         m_ConstStateService = GetService<ConstStateService>();
+        m_SimulatorService = GetService<SimulatorService>();
     }
 
     protected T GetService<T>() where T : IService 

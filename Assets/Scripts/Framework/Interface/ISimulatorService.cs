@@ -6,4 +6,6 @@ public interface ISimulatorService : IService
 {
     void RunVideo();
     void JumpTo(int tick);
+
+    void StartGame(string mapName,List<PlayerInfo> players);
 }

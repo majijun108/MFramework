@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Lockstep.Math;
+using System;
 using System.Collections.Generic;
 
 public class World
@@ -7,6 +8,7 @@ public class World
     private Dictionary<System.Type, BaseSystem> m_type2System = new Dictionary<Type, BaseSystem>();
     
     protected EntityManager m_entityMgr;
+    protected bool m_hasCreatePlayer = false;
 
     public void RegisterSystem(BaseSystem system)
     {
@@ -30,6 +32,7 @@ public class World
     void RegisterSystems() 
     {
         RegisterSystem(new EntityManager(this));
+        RegisterSystem(new PlayerSystem(this));
     }
 
     public void DoAwake(IServiceContainer services) 
@@ -52,11 +55,22 @@ public class World
         }
     }
 
-
-
-
-    public void DoUpdate() 
+    public void CreatePlayers(List<PlayerInfo> players) 
     {
+        if (m_hasCreatePlayer)
+            return;
+        for (int i = 0; i < players.Count; i++) 
+        {
+            m_entityMgr.CreateEntity<PlayerEntity>(0, LVector3.zero);
+        }
+    }
 
+
+    public void DoUpdate(LFloat delta) 
+    {
+        for (int i = 0; i < m_BattleSystems.Count; i++)
+        {
+            m_BattleSystems[i].DoUpdate(delta);
+        }
     }
 }

@@ -94,7 +94,7 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
     //客户端准备完毕 可以开始战斗
     public void C2S_ClientReady() 
     {
-
+        m_Client.Send((byte)MsgType.C2S_ClientReady, m_PlayerInfo);
     }
 
 
@@ -156,10 +156,7 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
         m_roomInfo = room;
         UIService.Instance.CloseWindow("RoomWindowCtrl");
 
-        LoadingService.Instance.LoadingScene("GameScene", () => 
-        {
-            C2S_ClientReady();
-        });
+        m_SimulatorService.StartGame("GameScene", m_roomInfo.Players);
     }
 
     public void On_S2C_OnClosetRoom(MsgType type, object obj) 

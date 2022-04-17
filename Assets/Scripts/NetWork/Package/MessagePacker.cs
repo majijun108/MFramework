@@ -32,6 +32,7 @@ public class MessagePacker : IMessagePacker
             case MsgType.C2S_ReqJoinRoom:
             case MsgType.C2S_ReqExitRoom:
             case MsgType.C2S_ReqStartGame:
+            case MsgType.C2S_ClientReady:
                 return BaseFormater.FromBytes<PlayerInfo>(bytes,startIndex, count);
         }
         return null;
@@ -54,6 +55,7 @@ public class MessagePacker : IMessagePacker
             case MsgType.C2S_ReqJoinRoom:
             case MsgType.C2S_ReqExitRoom:
             case MsgType.C2S_ReqStartGame:
+            case MsgType.C2S_ClientReady:
                 return (msg as PlayerInfo).ToBytes();
         }
         return null;

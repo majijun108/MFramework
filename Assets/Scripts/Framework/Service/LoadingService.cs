@@ -17,6 +17,14 @@ public class LoadingState
     public float percent;
 }
 
+public interface ILoadingHandle 
+{
+    void OnLoadSuccess();
+    void CreatWorld();
+    void Preload();
+    void CreatePlayer();
+}
+
 public class LoadingService:BaseSingleService<LoadingService>
 {
     enum LOADING_STATE 
@@ -28,11 +36,11 @@ public class LoadingService:BaseSingleService<LoadingService>
 
     private LOADING_STATE m_state = LOADING_STATE.INIT;
     private AsyncOperationHandle m_loadingHandle;
-    private Action m_onLoadingSuccess;
+    private ILoadingHandle m_loadHander;
     private string m_loadingSceneName;
     public string SceneName { get; private set; }
 
-    public void LoadingScene(string sceneName,Action onSuccess) 
+    public void LoadingScene(string sceneName, ILoadingHandle handle) 
     {
         if (m_state == LOADING_STATE.LOADING)
             return;
@@ -40,7 +48,7 @@ public class LoadingService:BaseSingleService<LoadingService>
             ResourceService.Instance.ReleaseScene(m_loadingHandle);
 
         m_loadingSceneName = sceneName;
-        m_onLoadingSuccess = onSuccess;
+        m_loadHander = handle;
         m_state = LOADING_STATE.LOADING;
         m_loadingHandle = ResourceService.Instance.LoadSceneAsync(sceneName,UnityEngine.SceneManagement.LoadSceneMode.Single);
 
@@ -61,19 +69,24 @@ public class LoadingService:BaseSingleService<LoadingService>
             EventHelper.Instance.Trigger(EEvent.LoadingSceneState, m_loadingState);
             yield return null;
         }
+
         //加载地图数据
         m_loadingState.state = LoadingState.STATE_TYPE.MAP_INFO;
+        m_loadHander.CreatWorld();
         EventHelper.Instance.Trigger(EEvent.LoadingSceneState, m_loadingState);
         yield return new WaitForSeconds(0.1f);
 
+        //预加载TODO
+
         //加载角色
         m_loadingState.state = LoadingState.STATE_TYPE.CREATE_PLAYER;
+        m_loadHander.CreatePlayer();
         EventHelper.Instance.Trigger(EEvent.LoadingSceneState, m_loadingState);
         yield return new WaitForSeconds(0.1f);
 
         //打扫战场
-        m_onLoadingSuccess?.Invoke();
-        m_onLoadingSuccess = null;
+        m_loadHander.OnLoadSuccess();
+        m_loadHander = null;
         SceneName = m_loadingSceneName;
         m_loadingSceneName = null;
         m_state = LOADING_STATE.LOADED;

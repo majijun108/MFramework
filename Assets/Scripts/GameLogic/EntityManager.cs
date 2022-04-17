@@ -48,4 +48,24 @@ public class EntityManager : BaseSystem
         AddEntity(entity);
         return entity;
     }
+
+    private List<T> GetEntities<T>()
+    {
+        var t = typeof(T);
+        if (m_type2Entities.TryGetValue(t, out var lstObj))
+        {
+            return lstObj as List<T>;
+        }
+        else
+        {
+            var lst = new List<T>();
+            m_type2Entities.Add(t, lst);
+            return lst;
+        }
+    }
+
+    public PlayerEntity[] GetPlayers() 
+    {
+        return GetEntities<PlayerEntity>().ToArray();
+    }
 }
