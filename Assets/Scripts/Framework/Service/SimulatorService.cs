@@ -24,6 +24,19 @@ public class SimulatorService : BaseGameService, ISimulatorService,ILoadingHandl
         m_serviceContainer = services;
     }
 
+    public override void DoStart()
+    {
+        base.DoStart();
+        ClientMsgHandler.Instance.AddListener(MsgType.S2C_Msg_FrameInfo, OnRecvFramInfo);
+    }
+
+    //收到服务器帧
+    void OnRecvFramInfo(MsgType type, object obj) 
+    {
+
+    }
+
+
     public void StartGame(string mapName, List<PlayerInfo> players)
     {
         if (m_isGaming)
@@ -54,5 +67,11 @@ public class SimulatorService : BaseGameService, ISimulatorService,ILoadingHandl
     public void CreatePlayer()
     {
         m_mainWorld?.CreatePlayers(m_curPlayers);
+    }
+
+    public override void DoDestroy()
+    {
+        base.DoDestroy();
+        ClientMsgHandler.Instance.RemoveListener(MsgType.S2C_Msg_FrameInfo, OnRecvFramInfo);
     }
 }

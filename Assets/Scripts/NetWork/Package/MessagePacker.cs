@@ -34,6 +34,8 @@ public class MessagePacker : IMessagePacker
             case MsgType.C2S_ReqStartGame:
             case MsgType.C2S_ClientReady:
                 return BaseFormater.FromBytes<PlayerInfo>(bytes,startIndex, count);
+            case MsgType.S2C_Msg_FrameInfo:
+                return BaseFormater.FromBytes<Msg_FrameInfo>(bytes, startIndex, count);
         }
         return null;
     }
@@ -57,6 +59,8 @@ public class MessagePacker : IMessagePacker
             case MsgType.C2S_ReqStartGame:
             case MsgType.C2S_ClientReady:
                 return (msg as PlayerInfo).ToBytes();
+            case MsgType.S2C_Msg_FrameInfo:
+                return (msg as Msg_FrameInfo).ToBytes();
         }
         return null;
     }

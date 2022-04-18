@@ -25,7 +25,7 @@ namespace Server
             Disposed
         }
 
-        private const int FrameRate = 30;
+        private const int FrameDelta = 30;//每帧的间隔 30ms
 
         private UDPNetProxy m_Server;
         private RoomInfo m_roomInfo;
@@ -33,8 +33,6 @@ namespace Server
         private int m_broadcastMaxPort;//广播的端口号
         private string m_mainPlayerIP;//主机的IP
         private int m_mainPlayerPort;//主机的端口
-
-        private int m_frameDelta;//每帧的时间
 
         private List<PlayerInfo> m_readyPlayer = new List<PlayerInfo>();//已经准备好的客户端
 
@@ -71,7 +69,6 @@ namespace Server
                 Players = new List<PlayerInfo>()
             };
             m_MaxPlayerCount = maxCount;
-            m_frameDelta = 1000 / FrameRate;
             serverIP = NetHelper.GetLocalIP();
             serverPort = port;
 
@@ -109,7 +106,7 @@ namespace Server
                 if (m_roomState == RoomState.Disposed)
                     return;
                 Tick();
-                await Task.Delay(m_frameDelta);
+                await Task.Delay(FrameDelta);
             }
         }
 
@@ -248,7 +245,7 @@ namespace Server
         private float m_startTime;
         private int m_Tick;
         private int m_tickSinceGameStart =>
-            (int)(LTime.realtimeSinceStartup - m_startTime) / m_frameDelta;
+            (int)(LTime.realtimeSinceStartup - m_startTime) / FrameDelta;
 
         void StartBattle() 
         {
