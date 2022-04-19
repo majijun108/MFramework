@@ -8,6 +8,8 @@ public class SimulatorService : BaseGameService, ISimulatorService,ILoadingHandl
     private bool m_isGaming = false;
     private List<PlayerInfo> m_curPlayers;
 
+    public const int UPDATE_DELTA_TIME = 30;
+
     public void JumpTo(int tick)
     {
         
@@ -33,7 +35,7 @@ public class SimulatorService : BaseGameService, ISimulatorService,ILoadingHandl
     //收到服务器帧
     void OnRecvFramInfo(MsgType type, object obj) 
     {
-
+        m_mainWorld?.PushServerFrame(obj as Msg_FrameInfo);
     }
 
 
@@ -53,7 +55,7 @@ public class SimulatorService : BaseGameService, ISimulatorService,ILoadingHandl
 
     public void CreatWorld()
     {
-        m_mainWorld = new World();
+        m_mainWorld = new World(UPDATE_DELTA_TIME);
         m_mainWorld.DoAwake(m_ServiceContainer);
         m_mainWorld.DoStart();
     }

@@ -4,11 +4,39 @@ using System.Collections.Generic;
 
 public class World
 {
+    public enum WORLD_STATE 
+    {
+        INIT,
+        WAITING_FOR_FRAME,
+        RUNNING,
+        PAUSE,
+        DESTROYED
+    }
+
     private List<BaseSystem> m_BattleSystems = new List<BaseSystem>();
     private Dictionary<System.Type, BaseSystem> m_type2System = new Dictionary<Type, BaseSystem>();
     
     protected EntityManager m_entityMgr;
     protected bool m_hasCreatePlayer = false;
+    public int Tick { get; private set; }
+
+    private long m_gameStartTimestampMs = -1;
+    private IFrameBuffer m_FrameBuffer;
+    private int m_updateDeltaTime;
+
+    private int m_maxPredictCount = 0;//最大预测帧数 TODO
+    private int m_maxPursueMsPerFrame = 20;//每个update追帧的最大时间
+    private int m_tickSinceGameStart => (int)((LTime.realtimeSinceStartupMS - m_gameStartTimestampMs) / m_updateDeltaTime);
+    private int m_inputTargetTick => m_tickSinceGameStart + 1;//发送操作最大帧数
+    private int m_TargetTick => m_tickSinceGameStart;//目标帧
+
+    public WORLD_STATE State { get; private set; } = WORLD_STATE.INIT;
+
+    public World(int updateTime) 
+    {
+        m_updateDeltaTime = updateTime;
+        m_FrameBuffer = new FrameBuffer(this, 2000);
+    }
 
     public void RegisterSystem(BaseSystem system)
     {
@@ -65,12 +93,88 @@ public class World
         }
     }
 
+    public void PushServerFrame(Msg_FrameInfo frame) 
+    {
+        m_FrameBuffer.PushServerFrame(frame);
+    }
 
-    public void DoUpdate(LFloat delta) 
+
+    void Step(LFloat delta) 
     {
         for (int i = 0; i < m_BattleSystems.Count; i++)
         {
             m_BattleSystems[i].DoUpdate(delta);
         }
+        Tick++;
+    }
+
+    void Simulate(Msg_FrameInfo frame, bool needGenSnap = false) 
+    {
+
+    }
+
+
+    public void DoUpdate(float delta) 
+    {
+        if (State != WORLD_STATE.RUNNING)
+            return;
+        if (m_gameStartTimestampMs == -1)
+            m_gameStartTimestampMs = LTime.realtimeSinceStartupMS;
+
+        m_FrameBuffer.FrameCheck(delta);
+        while (m_inputTick <= m_inputTargetTick) 
+        {
+            SendInputs(m_inputTick++);
+        }
+        DoNormalUpdate();
+    }
+
+    void DoNormalUpdate() 
+    {
+        if ((Tick - m_FrameBuffer.MaxContinueServerTick) > m_maxPredictCount)
+            return;
+        var deadline = LTime.realtimeSinceStartupMS + m_maxPursueMsPerFrame;
+        //追帧
+        while (Tick < m_FrameBuffer.CurtTickInServer) 
+        {
+            var sFrame = m_FrameBuffer.GetServerFrame(Tick);
+            if (sFrame == null)
+            {
+                OnPursuingFrame();
+                return;
+            }
+            m_FrameBuffer.PushLocalFrame(sFrame);
+            Simulate(sFrame);
+            if (LTime.realtimeSinceStartupMS > deadline)
+            {
+                OnPursuingFrame();
+                return;
+            }
+        }
+
+        if (m_FrameBuffer.IsNeedRollback) //回滚 TODO
+        {
+
+        }
+
+        //预测 TODO
+    }
+
+    //追帧种的操作
+    void OnPursuingFrame() 
+    {
+
+    }
+
+
+    private int m_inputTick = 0;
+    void SendInputs(int tick) 
+    {
+
+    }
+
+    public void DoDestroy() 
+    {
+        State = WORLD_STATE.DESTROYED;
     }
 }

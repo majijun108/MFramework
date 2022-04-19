@@ -32,6 +32,11 @@ public class Msg_FrameInfo: BaseFormater
     {
         
     }
+
+    public bool Equals(Msg_FrameInfo other) 
+    {
+        return false;//TODO
+    }
 }
 
 public class Msg_PlayerInput : BaseFormater
