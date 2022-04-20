@@ -185,6 +185,18 @@ namespace Server
                 return m_playerID2Index[player.PlayerID];
             return -1;
         }
+        int GetPlayerIndex(int playerid)
+        {
+            //for (int i = 0; i < m_roomInfo.Players.Count; i++)
+            //{
+            //    var p = m_roomInfo.Players[i];
+            //    if (p.ClientIP == player.ClientIP && p.ClientPort == player.ClientPort)
+            //        return i;
+            //}
+            if (m_playerID2Index.ContainsKey(playerid))
+                return m_playerID2Index[playerid];
+            return -1;
+        }
 
         bool IsInRoom(PlayerInfo player,out int index) 
         {
@@ -242,15 +254,15 @@ namespace Server
 
         #region 开始战斗
 
-        private float m_startTime;
+        private long m_startTime;
         private int m_Tick;
         private int m_tickSinceGameStart =>
-            (int)(LTime.realtimeSinceStartup - m_startTime) / FrameDelta;
+            (int)((LTime.realtimeSinceStartupMS - m_startTime) / FrameDelta);
 
         void StartBattle() 
         {
             m_roomState = RoomState.InBattle;
-            m_startTime = LTime.realtimeSinceStartup;
+            m_startTime = LTime.realtimeSinceStartupMS;
             m_Tick = 0;
         }
         //战斗跑帧
@@ -374,9 +386,12 @@ namespace Server
                 return;
             if (input.Tick < m_Tick)
                 return;
+            int index = GetPlayerIndex(input.PlayerID);
+            if (index < 0)
+                return;
 
             var frame = GetOrCreateFrame(input.Tick);
-            frame.Inputs[input.PlayerID] = input;
+            frame.Inputs[index] = input;
         }
 
         public void Dispatch(Session session, byte opcode, object message)

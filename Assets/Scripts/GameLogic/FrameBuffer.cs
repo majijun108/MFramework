@@ -35,6 +35,9 @@ public class FrameBuffer : IFrameBuffer
     {
         m_world = world;
         m_bufferSize = buffSize;
+        m_maxServerOverFrameCount = buffSize;
+        m_serverBuffer = new Msg_FrameInfo[m_bufferSize];
+        m_clientBuffer = new Msg_FrameInfo[m_bufferSize];
     }
 
     private int GetFrameIndex(int tick) 

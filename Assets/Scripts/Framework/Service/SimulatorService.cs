@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public class SimulatorService : BaseGameService, ISimulatorService,ILoadingHandle
+public class SimulatorService : BaseGameService, ISimulatorService,ILoadingHandle,IUpdate
 {
     private IServiceContainer m_serviceContainer;
     private World m_mainWorld;
@@ -75,5 +75,10 @@ public class SimulatorService : BaseGameService, ISimulatorService,ILoadingHandl
     {
         base.DoDestroy();
         ClientMsgHandler.Instance.RemoveListener(MsgType.S2C_Msg_FrameInfo, OnRecvFramInfo);
+    }
+
+    public void DoUpdate(float deltaTime)
+    {
+        m_mainWorld?.DoUpdate(deltaTime);
     }
 }

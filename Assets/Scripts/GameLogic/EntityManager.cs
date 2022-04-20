@@ -11,7 +11,7 @@ public class EntityManager : BaseSystem
 
     public EntityManager(World world) : base(world){ }
 
-    private void AddEntity(BaseEntity entity)
+    private void AddEntity<T>(T entity) where T : BaseEntity
     {
         var type = entity.GetType();
         if (m_type2Entities.TryGetValue(type, out IList entities))
@@ -20,7 +20,7 @@ public class EntityManager : BaseSystem
         }
         else 
         {
-            var list = new List<BaseEntity>();
+            var list = new List<T>();
             m_type2Entities[type] = list;
             list.Add(entity);
         }
@@ -45,7 +45,12 @@ public class EntityManager : BaseSystem
         entity.DoAwake();
         entity.DoStart();
 
-        AddEntity(entity);
+        //TEST
+        var go = UnityEngine.GameObject.Find("CompleteTank");
+        var test = go.AddComponent<CSharpTest>();
+        test.BaseEntity = entity;
+
+        AddEntity<T>(entity);
         return entity;
     }
 

@@ -8,3 +8,9 @@ public interface ILifeCycle
     void DoDestroy();
     void OnApplicationQuit();
 }
+
+//游戏渲染的update 跑帧用的tick
+public interface IUpdate 
+{
+    void DoUpdate(float deltaTime);
+}

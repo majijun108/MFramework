@@ -36,6 +36,8 @@ public class MessagePacker : IMessagePacker
                 return BaseFormater.FromBytes<PlayerInfo>(bytes,startIndex, count);
             case MsgType.S2C_Msg_FrameInfo:
                 return BaseFormater.FromBytes<Msg_FrameInfo>(bytes, startIndex, count);
+            case MsgType.C2S_PlayerInput:
+                return BaseFormater.FromBytes<Msg_PlayerInput>(bytes, startIndex, count);
         }
         return null;
     }
@@ -61,6 +63,8 @@ public class MessagePacker : IMessagePacker
                 return (msg as PlayerInfo).ToBytes();
             case MsgType.S2C_Msg_FrameInfo:
                 return (msg as Msg_FrameInfo).ToBytes();
+            case MsgType.C2S_PlayerInput:
+                return (msg as Msg_PlayerInput).ToBytes();
         }
         return null;
     }

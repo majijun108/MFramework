@@ -11,6 +11,8 @@ public abstract class BaseEntity :IRecyclable,IEntity
     protected List<BaseComponent> m_allComponents;
     protected Dictionary<Type,BaseComponent> m_type2Components;
 
+    public LTransform transform;
+
     protected World m_World { get; set; }
 
     public int ID { get; private set; }
@@ -32,15 +34,16 @@ public abstract class BaseEntity :IRecyclable,IEntity
         component.BindEntity(this);
     }
 
-    protected void RegisterComponent<T>() where T : BaseComponent,new()
+    protected T RegisterComponent<T>() where T : BaseComponent,new()
     {
         var comp = ObjectPool.Get<T>();
         RegisterComponent(comp);
+        return comp;
     }
 
     public BaseEntity() 
     {
-        RegisterComponent<LTransform>();
+        transform = RegisterComponent<LTransform>();
     }
 
     public void BindWorld(World world, int id) 

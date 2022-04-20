@@ -10,5 +10,5 @@ public abstract class BaseSystem:BaseGameService
     protected World m_World;
 
     public BaseSystem(World world) { m_World = world; }
-    public virtual void DoUpdate(LFloat deltaTime) { }
+    public virtual void Tick(LFloat deltaTime) { }
 }

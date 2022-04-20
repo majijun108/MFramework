@@ -6,53 +6,17 @@ using UnityEngine;
 
 public class CSharpTest : MonoBehaviour
 {
-    //public delegate void handle(int num);
+    public BaseEntity BaseEntity { get; set; }
 
-    //private List<handle> myhand = new List<handle>();
-    //void Start()
-    //{
-    //    var methodinfo = this.GetType().GetMethod("MyMethod",BindingFlags.NonPublic | BindingFlags.Public |
-    //        BindingFlags.Instance | BindingFlags.DeclaredOnly);
-    //    myhand.Add(Delegate.CreateDelegate(typeof(handle), this, methodinfo) as handle);
-    //}
-
-    //// Update is called once per frame
-    //void Update()
-    //{
-    //    if (Input.GetKeyDown(KeyCode.A)) 
-    //    {
-    //        myhand[0].Invoke(10);
-    //    }
-    //    if (Input.GetKeyDown(KeyCode.S)) 
-    //    {
-    //        if (myhand.Remove(MyMethod)) 
-    //        {
-    //            Debug.LogError("ÒÆ³ý³É¹¦");
-    //        }
-    //        if (myhand.Count > 0) 
-    //        {
-    //            myhand[0].Invoke(10);
-    //        }
-    //    }
-    //}
-
-    //void MyMethod(int num) 
-    //{
-    //    Debug.LogError("123");
-    //}
-
-    abstract class A 
+    private void Update()
     {
-
-    }
-    class B :A
-    {
-
-    }
-
-    private void Start()
-    {
-        B b = new B();
-        Debug.LogError(b.GetType().Name);
+        if (BaseEntity != null) 
+        {
+            var player = BaseEntity as PlayerEntity;
+            if (player == null)
+                return;
+            Vector3 pos = new Vector3(BaseEntity.transform.Pos.x.ToFloat(), 0, BaseEntity.transform.Pos.y.ToFloat());
+            transform.position = pos;
+        }
     }
 }

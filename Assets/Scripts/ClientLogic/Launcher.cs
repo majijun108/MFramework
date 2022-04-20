@@ -9,7 +9,10 @@ public class Launcher : ILifeCycle
     public static Launcher Instance { get; private set; }
     private BaseServiceContainer _serviceContainer;
     private ManagerContainer _managerContainer;
+    private List<IUpdate> m_updateServices = new List<IUpdate>();
+
     private NetworkService m_NetworkService;
+    private InputService m_InputService;
 
     public void DoAwake(IServiceContainer services)
     {
@@ -26,6 +29,10 @@ public class Launcher : ILifeCycle
             if (item is BaseService) 
             {
                 _managerContainer.RegisterManager(item as BaseService);
+            }
+            if (item is IUpdate) 
+            {
+                m_updateServices.Add((IUpdate)item);
             }
         }
     }
@@ -60,6 +67,7 @@ public class Launcher : ILifeCycle
     void _DoAwake() 
     {
         m_NetworkService = _serviceContainer.GetService<NetworkService>();
+        m_InputService = _serviceContainer.GetService<InputService>();
     }
 
     void _DoStart() 
@@ -71,7 +79,12 @@ public class Launcher : ILifeCycle
     public void DoUpdate(float deltaTime) 
     {
         GlobalUtils.UpdateServices();
-        m_NetworkService.DoUpdate(deltaTime);
+        //m_NetworkService.DoUpdate(deltaTime);
+        //m_InputService.DoUpdate(deltaTime);
+        for (int i = 0; i < m_updateServices.Count; i++)
+        {
+            m_updateServices[i].DoUpdate(deltaTime);
+        }
     }
 
     public void DoDestroy()

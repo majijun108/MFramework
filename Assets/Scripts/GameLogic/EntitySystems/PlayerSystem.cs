@@ -16,9 +16,9 @@ public class PlayerSystem : BaseSystem
         m_entityManager = m_World.GetSystem<EntityManager>();
     }
 
-    public override void DoUpdate(LFloat deltaTime)
+    public override void Tick(LFloat deltaTime)
     {
-        base.DoUpdate(deltaTime);
+        base.Tick(deltaTime);
         foreach (var item in m_entityManager.GetPlayers())
         {
             item.DoUpdate(deltaTime);

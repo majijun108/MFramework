@@ -7,7 +7,7 @@ using Lockstep.NetWork;
 /// <summary>
 /// 直接面向unity了 如果是服务器 重写这个
 /// </summary>
-public class NetworkService : BaseSingleService<NetworkService>,INetworkService
+public class NetworkService : BaseSingleService<NetworkService>,INetworkService,IUpdate
 {
     public const int BROADCAST_MIN_PORT = 9000;//监听的最小端口号
     public const int BROADCAST_MAX_PORT = 9010;//监听的最大端口号
@@ -17,6 +17,7 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
     private RoomInfo m_roomInfo;//当前加入的房间信息
     private int m_playerID = -1;
 
+    public int LocalPlayerID => m_playerID;
     //获取可用的端口号
     int GetUseablePort() 
     {
@@ -97,6 +98,11 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
         m_Client.Send((byte)MsgType.C2S_ClientReady, m_PlayerInfo);
     }
 
+    //发送操作给服务器
+    public void C2S_PlayerInput(Msg_PlayerInput msg) 
+    {
+        m_Client.Send((byte)MsgType.C2S_PlayerInput, msg);
+    }
 
 
     int GetPlayerID(RoomInfo room)
@@ -117,10 +123,13 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService
         if (obj == null)
             return;
         RoomInfo room = (RoomInfo)obj;
+        if (m_roomInfo != null && m_roomInfo.RoomID != room.RoomID)
+            return;
+
+        m_playerID = GetPlayerID(room);
         if (m_roomInfo != null && m_roomInfo.RoomID == room.RoomID) //更新房间信息
         {
             m_roomInfo = room;
-            m_playerID = GetPlayerID(room);
             EventHelper.Instance.Trigger(EEvent.UpdateRoomInfo, m_roomInfo);
             return;
         }

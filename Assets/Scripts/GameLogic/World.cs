@@ -23,6 +23,7 @@ public class World
     private long m_gameStartTimestampMs = -1;
     private IFrameBuffer m_FrameBuffer;
     private int m_updateDeltaTime;
+    private LFloat m_updateFloatDeltaTime;
 
     private int m_maxPredictCount = 0;//最大预测帧数 TODO
     private int m_maxPursueMsPerFrame = 20;//每个update追帧的最大时间
@@ -35,6 +36,7 @@ public class World
     public World(int updateTime) 
     {
         m_updateDeltaTime = updateTime;
+        m_updateFloatDeltaTime = new LFloat(true,updateTime);
         m_FrameBuffer = new FrameBuffer(this, 2000);
     }
 
@@ -91,29 +93,53 @@ public class World
         {
             m_entityMgr.CreateEntity<PlayerEntity>(0, LVector3.zero);
         }
+        State = WORLD_STATE.WAITING_FOR_FRAME;
     }
 
     public void PushServerFrame(Msg_FrameInfo frame) 
     {
         m_FrameBuffer.PushServerFrame(frame);
+        if (State == WORLD_STATE.WAITING_FOR_FRAME) 
+        {
+            State = WORLD_STATE.RUNNING;
+        }
     }
 
-
+    //跑逻辑帧
     void Step(LFloat delta) 
     {
         for (int i = 0; i < m_BattleSystems.Count; i++)
         {
-            m_BattleSystems[i].DoUpdate(delta);
+            m_BattleSystems[i].Tick(delta);
         }
-        Tick++;
+    }
+
+    private Dictionary<int,Msg_PlayerInput> curInput = new Dictionary<int, Msg_PlayerInput> ();
+    //注入操作
+    void ProcessInput(Msg_FrameInfo frame) 
+    {
+        curInput.Clear();
+        for (int i = 0; i < frame.Inputs.Length; i++) 
+        {
+            var input = frame.Inputs[i];
+            if(input != null)
+                curInput[input.PlayerID] = input;
+        }
+        foreach (var item in m_entityMgr.GetPlayers())
+        {
+            item.Input = curInput.ContainsKey(item.PlayerID) ? curInput[item.PlayerID] : null;
+        }
     }
 
     void Simulate(Msg_FrameInfo frame, bool needGenSnap = false) 
     {
-
+        ProcessInput(frame);
+        Step(m_updateFloatDeltaTime);
+        Tick++;
     }
 
 
+    private int m_inputTick = 0;
     public void DoUpdate(float delta) 
     {
         if (State != WORLD_STATE.RUNNING)
@@ -160,17 +186,20 @@ public class World
         //预测 TODO
     }
 
-    //追帧种的操作
+    //追帧中的操作
     void OnPursuingFrame() 
     {
 
     }
 
 
-    private int m_inputTick = 0;
     void SendInputs(int tick) 
     {
-
+        var input = InputService.Instance.GetInput();
+        if (input == null)
+            return;
+        input.Tick = tick;
+        NetworkService.Instance.C2S_PlayerInput(input);
     }
 
     public void DoDestroy() 
