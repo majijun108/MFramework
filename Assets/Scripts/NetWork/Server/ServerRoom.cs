@@ -175,14 +175,12 @@ namespace Server
         {
             if (m_roomInfo == null)
                 return -1;
-            //for (int i = 0; i < m_roomInfo.Players.Count; i++)
-            //{
-            //    var p = m_roomInfo.Players[i];
-            //    if (p.ClientIP == player.ClientIP && p.ClientPort == player.ClientPort)
-            //        return i;
-            //}
-            if (m_playerID2Index.ContainsKey(player.PlayerID))
-                return m_playerID2Index[player.PlayerID];
+            for (int i = 0; i < m_roomInfo.Players.Count; i++)
+            {
+                var p = m_roomInfo.Players[i];
+                if (p.ClientIP == player.ClientIP && p.ClientPort == player.ClientPort)
+                    return i;
+            }
             return -1;
         }
         int GetPlayerIndex(int playerid)
@@ -205,7 +203,7 @@ namespace Server
                 return false;
             if (player == null)
                 return false;
-            index = GetPlayerIndex(player);
+            index = GetPlayerIndex(player.PlayerID);
             if (index < 0)
                 return false;
             return true;

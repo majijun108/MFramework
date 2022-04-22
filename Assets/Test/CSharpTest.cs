@@ -16,7 +16,7 @@ public class CSharpTest : MonoBehaviour
             if (player == null)
                 return;
             Vector3 pos = new Vector3(BaseEntity.transform.Pos.x.ToFloat(), 0, BaseEntity.transform.Pos.y.ToFloat());
-            transform.position = pos;
+            transform.position = Vector3.Lerp(transform.position,pos,0.1f);
         }
     }
 }

@@ -46,9 +46,12 @@ public class EntityManager : BaseSystem
         entity.DoStart();
 
         //TEST
-        var go = UnityEngine.GameObject.Find("CompleteTank");
-        var test = go.AddComponent<CSharpTest>();
-        test.BaseEntity = entity;
+        if (entity.ID == 0)
+        {
+            var go = UnityEngine.GameObject.Find("CompleteTank");
+            var test = go.AddComponent<CSharpTest>();
+            test.BaseEntity = entity;
+        }
 
         AddEntity<T>(entity);
         return entity;

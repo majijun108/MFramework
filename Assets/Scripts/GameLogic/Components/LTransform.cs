@@ -34,7 +34,7 @@ public class LTransform:BaseComponent
                 return;
             LFloat angle = player.Input.MoveAngle;
             LVector2 dir = GetDir(angle);
-            Pos += dir.normalized * deltaTime;
+            Pos += dir.normalized * deltaTime * 5;
         }
     }
     //END TEST

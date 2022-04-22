@@ -85,11 +85,12 @@ namespace Lockstep.NetWork
             int maxIndex = offset + count;
             while (buffIndex < maxIndex) 
             {
-                if (ChunkSize - Top > count) //内存足够 
+                int copuCount = maxIndex - buffIndex;
+                if (ChunkSize - Top > copuCount) //内存足够 
                 {
-                    Array.Copy(buffer, buffIndex, writeBuffer, Top, count);
-                    Top += count;
-                    buffIndex += count;
+                    Array.Copy(buffer, buffIndex, writeBuffer, Top, copuCount);
+                    Top += copuCount;
+                    buffIndex += copuCount;
                 }
                 else 
                 {
