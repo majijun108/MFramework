@@ -160,6 +160,7 @@ public class World
         if ((Tick - m_FrameBuffer.MaxContinueServerTick) > m_maxPredictCount)
             return;
         var deadline = LTime.realtimeSinceStartupMS + m_maxPursueMsPerFrame;
+        //DebugService.Instance.LogError(m_FrameBuffer.CurtTickInServer.ToString() +"-----------------------------------"+LTime.realtimeSinceStartupMS);
         //追帧
         while (Tick < m_FrameBuffer.CurtTickInServer) 
         {
