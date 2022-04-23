@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public interface IEntity 
 {
+    bool HasComponent(int index);
 }
 
 public abstract class BaseEntity :IRecyclable,IEntity
@@ -105,5 +106,10 @@ public abstract class BaseEntity :IRecyclable,IEntity
     public void OnRecycle()
     {
         
+    }
+
+    public bool HasComponent(int index)
+    {
+        throw new NotImplementedException();
     }
 }
