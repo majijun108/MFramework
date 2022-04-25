@@ -5,7 +5,9 @@ public class ComponentRegister
 {
     private static List<System.Type> m_types = new List<System.Type>()
     {
-        
+        typeof(PlayerComponent),
+        typeof(PositionComponent),
+        typeof(SpeedComponent),
     };
     private static Dictionary<System.Type, int> m_TypeLookup = new Dictionary<System.Type, int>();
 

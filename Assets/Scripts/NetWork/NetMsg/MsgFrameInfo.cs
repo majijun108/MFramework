@@ -73,6 +73,6 @@ public class Msg_PlayerInput : BaseFormater
         Tick=0;
         PlayerID=-1;
         SkillID=-1;
-        MoveAngle=LFloat.MinValue;
+        MoveAngle=LFloat.zero;
     }
 }

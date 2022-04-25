@@ -23,6 +23,7 @@ public interface IEntity
     void AddComponent(int index,IComponent component);
     void RemoveComponent(int index);
     void ReplaceComponent(int index,IComponent component);
+    T GetComponent<T>(int index) where T : IComponent;
     void RemoveAllComponents();
     void InternalDestroy();
     void Destroy();
@@ -152,5 +153,12 @@ public class Entity : IRecyclable, IEntity
         if (!IsEnable)
             return;
         OnEntityDestroyed?.Invoke(this);
+    }
+
+    public T GetComponent<T>(int index) where T : IComponent
+    {
+        if (HasComponent(index))
+            return (T)m_components[index];
+        return default;
     }
 }

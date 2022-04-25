@@ -26,7 +26,6 @@ public class EntityCompareer : IEqualityComparer<IEntity>
 
 public class EntityGroup:IGroup
 {
-
     private IMatcher m_Matcher;
     private HashSet<IEntity> m_entities = new HashSet<IEntity>(EntityCompareer.comparer);
     private IEntity[] m_entitiesCache;

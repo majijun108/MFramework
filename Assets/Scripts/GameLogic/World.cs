@@ -15,6 +15,9 @@ public class World
     
     protected EntityManager m_entityMgr;
     public EntityManager EntityMgr { get { return m_entityMgr; } }
+    private WorldBillboard m_billboard;
+    public WorldBillboard Billboard { get { return m_billboard; } }
+
     private Systems m_systems;
 
 
@@ -39,12 +42,16 @@ public class World
         m_updateDeltaTime = updateTime;
         m_updateFloatDeltaTime = new LFloat(true,updateTime);
         m_FrameBuffer = new FrameBuffer(this, 2000);
+        m_entityMgr = new EntityManager(ComponentRegister.ComponentCount);
+        m_billboard = new WorldBillboard();
+
         m_systems = new Systems();
     }
 
     void RegisterSystems() 
     {
-
+        m_systems.Add(new PlayerInputSystem(this));
+        m_systems.Add(new MoveSystem(this));
     }
 
     public void DoAwake(IServiceContainer services) 
@@ -63,7 +70,15 @@ public class World
             return;
         for (int i = 0; i < players.Count; i++) 
         {
-            //m_entityMgr.CreateEntity<PlayerEntity>(0, LVector3.zero);
+            var playerInfo = players[i];
+            var entity = EntityMgr.CreateEntity();
+            var player = EntityMgr.AddComponent<PlayerComponent>(entity);
+            player.PlayerID = playerInfo.PlayerID;
+
+            EntityMgr.AddComponent<SpeedComponent>(entity);
+            EntityMgr.AddComponent<PositionComponent>(entity);
+
+            GameViewService.Instance.CreatView(entity, "CompleteTank");
         }
         State = WORLD_STATE.WAITING_FOR_FRAME;
     }
@@ -84,22 +99,12 @@ public class World
         m_systems.Cleanup();
     }
 
-    private Dictionary<int,Msg_PlayerInput> curInput = new Dictionary<int, Msg_PlayerInput> ();
-    //注入操作
-    void ProcessInput(Msg_FrameInfo frame) 
-    {
-        curInput.Clear();
-        for (int i = 0; i < frame.Inputs.Length; i++) 
-        {
-            var input = frame.Inputs[i];
-            if(input != null)
-                curInput[input.PlayerID] = input;
-        }
-    }
-
     void Simulate(Msg_FrameInfo frame, bool needGenSnap = false) 
     {
-        ProcessInput(frame);
+        Billboard.Reset();
+        Billboard.SetFrameDeltaTime(m_updateFloatDeltaTime);
+        Billboard.SetFrameInfo(frame);
+
         Step(m_updateFloatDeltaTime);
         Tick++;
     }
