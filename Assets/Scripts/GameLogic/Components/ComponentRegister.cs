@@ -5,7 +5,7 @@ public class ComponentRegister
 {
     private static List<System.Type> m_types = new List<System.Type>()
     {
-        typeof(LTransform),
+        
     };
     private static Dictionary<System.Type, int> m_TypeLookup = new Dictionary<System.Type, int>();
 
@@ -30,6 +30,11 @@ public class ComponentRegister
             return m_TypeLookup[type];
         }
         return -1;
+    }
+
+    public static int GetComponentIndex<T>() where T : IComponent 
+    {
+        return GetComponentIndex(typeof(T));
     }
 
     public static int ComponentCount => m_types.Count;

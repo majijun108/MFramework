@@ -3,77 +3,83 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-public class EntityManager : BaseSystem
+public class EntityManager
 {
     public int m_currentID = 0;
-    private Dictionary<Type, IList> m_type2Entities = new Dictionary<Type,IList>();
-    private Dictionary<int,BaseEntity> m_id2Entity = new Dictionary<int, BaseEntity>();
 
-    public EntityManager(World world) : base(world){ }
+    private HashSet<IEntity> m_entities = new HashSet<IEntity>(EntityCompareer.comparer);
 
-    private void AddEntity<T>(T entity) where T : BaseEntity
+    readonly EntityComponentChanged m_entityComponentChanged;
+    readonly EntityComponentReplaced m_entityComponentReplaced;
+    readonly EntityEnvent m_entityReleased;
+    readonly EntityEnvent m_entityDestroyed;
+
+    private Dictionary<IMatcher,IGroup> m_groups = new Dictionary<IMatcher,IGroup>();
+    private List<IGroup>[] m_index2Groups;
+    private int m_totalComponents;
+
+    public EntityManager(int totalComponents)
     {
-        var type = entity.GetType();
-        if (m_type2Entities.TryGetValue(type, out IList entities))
-        {
-            entities.Add(entity);
-        }
-        else 
-        {
-            var list = new List<T>();
-            m_type2Entities[type] = list;
-            list.Add(entity);
-        }
-        m_id2Entity[entity.ID] = entity;
+        m_entityComponentChanged = onEntityComponentChanged;
+        m_entityComponentReplaced = onEntityComponentReplaced;
+        m_entityReleased = onEntityReleased;
+        m_entityDestroyed = onEntityDestroyed;
+
+        m_totalComponents = totalComponents;
+        m_index2Groups = new List<IGroup>[totalComponents];
     }
 
-    private void RemoveEntity(BaseEntity entity) 
+    public Entity CreateEntity()
     {
-        var type = entity.GetType();
-        if (m_type2Entities.TryGetValue(type, out IList entities)) 
-        {
-            entities.Remove(entity);
-            m_id2Entity.Remove(entity.ID);
-        }
-    }
+        var entity = ObjectPool.Get<Entity>();
+        entity.Initialize(m_currentID++, m_totalComponents);
+        m_entities.Add(entity);
 
-    public T CreateEntity<T>(int prefabID,LVector3 initPos) where T :BaseEntity,new()
-    {
-        var entity = new T();//Activator.CreateInstance(typeof(T), m_World,m_currentID++);
-        entity.BindWorld(m_World, m_currentID++);
+        entity.OnComponentAdded += m_entityComponentChanged;
+        entity.OnComponentRemoved += m_entityComponentChanged;
+        entity.OnComponentReplaced += m_entityComponentReplaced;
+        entity.OnEntityReleased += m_entityReleased;
+        entity.OnEntityDestroyed += m_entityDestroyed;
 
-        entity.DoAwake();
-        entity.DoStart();
-
-        //TEST
-        if (entity.ID == 0)
-        {
-            var go = UnityEngine.GameObject.Find("CompleteTank");
-            var test = go.AddComponent<CSharpTest>();
-            test.BaseEntity = entity;
-        }
-
-        AddEntity<T>(entity);
         return entity;
     }
 
-    private List<T> GetEntities<T>()
+
+
+    void onEntityComponentChanged(IEntity entity, int index, IComponent component) 
     {
-        var t = typeof(T);
-        if (m_type2Entities.TryGetValue(t, out var lstObj))
+        var groups = m_index2Groups[index];
+        if (groups == null)
+            return;
+        for (int i = 0; i < groups.Count; i++)
         {
-            return lstObj as List<T>;
-        }
-        else
-        {
-            var lst = new List<T>();
-            m_type2Entities.Add(t, lst);
-            return lst;
+            groups[i].HandleEntity(entity);
         }
     }
 
-    public PlayerEntity[] GetPlayers() 
+    void onEntityComponentReplaced(IEntity entity, int index, IComponent preComponent, IComponent placeComponent) 
     {
-        return GetEntities<PlayerEntity>().ToArray();
+        var groups = m_index2Groups[index];
+        if (groups == null)
+            return;
+        for (int i = 0; i < groups.Count; i++)
+        {
+            groups[i].UpdateEntity(entity,index,preComponent,placeComponent);
+        }
+    }
+
+    void onEntityReleased(IEntity entity) 
+    {
+
+    }
+
+    void onEntityDestroyed(IEntity entity) 
+    {
+        var removed = m_entities.Remove(entity);
+        if (!removed)
+            return;
+
+        entity.InternalDestroy();
+        ObjectPool.Return(entity);
     }
 }
