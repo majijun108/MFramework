@@ -28,7 +28,7 @@ public class GameViewService : BaseSingleService<GameViewService>,IUpdate
 
     private List<EntityView> m_views = new List<EntityView>();
 
-    public void CreatView(IEntity entity,string path) 
+    public void CreatView(IEntity entity,string path,bool isMainPlayer = false) 
     {
         ResourceService.Instance.LoadGameObjectAsync(path, (go) => 
         {
@@ -39,6 +39,10 @@ public class GameViewService : BaseSingleService<GameViewService>,IUpdate
             }
 
             m_views.Add(new EntityView(entity,go.transform));
+            if (isMainPlayer) 
+            {
+                CameraService.Instance.SetTarget(go.transform);
+            }
         });
     }
 

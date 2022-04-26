@@ -6,5 +6,5 @@ public class ConstStateService : BaseSingleService<ConstStateService>,IConstStat
 {
     public bool IsPursueFrame { get; set; }
     public string PlayerName { get; set; } = "test_name";
-    public int RoomMaxCount { get; set; } = 2;
+    public int RoomMaxCount { get; set; } = 1;
 }
