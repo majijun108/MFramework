@@ -34,6 +34,6 @@ public class GameManager:MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        launcher.OnApplicationQuit();
+        //launcher.OnApplicationQuit();
     }
 }
