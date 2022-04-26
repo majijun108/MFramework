@@ -26,7 +26,9 @@ public class MoveSystem : IInitializeSystem, IExecuteSystem
             var entity = entities[i];
             var moveSpeed = m_world.EntityMgr.GetEntityComponent<SpeedComponent>(entity);
             var position = m_world.EntityMgr.GetEntityComponent<PositionComponent>(entity);
+            var rotate = m_world.EntityMgr.GetEntityComponent<RotateComponent>(entity);
 
+            rotate.Forward = moveSpeed.MoveSpeed;
             position.Position += moveSpeed.MoveSpeed * deltaTime;
         }
     }

@@ -32,7 +32,7 @@ public class World
     private int m_maxPredictCount = 0;//最大预测帧数 TODO
     private int m_maxPursueMsPerFrame = 20;//每个update追帧的最大时间
     private int m_tickSinceGameStart => (int)((LTime.realtimeSinceStartupMS - m_gameStartTimestampMs) / m_updateDeltaTime);
-    private int m_inputTargetTick => m_tickSinceGameStart + 10;//发送操作最大帧数
+    private int m_inputTargetTick => m_tickSinceGameStart + 5;//发送操作最大帧数
     private int m_TargetTick => m_tickSinceGameStart;//目标帧
 
     public WORLD_STATE State { get; private set; } = WORLD_STATE.INIT;
@@ -77,6 +77,7 @@ public class World
 
             EntityMgr.AddComponent<SpeedComponent>(entity);
             EntityMgr.AddComponent<PositionComponent>(entity);
+            EntityMgr.AddComponent<RotateComponent>(entity);
 
             GameViewService.Instance.CreatView(entity, "CompleteTank",player.PlayerID == NetworkService.Instance.LocalPlayerID);
         }

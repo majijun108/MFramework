@@ -48,7 +48,7 @@ public class PlayerInputSystem : IInitializeSystem, IExecuteSystem
             if (input != null)
             {
                 var moveSpeed = m_world.EntityMgr.GetEntityComponent<SpeedComponent>(entity);
-                moveSpeed.MoveSpeed = GetSpeedByAngle(input.MoveAngle).normalized * 2;
+                moveSpeed.MoveSpeed = GetSpeedByAngle(input.MoveAngle).normalized * 5;
             }
         }
     }

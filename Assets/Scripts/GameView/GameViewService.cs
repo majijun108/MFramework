@@ -9,12 +9,14 @@ public class GameViewService : BaseSingleService<GameViewService>,IUpdate
     {
         private IEntity m_entity;
         private PositionComponent m_position;
+        private RotateComponent m_rotate;
         private Transform transform;
         public EntityView(IEntity entity,Transform trans) 
         {
             m_entity = entity;
             transform = trans;
             m_position = entity.GetComponent<PositionComponent>(ComponentRegister.GetComponentIndex<PositionComponent>());
+            m_rotate = entity.GetComponent<RotateComponent>(ComponentRegister.GetComponentIndex<RotateComponent>());
         }
 
         public void Update(float deltaTime) 
@@ -23,6 +25,12 @@ public class GameViewService : BaseSingleService<GameViewService>,IUpdate
                 return;
             Vector3 pos = new Vector3(m_position.Position.x.ToFloat(), 0, m_position.Position.y.ToFloat());
             transform.position = Vector3.Lerp(transform.position,pos,0.3f);
+            if (m_rotate.Forward != Lockstep.Math.LVector2.zero)
+            {
+                Quaternion rot = Quaternion.LookRotation(new Vector3(m_rotate.Forward.x.ToFloat(), 0, m_rotate.Forward.y.ToFloat())
+                    , Vector3.up);
+                transform.rotation = Quaternion.Lerp(transform.rotation, rot, 0.3f);
+            }
         }
     }
 
