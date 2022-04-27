@@ -1,0 +1,134 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace GJKTest
+{
+    public class GJKCollider
+    {
+
+        private Simplex m_simplex = new Simplex();
+        /// 浮点数误差。
+        public float epsilon = 0.00001f;
+
+        public bool CheckCollider(Shape shapeA, Shape shapeB)
+        {
+            m_simplex.Clear();
+
+            Vector2 dir = findFirstDir(shapeA, shapeB);
+            m_simplex.Add(support(shapeA,shapeB,dir));
+
+            dir = -dir;
+            while (true) 
+            {
+                Vector2 p = support(shapeA,shapeB,dir);
+                if (Vector2.Dot(p, dir) < epsilon)
+                    return false;
+                m_simplex.Add(p);
+                if (m_simplex.Contains(Vector2.zero))
+                    return true;
+                dir = m_simplex.FindNextDir();
+            }
+        }
+
+        Vector2 findFirstDir(Shape a,Shape b) 
+        {
+            Vector2 dir = a[0] - b[0];
+            if (dir.sqrMagnitude < epsilon) 
+            {
+                dir = a[1] - b[0];
+            }
+            return dir;
+        }
+
+        Vector2 support(Shape shapeA, Shape shapeB, Vector2 dir) 
+        {
+            Vector2 fastA = shapeA.FindFastestPointInDir(dir);
+            Vector2 fastB = shapeB.FindFastestPointInDir(-dir);
+            return fastA - fastB;
+        }
+    }
+
+    //单纯形
+    public class Simplex 
+    {
+        private List<Vector2> points = new List<Vector2>();
+
+
+        public void Clear() 
+        {
+            points.Clear();
+        }
+
+        public void Add(Vector2 point) 
+        {
+            points.Add(point);
+        }
+
+        public bool Contains(Vector2 point) 
+        {
+            return GJKUtil.Cotains(points, point);
+        }
+
+        public Vector2 FindNextDir() 
+        {
+            if (points.Count == 2)
+            {
+                Vector2 point = GJKUtil.GetOriginFootPoint(points[0], points[1]);
+                return Vector2.zero - point;
+            }
+            else if (points.Count == 3) 
+            {
+                Vector2 point1 = GJKUtil.GetOriginFootPoint(points[2], points[0]);
+                Vector2 point2 = GJKUtil.GetOriginFootPoint(points[2], points[1]);
+                if (point1.sqrMagnitude < point2.sqrMagnitude)
+                {
+                    points.RemoveAt(1);
+                    return Vector2.zero - point1;
+                }
+                else 
+                {
+                    points.RemoveAt(0);
+                    return Vector2.zero - point2;
+                }
+            }
+            else
+                return Vector2.zero;
+        }
+    }
+
+    public class Shape
+    {
+        private List<Vector2> points = new List<Vector2>();
+
+        public Vector2 this[int index] 
+        { 
+            get 
+            {
+                return points[index];
+            } 
+        }
+
+        public void AddPoint(Vector2 p) 
+        {
+            this.points.Add(p);
+        }
+
+        //寻找这个方向上的最远点
+        public Vector2 FindFastestPointInDir(Vector2 dir) 
+        {
+            float maxDis = float.MinValue;
+            int findIndex = 0;
+            for (int i = 0; i < points.Count; i++)
+            {
+                var distance = Vector2.Dot(points[i], dir);
+                if (distance > maxDis) 
+                {
+                    maxDis = distance;
+                    findIndex = i;
+                }
+            }
+            return points[findIndex];
+        }
+    }
+}
