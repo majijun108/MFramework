@@ -48,6 +48,7 @@ namespace GJKTest
             m_shaper.position = transform.position;
             if (!isMain)
                 return;
+
             if (m_collider.CheckCollider(m_shaper, other.m_shaper))
             {
                 m_material.SetColor("_Color", Color.red);
