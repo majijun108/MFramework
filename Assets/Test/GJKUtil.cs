@@ -42,7 +42,8 @@ namespace GJKTest
             Vector2 ab = b - a;
             Vector2 ao = Vector2.zero - a;
             float dot = Vector2.Dot(ab, ao) / Vector2.SqrMagnitude(ab);
-            return a + ab * dot;
+            var res = a + ab * dot;
+            return res;
         }
     }
 }

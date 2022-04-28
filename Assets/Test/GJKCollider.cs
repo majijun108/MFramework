@@ -97,17 +97,38 @@ namespace GJKTest
         }
     }
 
+    //public interface IShape 
+    //{
+    //    Vector2 GetPoint(int index);
+    //    int PointCount { get; }
+    //    void AddPoint(Vector2 p);
+    //    Vector2 FindFastestPointInDir(Vector2 dir);
+    //}
+
+    //public abstract class BaseShape : IShape 
+    //{
+
+    //}
+
+    //public class Polygon 
+    //{
+
+    //}
+
     public class Shape
     {
         private List<Vector2> points = new List<Vector2>();
+        public Vector2 position;
 
         public Vector2 this[int index] 
         { 
             get 
             {
-                return points[index];
+                return points[index] + position;
             } 
         }
+
+        public int Count { get { return points.Count; } }
 
         public void AddPoint(Vector2 p) 
         {
@@ -121,14 +142,14 @@ namespace GJKTest
             int findIndex = 0;
             for (int i = 0; i < points.Count; i++)
             {
-                var distance = Vector2.Dot(points[i], dir);
+                var distance = Vector2.Dot(this[i], dir);
                 if (distance > maxDis) 
                 {
                     maxDis = distance;
                     findIndex = i;
                 }
             }
-            return points[findIndex];
+            return this[findIndex];
         }
     }
 }
