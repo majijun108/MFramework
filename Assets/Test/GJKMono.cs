@@ -13,12 +13,15 @@ namespace GJKTest
         public Shape m_shaper;
         MeshFilter m_meshFilter;
         Material m_material;
-        GJKCollider m_collider = new GJKCollider();
+        //GJKCollider m_collider = new GJKCollider();
+        GJKDistancce m_collider = new GJKDistancce();
 
         private void Start()
         {
             PolygonCollider2D poly = GetComponent<PolygonCollider2D>();
             m_shaper = new Shape();
+            m_shaper.position = transform.position;
+
             Vector3[] vertices = new Vector3[poly.points.Length];
             for (int i = 0; i < poly.points.Length; i++)
             {
@@ -43,20 +46,61 @@ namespace GJKTest
             m_material = GetComponent<MeshRenderer>().material;
         }
 
+        Vector2 distance = new Vector2(100.0f,100.0f);
         private void Update()
         {
-            m_shaper.position = transform.position;
             if (!isMain)
                 return;
 
-            if (m_collider.CheckCollider(m_shaper, other.m_shaper))
+            int x = 0;
+            int y = 0;
+            if (Input.GetKey(KeyCode.W))
             {
-                m_material.SetColor("_Color", Color.red);
+                y += 1;
             }
-            else 
+            if (Input.GetKey(KeyCode.S))
             {
-                m_material.SetColor("_Color", Color.green);
+                y -= 1;
             }
+            if (Input.GetKey(KeyCode.A))
+            {
+                x -= 1;
+            }
+            if (Input.GetKey(KeyCode.D))
+            {
+                x += 1;
+            }
+
+            Vector2 MoveDir = new Vector3(x, y) * Time.deltaTime * 2;
+            float t = Vector2.Dot(MoveDir, distance) / distance.sqrMagnitude;
+            if (t > 1)
+            {
+                t = 1.0f / t;
+                MoveDir = MoveDir * t;
+                isMain = false;
+
+                transform.position += new Vector3(MoveDir.x, MoveDir.y, 0);
+                m_shaper.position += MoveDir;
+            }
+            else
+            {
+                transform.position += new Vector3(MoveDir.x, MoveDir.y, 0);
+                m_shaper.position += MoveDir;
+                if (!m_collider.CheckCollider(m_shaper, other.m_shaper))
+                {
+                    distance = m_collider.FromB - m_collider.FromA;
+                    GJKUtil.DebugDraw(new List<Vector2>() { m_collider.FromA, m_collider.FromB }, Color.green);
+                }
+            }
+            //if (m_collider.CheckCollider(m_shaper, other.m_shaper))
+            //{
+            //    m_material.SetColor("_Color", Color.red);
+            //}
+            //else 
+            //{
+            //    m_material.SetColor("_Color", Color.green);
+            //    GJKUtil.DebugDraw(new List<Vector2>() { m_collider.FromA, m_collider.FromB }, Color.green);
+            //}
         }
 
     }

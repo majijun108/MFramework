@@ -102,6 +102,9 @@ namespace GJKTest
     {
         private Simplex m_simplex = new Simplex();
 
+        public Vector2 FromA { get; private set; }
+        public Vector2 FromB { get; private set; }
+
         public bool CheckCollider(Shape a, Shape b) 
         {
             m_simplex.Clear();
@@ -114,6 +117,50 @@ namespace GJKTest
             m_simplex.Add(support);
 
             dir = -GJKUtil.FindClosestToOrigin(m_simplex[0].Point,m_simplex[1].Point);
+            bool isCollider = false;
+            while (true) 
+            {
+                if (dir.sqrMagnitude < GJKUtil.epsilon) 
+                {
+                    isCollider = true;
+                    break;
+                }
+                GJKUtil.Support(a,b,dir,ref support);
+                if (GJKUtil.SqrDistance(support.Point, m_simplex[0].Point) < GJKUtil.epsilon ||
+                    GJKUtil.SqrDistance(support.Point, m_simplex[1].Point) < GJKUtil.epsilon) 
+                {
+                    isCollider = false;
+                    break;
+                }
+                m_simplex.Add(support);
+                if (m_simplex.Contains(Vector2.zero)) 
+                {
+                    isCollider = true;
+                    break;
+                }
+                dir = m_simplex.FindNextDir(0);
+            }
+
+            if (!isCollider) 
+            {
+                ComputerClosePoint();
+            }
+            return isCollider;
+        }
+
+        //计算距离最近的两个点
+        void ComputerClosePoint() 
+        {
+            SupportPoint a = m_simplex[0];
+            SupportPoint b = m_simplex[1];
+
+            Vector2 ab = b.Point - a.Point;
+            float dot = Vector2.Dot(a.Point, ab);
+            float t = -dot / ab.sqrMagnitude;
+            t = Mathf.Clamp01(t);
+
+            FromA = a.FromeA + (b.FromeA - a.FromeA) * t;
+            FromB = a.FromeB + (b.FromeB - a.FromeB) * t;
         }
 
         Vector2 findFirstDir(Shape a, Shape b)
@@ -178,6 +225,31 @@ namespace GJKTest
                 }
             }
             else
+                return Vector2.zero;
+        }
+
+        public Vector2 FindNextDir(int _)
+        {
+            if (points.Count == 2)
+            {
+                Vector2 dir = GJKUtil.FindClosestToOrigin(points[0].Point, points[1].Point);
+                return -dir;
+            }
+            else if (points.Count == 3) 
+            {
+                Vector2 dir20 = GJKUtil.FindClosestToOrigin(points[2].Point, points[0].Point);
+                Vector2 dir21 = GJKUtil.FindClosestToOrigin(points[2].Point, points[1].Point);
+                if (dir20.sqrMagnitude < dir21.sqrMagnitude)
+                {
+                    points.RemoveAt(1);
+                    return -dir20;
+                }
+                else 
+                {
+                    points.RemoveAt(0);
+                    return -dir21;
+                }
+            }else
                 return Vector2.zero;
         }
     }

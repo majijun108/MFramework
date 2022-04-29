@@ -24,6 +24,13 @@ namespace GJKTest
             return -1;
         }
 
+        public static float SqrDistance(Vector2 a, Vector2 b) 
+        {
+            float x = a.x - b.x;
+            float y = a.y - b.y;
+            return x * x + y * y;
+        }
+
         //多边形是否包含一个点
         public static bool Cotains(List<Vector2> shape, Vector2 point) 
         {
@@ -77,7 +84,7 @@ namespace GJKTest
         public static void Support(Shape a, Shape b, Vector2 dir,ref SupportPoint point) 
         {
             Vector2 fastestA = a.FindFastestPointInDir(dir);
-            Vector2 fastestB = b.FindFastestPointInDir(dir);
+            Vector2 fastestB = b.FindFastestPointInDir(-dir);
             point.Point = fastestA - fastestB;
             point.FromeA = fastestA;
             point.FromeB = fastestB;
@@ -101,6 +108,19 @@ namespace GJKTest
             if (disNormal > 1)
                 return b;
             return a + disNormal * ab;
+        }
+
+        public static void DebugDraw(List<Vector2> points,Color c) 
+        {
+            if (points.Count < 2)
+                return;
+            int length = points.Count;
+            for (int i = 0; i < points.Count; i++)
+            {
+                Vector2 from = points[i];
+                Vector2 to = points[(i + 1) % length];
+                Debug.DrawLine(from, to, c);
+            }
         }
     }
 }
