@@ -174,10 +174,133 @@ namespace GJKTest
         }
     }
 
+    public class EPA 
+    {
+        private Simplex m_simplex = new Simplex();
+
+        public bool CheckCollider(Shape a, Shape b) 
+        {
+            //1、GJK判断有没有相交
+            if (!GJK(a, b))
+                return false;
+            //2、如果相交  通过EPA算法求得相交深度
+            EPA_GetDepth(a,b);
+            return true;
+        }
+
+        bool GJK(Shape a, Shape b) 
+        {
+            m_simplex.Clear();
+            Vector2 dir = GJKUtil.FindFirstDir(a, b);
+
+            SupportPoint point = new SupportPoint();
+            GJKUtil.Support(a, b, dir, ref point);
+            m_simplex.Add(point);
+            dir = -dir;
+            while (true) 
+            {
+                GJKUtil.Support(a,b,dir,ref point);
+                if (Vector2.Dot(dir, point.Point) < GJKUtil.epsilon)
+                    return false;
+
+                m_simplex.Add(point);
+                if (m_simplex.Contains(Vector2.zero))
+                    return true;
+
+                dir = m_simplex.FindNextDir();
+            }
+        }
+
+        List<EPA_Edge> m_edges = new List<EPA_Edge>();
+        public Vector2 PenetrateVector { get; private set; }
+        void EPA_GetDepth(Shape a,Shape b) 
+        {
+            initEdge();
+            SupportPoint point = new SupportPoint();
+            while (true) 
+            {
+                EPA_Edge edge = FindNearestEdge();
+                GJKUtil.Support(a, b, edge.normal, ref point);
+                float distance = Vector2.Dot(point.Point, edge.normal);
+                if (distance - edge.distance < GJKUtil.epsilon) 
+                {
+                    PenetrateVector = distance * edge.normal;
+                    return;
+                }
+
+                EPA_Edge e1 = new EPA_Edge(edge.a, point.Point);
+                m_edges[edge.Index] = e1;
+                EPA_Edge e2 = new EPA_Edge(point.Point, edge.b);
+                m_edges.Insert(edge.Index + 1, e2);
+            }
+        }
+
+        void initEdge() 
+        {
+            m_edges.Clear();
+            int n = m_simplex.Count;
+            for (int i = 0; i < n; i++)
+            {
+                var bIndex = (i + 1) % n;
+                EPA_Edge edge = new EPA_Edge(m_simplex[i].Point, m_simplex[bIndex].Point)
+                {
+                    Index = i
+                };
+                m_edges.Add(edge);
+            }
+        }
+
+        EPA_Edge FindNearestEdge() 
+        {
+            float distane = float.MaxValue;
+            EPA_Edge result = null;
+            for (int i = 0; i < m_edges.Count; i++)
+            {
+                if (m_edges[i].distance < distane) 
+                {
+                    result = m_edges[i];
+                    distane = m_edges[i].distance;
+                }
+            }
+            return result;
+        }
+    }
+
+    //epa计算的时候的边
+    public class EPA_Edge 
+    {
+        public Vector2 a;
+        public Vector2 b;
+        public Vector2 normal;
+        public int Index { get; set; }
+        public float distance { get; private set; }
+        public EPA_Edge(Vector2 a, Vector2 b) 
+        {
+            this.a = a;
+            this.b = b;
+
+            this.normal = GJKUtil.GetOriginFootPoint(a, b);//法向量
+            distance = this.normal.magnitude;
+            if (distance < GJKUtil.epsilon) //原点在直线上
+            {
+                Vector2 v = a - b;
+                v.Normalize();
+                this.normal = new Vector2(-v.y, v.x);
+                this.distance = 0.0f;
+            }
+            else 
+            {
+                this.normal *= 1.0f / distance;
+            }
+        }
+    }
+
     //单纯形
     public class Simplex 
     {
         private List<SupportPoint> points = new List<SupportPoint>();
+
+        public int Count => points.Count;
 
         public SupportPoint this[int index] 
         {

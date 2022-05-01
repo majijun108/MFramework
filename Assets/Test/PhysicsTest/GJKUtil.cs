@@ -110,6 +110,15 @@ namespace GJKTest
             return a + disNormal * ab;
         }
 
+        //求初始的查找方向
+        public static Vector2 FindFirstDir(Shape a, Shape b)
+        {
+            var dir = a[0] - b[0];
+            if (dir.sqrMagnitude < epsilon)
+                dir = a[1] - b[0];
+            return dir;
+        }
+
         public static void DebugDraw(List<Vector2> points,Color c) 
         {
             if (points.Count < 2)
