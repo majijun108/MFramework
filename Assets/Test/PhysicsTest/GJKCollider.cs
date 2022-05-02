@@ -217,48 +217,55 @@ namespace GJKTest
         {
             initEdge();
             SupportPoint point = new SupportPoint();
-            while (true) 
+            for(int i = 0; i < 10; i++) 
             {
-                EPA_Edge edge = FindNearestEdge();
+                int edgeIndex = FindNearestEdge();
+                EPA_Edge edge = m_edges[edgeIndex];
                 GJKUtil.Support(a, b, edge.normal, ref point);
-                float distance = Vector2.Dot(point.Point, edge.normal);
-                if (distance - edge.distance < GJKUtil.epsilon) 
+                //float distance = Vector2.Dot(point.Point, edge.normal);
+                //if (distance - edge.distance < 0.001f) 
+                //{
+                //    PenetrateVector = distance * edge.normal;
+                //    return;
+                //}
+                if (edge.IsOnEdge(point.Point)) 
                 {
-                    PenetrateVector = distance * edge.normal;
+                    PenetrateVector = edge.distance * edge.normal;
                     return;
                 }
 
                 EPA_Edge e1 = new EPA_Edge(edge.a, point.Point);
-                m_edges[edge.Index] = e1;
+                m_edges[edgeIndex] = e1;
                 EPA_Edge e2 = new EPA_Edge(point.Point, edge.b);
-                m_edges.Insert(edge.Index + 1, e2);
+                m_edges.Insert(edgeIndex + 1, e2);
             }
+            Debug.LogError("loop max");
         }
 
         void initEdge() 
         {
             m_edges.Clear();
+            //m_simplex.FindNextDir();
+            //m_edges.Add(new EPA_Edge(m_simplex[0].Point, m_simplex[1].Point));
+            //m_edges.Add(new EPA_Edge(m_simplex[1].Point, m_simplex[0].Point));
             int n = m_simplex.Count;
             for (int i = 0; i < n; i++)
             {
                 var bIndex = (i + 1) % n;
-                EPA_Edge edge = new EPA_Edge(m_simplex[i].Point, m_simplex[bIndex].Point)
-                {
-                    Index = i
-                };
+                EPA_Edge edge = new EPA_Edge(m_simplex[i].Point, m_simplex[bIndex].Point);
                 m_edges.Add(edge);
             }
         }
 
-        EPA_Edge FindNearestEdge() 
+        int FindNearestEdge() 
         {
             float distane = float.MaxValue;
-            EPA_Edge result = null;
+            int result = 0;
             for (int i = 0; i < m_edges.Count; i++)
             {
                 if (m_edges[i].distance < distane) 
                 {
-                    result = m_edges[i];
+                    result = i;
                     distane = m_edges[i].distance;
                 }
             }
@@ -272,7 +279,6 @@ namespace GJKTest
         public Vector2 a;
         public Vector2 b;
         public Vector2 normal;
-        public int Index { get; set; }
         public float distance { get; private set; }
         public EPA_Edge(Vector2 a, Vector2 b) 
         {
@@ -286,12 +292,20 @@ namespace GJKTest
                 Vector2 v = a - b;
                 v.Normalize();
                 this.normal = new Vector2(-v.y, v.x);
-                this.distance = 0.0f;
             }
             else 
             {
                 this.normal *= 1.0f / distance;
             }
+        }
+
+        public bool IsOnEdge(Vector2 point) 
+        {
+            if ((a - point).magnitude < GJKUtil.epsilon)
+                return true;
+            if ((b - point).magnitude < GJKUtil.epsilon)
+                return true;
+            return false;
         }
     }
 

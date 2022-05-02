@@ -80,6 +80,8 @@ namespace GJKTest
             {
                 m_material.SetColor("_Color", Color.green);
                 GJKUtil.DebugDraw(new List<Vector2>() { Vector2.zero,m_collider.PenetrateVector }, Color.green);
+                transform.position -= new Vector3(m_collider.PenetrateVector.x, m_collider.PenetrateVector.y, 0);
+                m_shaper.position = transform.position;
             }
 
             //Vector2 MoveDir = new Vector3(x, y) * Time.deltaTime * 2;

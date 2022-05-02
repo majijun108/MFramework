@@ -13,7 +13,7 @@ namespace GJKTest
 
     public static class GJKUtil
     {
-        public static float epsilon = 0.00001f;
+        public static float epsilon = 0.0001f;
         static int Cross(Vector2 a, Vector2 b, Vector2 c) 
         {
             Vector2 ab = b - a;
