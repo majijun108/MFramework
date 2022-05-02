@@ -184,7 +184,9 @@ namespace GJKTest
             if (!GJK(a, b))
                 return false;
             //2、如果相交  通过EPA算法求得相交深度
-            EPA_GetDepth(a,b);
+            //EPA_GetDepth(a,b);
+            //MPR计算深度
+            MPR_GetDepth(a, b);
             return true;
         }
 
@@ -271,6 +273,38 @@ namespace GJKTest
             }
             return result;
         }
+
+        void MPR_GetDepth(Shape a, Shape b)
+        {
+            m_simplex.Clear();
+            Vector2 center = a.GetCenter() - b.GetCenter();
+            m_simplex.Add(new SupportPoint() { Point = center });
+            Vector2 dir = Vector2.zero - center;
+            SupportPoint point = new SupportPoint();
+            GJKUtil.Support(a, b, dir, ref point);
+            m_simplex.Add(point);
+            Vector2 foot = GJKUtil.GetOriginFootPoint(m_simplex[0].Point, m_simplex[1].Point);
+            dir = Vector2.zero - foot;
+            GJKUtil.Support(a, b, dir, ref point);
+            m_simplex.Add(point);
+            //找到一个门之后开始迭代
+            for(int i = 0; i < 10; i++)
+            {
+                Vector2 nextDir = GJKUtil.GetOriginFootPoint(m_simplex[1].Point, m_simplex[2].Point);
+                if (Vector2.Dot(-m_simplex[0].Point, nextDir) < 0)
+                {
+                    nextDir = -nextDir;
+                }
+                GJKUtil.Support(a, b, nextDir, ref point);
+                if ((m_simplex[1].Point - point.Point).magnitude < GJKUtil.epsilon ||
+                    (m_simplex[2].Point - point.Point).magnitude < GJKUtil.epsilon)
+                {
+                    PenetrateVector = nextDir;
+                    break;
+                }
+                m_simplex[2] = point;
+            }
+        }
     }
 
     //epa计算的时候的边
@@ -321,6 +355,10 @@ namespace GJKTest
             get 
             {
                 return points[index];
+            }
+            set 
+            {
+                points[index] = value;
             }
         }
 
@@ -423,6 +461,17 @@ namespace GJKTest
         }
 
         public int Count { get { return points.Count; } }
+        public Vector2 GetCenter() 
+        {
+            float count = 0;
+            Vector2 multi = Vector2.zero;
+            for (int i = 0; i < points.Count; i++)
+            {
+                count++;
+                multi += points[i];
+            }
+            return multi / count + position;
+        }
 
         public void AddPoint(Vector2 p) 
         {
