@@ -184,5 +184,6 @@ public class World
     {
         State = WORLD_STATE.DESTROYED;
         m_systems.TearDown();
+        Physics.DoDestroy();
     }
 }
