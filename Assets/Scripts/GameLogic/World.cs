@@ -18,6 +18,9 @@ public class World
     private WorldBillboard m_billboard;
     public WorldBillboard Billboard { get { return m_billboard; } }
 
+    private PhysicsWorld m_physicsWorld;
+    public PhysicsWorld Physics { get { return m_physicsWorld; } }
+
     private Systems m_systems;
 
 
@@ -42,7 +45,9 @@ public class World
         m_updateDeltaTime = updateTime;
         m_updateFloatDeltaTime = new LFloat(true,updateTime);
         m_FrameBuffer = new FrameBuffer(this, 2000);
-        m_entityMgr = new EntityManager(ComponentRegister.ComponentCount);
+
+        m_physicsWorld = new PhysicsWorld();
+        m_entityMgr = new EntityManager(ComponentRegister.ComponentCount, m_physicsWorld);
         m_billboard = new WorldBillboard();
 
         m_systems = new Systems();

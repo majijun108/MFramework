@@ -18,8 +18,9 @@ public class EntityManager
     private Dictionary<IMatcher,IGroup> m_groups = new Dictionary<IMatcher,IGroup>();
     private List<IGroup>[] m_index2Groups;
     private int m_totalComponents;
+    private PhysicsWorld m_physicsWorld;
 
-    public EntityManager(int totalComponents)
+    public EntityManager(int totalComponents, PhysicsWorld physics)
     {
         m_entityComponentChanged = onEntityComponentChanged;
         m_entityComponentReplaced = onEntityComponentReplaced;
@@ -28,6 +29,7 @@ public class EntityManager
 
         m_totalComponents = totalComponents;
         m_index2Groups = new List<IGroup>[totalComponents];
+        m_physicsWorld = physics;
     }
 
     public Entity CreateEntity()
