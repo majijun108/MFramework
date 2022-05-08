@@ -52,6 +52,10 @@ public class BoundsQuadTreeNode
 
     public static int MonoID = 0;
 
+    private Dictionary<ColliderProxy, BoundsQuadTreeNode> m_obj2Node;
+    //public static Dictionary<ColliderProxy, BoundsQuadTreeNode> obj2Node =
+    //    new Dictionary<ColliderProxy, BoundsQuadTreeNode>();
+
     /// <summary>
     /// Constructor.
     /// </summary>
@@ -60,9 +64,10 @@ public class BoundsQuadTreeNode
     /// <param name="loosenessVal">Multiplier for baseLengthVal to get the actual size.</param>
     /// <param name="centerVal">Centre position of this node.</param>
     public BoundsQuadTreeNode(BoundsQuadTreeNode parent, LFloat baseLengthVal, LFloat minSizeVal,
-        LFloat loosenessVal, LVector2 centerVal)
+        LFloat loosenessVal, LVector2 centerVal,Dictionary<ColliderProxy,BoundsQuadTreeNode> obj2Node)
     {
         this.parent = parent;
+        this.m_obj2Node = obj2Node;
         SetValues(baseLengthVal, minSizeVal, loosenessVal, centerVal);
     }
 
@@ -91,9 +96,9 @@ public class BoundsQuadTreeNode
     /// <returns>True if the object was removed successfully.</returns>
     public bool Remove(ColliderProxy obj)
     {
-        if (obj2Node.TryGetValue(obj, out var val))
+        if (m_obj2Node.TryGetValue(obj, out var val))
         {
-            obj2Node.Remove(obj);
+            m_obj2Node.Remove(obj);
             bool removed = false;
             for (int i = 0; i < val.objects.Count; i++)
             {
@@ -427,10 +432,6 @@ public class BoundsQuadTreeNode
         return new LRect(center - size / 2, size);
     }
 
-
-    public static Dictionary<ColliderProxy, BoundsQuadTreeNode> obj2Node =
-        new Dictionary<ColliderProxy, BoundsQuadTreeNode>();
-
     /// <summary>
     /// Private counterpart to the public Add method.
     /// </summary>
@@ -450,7 +451,7 @@ public class BoundsQuadTreeNode
                 OctreeObject newObj = new OctreeObject { Obj = obj, Bounds = objBounds };
                 objects.Add(newObj);
 
-                obj2Node[obj] = this;
+                m_obj2Node[obj] = this;
                 return; // We're done. No children yet
             }
 
@@ -495,7 +496,7 @@ public class BoundsQuadTreeNode
             // Didn't fit in a child. We'll have to it to this node instead
             OctreeObject newObj = new OctreeObject { Obj = obj, Bounds = objBounds };
             objects.Add(newObj);
-            obj2Node[obj] = this;
+            m_obj2Node[obj] = this;
         }
     }
 
@@ -545,13 +546,13 @@ public class BoundsQuadTreeNode
         LFloat newLength = BaseLength / 2;
         children = new BoundsQuadTreeNode[NUM_CHILDREN];
         children[0] = new BoundsQuadTreeNode(this, newLength, minSize, looseness,
-            Center + new LVector2(-quarter, -quarter));
+            Center + new LVector2(-quarter, -quarter),m_obj2Node);
         children[1] = new BoundsQuadTreeNode(this, newLength, minSize, looseness,
-            Center + new LVector2(quarter, -quarter));
+            Center + new LVector2(quarter, -quarter), m_obj2Node);
         children[2] = new BoundsQuadTreeNode(this, newLength, minSize, looseness,
-            Center + new LVector2(-quarter, quarter));
+            Center + new LVector2(-quarter, quarter), m_obj2Node);
         children[3] = new BoundsQuadTreeNode(this, newLength, minSize, looseness,
-            Center + new LVector2(quarter, quarter));
+            Center + new LVector2(quarter, quarter), m_obj2Node);
     }
 
     /// <summary>
@@ -571,7 +572,7 @@ public class BoundsQuadTreeNode
             {
                 OctreeObject curObj = curChild.objects[j];
                 objects.Add(curObj);
-                obj2Node[curObj.Obj] = this;
+                m_obj2Node[curObj.Obj] = this;
             }
 #if SHOW_NODES
                 var childCount = curChild.monoTrans.childCount;

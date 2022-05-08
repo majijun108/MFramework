@@ -20,6 +20,8 @@ public partial class BoundsQuadTree
     // Minimum side length that a node can be - essentially an alternative to having a max depth
     readonly LFloat minSize;
 
+    private Dictionary<ColliderProxy,BoundsQuadTreeNode> m_obj2Node = new Dictionary<ColliderProxy,BoundsQuadTreeNode>();
+
     /// <summary>
     /// Constructor for the bounds octree.
     /// </summary>
@@ -40,7 +42,8 @@ public partial class BoundsQuadTree
         initialSize = initialWorldSize;
         minSize = minNodeSize;
         looseness = LMath.Clamp(loosenessVal, 1.ToLFloat(), 2.ToLFloat());
-        rootNode = new BoundsQuadTreeNode(null, initialSize, minSize, looseness, initialWorldPos);
+        m_obj2Node.Clear();
+        rootNode = new BoundsQuadTreeNode(null, initialSize, minSize, looseness, initialWorldPos, m_obj2Node);
     }
 
     public void UpdateObj(ColliderProxy obj, LRect bound)
@@ -69,7 +72,7 @@ public partial class BoundsQuadTree
     // #### PUBLIC METHODS ####
     public BoundsQuadTreeNode GetNode(ColliderProxy obj)
     {
-        if (BoundsQuadTreeNode.obj2Node.TryGetValue(obj, out var val))
+        if (m_obj2Node.TryGetValue(obj, out var val))
         {
             return val;
         }
@@ -210,7 +213,7 @@ public partial class BoundsQuadTree
         LVector2 newCenter = rootNode.Center + new LVector2(xDirection * half, yDirection * half);
 
         // Create a new, bigger octree root node
-        rootNode = new BoundsQuadTreeNode(null, newLength, minSize, looseness, newCenter);
+        rootNode = new BoundsQuadTreeNode(null, newLength, minSize, looseness, newCenter,m_obj2Node);
 
         if (oldRoot.HasAnyObjects())
         {
@@ -228,7 +231,7 @@ public partial class BoundsQuadTree
                     xDirection = i % 2 == 0 ? -1 : 1;
                     yDirection = i > 1 ? -1 : 1;
                     children[i] = new BoundsQuadTreeNode(rootNode, oldRoot.BaseLength, minSize, looseness,
-                        newCenter + new LVector2(xDirection * half, yDirection * half));
+                        newCenter + new LVector2(xDirection * half, yDirection * half),m_obj2Node);
                 }
             }
 

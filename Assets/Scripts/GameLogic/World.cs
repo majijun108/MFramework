@@ -46,7 +46,7 @@ public class World
         m_updateFloatDeltaTime = new LFloat(true,updateTime);
         m_FrameBuffer = new FrameBuffer(this, 2000);
 
-        m_physicsWorld = new PhysicsWorld();
+        m_physicsWorld = new PhysicsWorld(MapService.Instance.MapInitSize,MapService.Instance.MapInitPos,2.ToLFloat(),LFloat.one);
         m_entityMgr = new EntityManager(ComponentRegister.ComponentCount, m_physicsWorld);
         m_billboard = new WorldBillboard();
 

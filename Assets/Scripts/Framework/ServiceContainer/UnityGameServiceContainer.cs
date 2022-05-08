@@ -14,5 +14,6 @@ public class UnityGameServiceContainer:GameServiceContainer
         RegisterService(new InputService());
         RegisterService(new GameViewService());
         RegisterService(new CameraService());
+        RegisterService(new MapService());
     }
 }
