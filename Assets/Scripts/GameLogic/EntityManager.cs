@@ -1,4 +1,5 @@
 ﻿using Lockstep.Math;
+using Lockstep.UnsafeCollision2D;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,7 +11,8 @@ public class EntityManager
     private HashSet<IEntity> m_entities = new HashSet<IEntity>(EntityCompareer.comparer);
     private IEntity[] m_entitiesCache;
 
-    readonly EntityComponentChanged m_entityComponentChanged;
+    readonly EntityComponentChanged m_entityComponentAdd;
+    readonly EntityComponentChanged m_entityComponentRemove;
     readonly EntityComponentReplaced m_entityComponentReplaced;
     readonly EntityEnvent m_entityReleased;
     readonly EntityEnvent m_entityDestroyed;
@@ -22,7 +24,8 @@ public class EntityManager
 
     public EntityManager(int totalComponents, PhysicsWorld physics)
     {
-        m_entityComponentChanged = onEntityComponentChanged;
+        m_entityComponentAdd = onEntityComponentAdd;
+        m_entityComponentRemove = onEntityComponentRemove;
         m_entityComponentReplaced = onEntityComponentReplaced;
         m_entityReleased = onEntityReleased;
         m_entityDestroyed = onEntityDestroyed;
@@ -39,8 +42,8 @@ public class EntityManager
         m_entities.Add(entity);
         m_entitiesCache = null;
 
-        entity.OnComponentAdded += m_entityComponentChanged;
-        entity.OnComponentRemoved += m_entityComponentChanged;
+        entity.OnComponentAdded += m_entityComponentAdd;
+        entity.OnComponentRemoved += m_entityComponentRemove;
         entity.OnComponentReplaced += m_entityComponentReplaced;
         entity.OnEntityReleased += m_entityReleased;
         entity.OnEntityDestroyed += m_entityDestroyed;
@@ -86,7 +89,7 @@ public class EntityManager
         return m_entitiesCache;
     }
 
-    void onEntityComponentChanged(IEntity entity, int index, IComponent component) 
+    void onEntityComponentAdd(IEntity entity, int index, IComponent component) 
     {
         var groups = m_index2Groups[index];
         if (groups == null)
@@ -95,6 +98,18 @@ public class EntityManager
         {
             groups[i].HandleEntity(entity);
         }
+    }
+
+    void onEntityComponentRemove(IEntity entity, int index, IComponent preComponent) 
+    {
+        var groups = m_index2Groups[index];
+        if (groups == null)
+            return;
+        for (int i = 0; i < groups.Count; i++)
+        {
+            groups[i].HandleEntity(entity);
+        }
+        RemovePhysics(entity, preComponent);
     }
 
     void onEntityComponentReplaced(IEntity entity, int index, IComponent preComponent, IComponent placeComponent) 
@@ -135,5 +150,12 @@ public class EntityManager
         var index = ComponentRegister.GetComponentIndex<T>();
         entity.AddComponent(index, component);
         return component;
+    }
+
+    void RemovePhysics(IEntity entity, IComponent preCom) 
+    {
+        if (preCom == null || preCom is not PhysicsComponent)
+            return;
+        m_physicsWorld.RemoveObj(entity.ID);
     }
 }

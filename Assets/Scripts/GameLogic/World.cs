@@ -83,7 +83,7 @@ public class World
             EntityMgr.AddComponent<SpeedComponent>(entity);
             EntityMgr.AddComponent<PositionComponent>(entity);
             EntityMgr.AddComponent<RotateComponent>(entity);
-
+            
             GameViewService.Instance.CreatView(entity, "CompleteTank",player.PlayerID == NetworkService.Instance.LocalPlayerID);
         }
         State = WORLD_STATE.WAITING_FOR_FRAME;
