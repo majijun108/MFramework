@@ -1,4 +1,5 @@
 ﻿using Lockstep.Math;
+using Lockstep.UnsafeCollision2D;
 using System;
 using System.Collections.Generic;
 
@@ -81,8 +82,13 @@ public class World
             player.PlayerID = playerInfo.PlayerID;
 
             EntityMgr.AddComponent<SpeedComponent>(entity);
-            EntityMgr.AddComponent<PositionComponent>(entity);
-            EntityMgr.AddComponent<RotateComponent>(entity);
+            var pos = EntityMgr.AddComponent<PositionComponent>(entity);
+            var angle = EntityMgr.AddComponent<RotateComponent>(entity);
+
+            var physics = EntityMgr.AddComponent<PhysicsComponent>(entity);
+            physics.Shape = new COBB() { Size = LVector2.one * 2,Angle = LFloat.zero};
+            //LRect rect = PhysicsUtil.GetRect(physics.Shape,pos.Position,angle.)
+            //Physics.AddObj(entity.ID,)
             
             GameViewService.Instance.CreatView(entity, "CompleteTank",player.PlayerID == NetworkService.Instance.LocalPlayerID);
         }
