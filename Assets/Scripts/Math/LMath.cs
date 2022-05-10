@@ -4,7 +4,7 @@ namespace Lockstep.Math
     public static partial class LMath
     {
         public static readonly LFloat PIHalf = new LFloat(true,1571);
-        public static readonly LFloat PI = new LFloat(true,3142);
+        public static readonly LFloat PI = new LFloat(true,3141);
         public static readonly LFloat PI2 = new LFloat(true,6283);
         public static readonly LFloat Rad2Deg = 180 / PI;
         public static readonly LFloat Deg2Rad = PI / 180;

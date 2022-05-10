@@ -46,7 +46,7 @@ public class PhysicsComponent : IComponent
     public IShape Shape;
     public LVector2 Velocity;
     public LVector2 DeltaPosition;
-    public LFloat Angle;
+    public int Angle;
 
     public void OnRecycle()
     {

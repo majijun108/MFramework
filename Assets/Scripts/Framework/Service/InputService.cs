@@ -29,14 +29,15 @@ public class InputService:BaseSingleService<InputService>,IInputService,IUpdate
         LVector2 dir = LVector2.zero;
         if (Input.GetKey(KeyCode.W))
             dir.y += LFloat.one;
-        else if (Input.GetKey(KeyCode.S))
+        if (Input.GetKey(KeyCode.S))
             dir.y -= LFloat.one;
-        else if (Input.GetKey(KeyCode.D))
+        if (Input.GetKey(KeyCode.D))
             dir.x += LFloat.one;
-        else if (Input.GetKey(KeyCode.A))
+        if (Input.GetKey(KeyCode.A))
             dir.x -= LFloat.one;
 
-        m_playerInput.MoveAngle = PhysicsUtil.GetRotateAngle(dir, LVector2.right);
+        if(dir != LVector2.zero)
+            m_playerInput.MoveAngle = PhysicsUtil.GetRotateAngle(dir, LVector2.right);
     }
 
     public Msg_PlayerInput GetInput()

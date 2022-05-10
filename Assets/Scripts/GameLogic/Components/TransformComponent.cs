@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class TransformComponent : IComponent
 {
     public LVector2 Position;
-    public LFloat Angle;
+    public int Angle;
     public void OnRecycle()
     {
         

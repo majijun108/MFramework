@@ -50,14 +50,14 @@ public class Msg_PlayerInput : BaseFormater
     public int Tick;
     public int PlayerID;
     public int SkillID;
-    public LFloat MoveAngle;//移动的角度
+    public int MoveAngle;//移动的角度
 
     public override void Deserialize(Deserializer reader)
     {
         Tick = reader.ReadInt32();
         PlayerID = reader.ReadInt32();
         SkillID = reader.ReadInt32();
-        MoveAngle = reader.ReadLFloat();
+        MoveAngle = reader.ReadInt32();
     }
 
     public override void Serialize(Serializer writer)
@@ -73,6 +73,6 @@ public class Msg_PlayerInput : BaseFormater
         Tick=0;
         PlayerID=-1;
         SkillID=-1;
-        MoveAngle=LFloat.zero;
+        MoveAngle=0;
     }
 }

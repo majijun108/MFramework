@@ -155,12 +155,12 @@ namespace Lockstep.Math
         public static LVector3 operator *(LMatrix33 lhs, LVector3 vector3)
         {
             LVector3 vec;
-            vec._x = (int) (((long) lhs.m00 * (long) vector3.x + (long) lhs.m01 * (long) vector3.y +
-                             (long) lhs.m02 * (long) vector3.z) / LFloat.Precision);
-            vec._y = (int) (((long) lhs.m10 * (long) vector3.x + (long) lhs.m11 * (long) vector3.y +
-                             (long) lhs.m12 * (long) vector3.z) / LFloat.Precision);
-            vec._z = (int) (((long) lhs.m20 * (long) vector3.x + (long) lhs.m21 * (long) vector3.y +
-                             (long) lhs.m22 * (long) vector3.z) / LFloat.Precision);
+            vec._x = (int) (((long) lhs.m00 * (long) vector3._x + (long) lhs.m01 * (long) vector3._y +
+                             (long) lhs.m02 * (long) vector3._z) / LFloat.Precision);
+            vec._y = (int) (((long) lhs.m10 * (long) vector3._x + (long) lhs.m11 * (long) vector3._y +
+                             (long) lhs.m12 * (long) vector3._z) / LFloat.Precision);
+            vec._z = (int) (((long) lhs.m20 * (long) vector3._x + (long) lhs.m21 * (long) vector3._y +
+                             (long) lhs.m22 * (long) vector3._z) / LFloat.Precision);
             return vec;
         }
 

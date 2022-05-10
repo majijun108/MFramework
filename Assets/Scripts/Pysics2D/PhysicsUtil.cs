@@ -5,6 +5,12 @@ using Lockstep.UnsafeCollision2D;
 
 public static class PhysicsUtil
 {
+    //角度和方向改为查表
+    static List<LVector2> angle2Dir = new List<LVector2>() 
+    {
+
+    };
+
     public static LRect GetRect(IShape shape,LVector2 pos,LFloat angle) 
     {
         switch ((ShapeType)shape.Type) 
@@ -42,10 +48,10 @@ public static class PhysicsUtil
     }
 
     //获取旋转后的方向
-    public static LVector2 GetRotateDir(LFloat angle,LVector2 originDir) 
+    public static LVector2 GetRotateDir(int angle,LVector2 originDir) 
     {
         LMatrix33 matrix = new LMatrix33();
-        var rad = LMath.Deg2Rad * angle;
+        var rad = LMath.Pi * (angle.ToLFloat() / 180.ToLFloat());//直接乘以弧度 精度损失特别大
         matrix.SetColumn(0, new LVector3(LMath.Cos(rad), LMath.Sin(rad), LFloat.zero));
         matrix.SetColumn(1, new LVector3(-LMath.Sin(rad), LMath.Cos(rad), LFloat.zero));
         matrix.SetColumn(2, new LVector3(true, 0, 0, 1000));
@@ -54,7 +60,7 @@ public static class PhysicsUtil
     }
 
     //获取旋转角度 逆时针
-    public static LFloat GetRotateAngle(LVector2 dir, LVector2 origin)
+    public static int GetRotateAngle(LVector2 dir, LVector2 origin)
     {
         dir = dir.normalized;
         origin = origin.normalized;
@@ -62,10 +68,10 @@ public static class PhysicsUtil
         if (cross > 0) 
         {
             LFloat angle = LMath.Acos(LVector2.Dot(origin, dir)) * LMath.Rad2Deg;
-            return angle;
+            return angle.ToInt();
         }
         LFloat angle1 = LMath.Acos(LVector2.Dot(origin, dir)) * LMath.Rad2Deg;
-        return 360 - angle1;
+        return 360 - angle1.ToInt();
     }
 
     static LRect GetMultiVertexRect(LVector2 size,ref LMatrix33 matrix) 

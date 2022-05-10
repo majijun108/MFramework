@@ -25,10 +25,13 @@ public class GameViewService : BaseSingleService<GameViewService>,IUpdate
             Vector3 pos = new Vector3(m_transform.Position.x.ToFloat(), 0, m_transform.Position.y.ToFloat());
             transform.position = Vector3.Lerp(transform.position, pos, 0.3f);
 
-            LVector3 dir = PhysicsUtil.GetRotateDir(m_transform.Angle, LVector2.right).ToInt3;
-            Quaternion rot = Quaternion.LookRotation(new Vector3(dir.x.ToFloat(), 0, dir.y.ToFloat())
-                    , Vector3.up);
-            transform.rotation = rot;
+            if (m_transform.Angle > 0)
+            {
+                LVector2 dir = PhysicsUtil.GetRotateDir(m_transform.Angle, LVector2.right);
+                Quaternion rot = Quaternion.LookRotation(new Vector3(dir.x.ToFloat(), 0, dir.y.ToFloat())
+                        , Vector3.up);
+                transform.rotation = Quaternion.Lerp(transform.rotation, rot, 0.3f);
+            }
             //if (m_rotate.Forward != Lockstep.Math.LVector2.zero)
             //{
             //    Quaternion rot = Quaternion.LookRotation(new Vector3(m_rotate.Forward.x.ToFloat(), 0, m_rotate.Forward.y.ToFloat())

@@ -33,8 +33,8 @@ public class PlayerInputSystem : IInitializeSystem, IExecuteSystem
                 }
                 else
                 {
-                    DebugService.Instance.LogError(physics.Angle.ToString());
                     physics.Velocity = PhysicsUtil.GetRotateDir(input.MoveAngle, LVector2.right).normalized * 5;
+                    DebugService.Instance.LogError(physics.Velocity.ToString());
                 }
             }
         }
