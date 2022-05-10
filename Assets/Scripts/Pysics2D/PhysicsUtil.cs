@@ -41,6 +41,33 @@ public static class PhysicsUtil
         matrix.SetColumn(2, new LVector3(true, pos._x, pos._y, 1000));
     }
 
+    //获取旋转后的方向
+    public static LVector2 GetRotateDir(LFloat angle,LVector2 originDir) 
+    {
+        LMatrix33 matrix = new LMatrix33();
+        var rad = LMath.Deg2Rad * angle;
+        matrix.SetColumn(0, new LVector3(LMath.Cos(rad), LMath.Sin(rad), LFloat.zero));
+        matrix.SetColumn(1, new LVector3(-LMath.Sin(rad), LMath.Cos(rad), LFloat.zero));
+        matrix.SetColumn(2, new LVector3(true, 0, 0, 1000));
+        LVector2 dir = matrix * originDir.ToHomogeneous;
+        return dir;
+    }
+
+    //获取旋转角度 逆时针
+    public static LFloat GetRotateAngle(LVector2 dir, LVector2 origin)
+    {
+        dir = dir.normalized;
+        origin = origin.normalized;
+        LFloat cross = LVector2.Cross(origin, dir);
+        if (cross > 0) 
+        {
+            LFloat angle = LMath.Acos(LVector2.Dot(origin, dir)) * LMath.Rad2Deg;
+            return angle;
+        }
+        LFloat angle1 = LMath.Acos(LVector2.Dot(origin, dir)) * LMath.Rad2Deg;
+        return 360 - angle1;
+    }
+
     static LRect GetMultiVertexRect(LVector2 size,ref LMatrix33 matrix) 
     {
         LVector2[] vertices = new LVector2[4];
@@ -57,11 +84,11 @@ public static class PhysicsUtil
     {
         if(count == 0)
             return default(LRect);
-        LVector2 min = vertices[0];
-        LVector2 max = vertices[0];
+        LVector2 min = matrix * vertices[0].ToHomogeneous;
+        LVector2 max = matrix * vertices[0].ToHomogeneous;
         for (int i = 1; i < count; i++) 
         {
-            var vertex = vertices[i];
+            var vertex = matrix * vertices[i].ToHomogeneous;
             if (vertex.x < min.x)
                 min.x = vertex.x;
             if(vertex.y < min.y)

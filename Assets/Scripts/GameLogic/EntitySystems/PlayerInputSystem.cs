@@ -12,29 +12,7 @@ public class PlayerInputSystem : IInitializeSystem, IExecuteSystem
     }
     public void Initialize()
     {
-        m_entityGroup = m_world.EntityMgr.GetGroup(new EntityMatcher(typeof(PlayerComponent), typeof(SpeedComponent)));
-    }
-
-    LVector2 GetSpeedByAngle(LFloat angle) 
-    {
-        if (angle == 0)
-            return LVector2.zero;
-        if (angle > 45 && angle <= 135)
-        {
-            return LVector2.up;
-        }
-        else if (angle > 135 && angle <= 225)
-        {
-            return LVector2.left;
-        }
-        else if (angle > 225 && angle < 315)
-        {
-            return LVector2.down;
-        }
-        else 
-        {
-            return LVector2.right;
-        }
+        m_entityGroup = m_world.EntityMgr.GetGroup(new EntityMatcher(typeof(PlayerComponent), typeof(PhysicsComponent)));
     }
 
     public void Execute()
@@ -47,8 +25,17 @@ public class PlayerInputSystem : IInitializeSystem, IExecuteSystem
             var input = m_world.Billboard.GetPlayerInput(playerCom.PlayerID);
             if (input != null)
             {
-                var moveSpeed = m_world.EntityMgr.GetEntityComponent<SpeedComponent>(entity);
-                moveSpeed.MoveSpeed = GetSpeedByAngle(input.MoveAngle).normalized * 5;
+                var physics = m_world.EntityMgr.GetEntityComponent<PhysicsComponent>(entity);
+                physics.Angle = input.MoveAngle;
+                if (input.MoveAngle == 0)
+                {
+                    physics.Velocity = LVector2.zero;
+                }
+                else
+                {
+                    DebugService.Instance.LogError(physics.Angle.ToString());
+                    physics.Velocity = PhysicsUtil.GetRotateDir(input.MoveAngle, LVector2.right).normalized * 5;
+                }
             }
         }
     }

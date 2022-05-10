@@ -234,6 +234,14 @@ namespace Lockstep.Math {
             get { return new LVector3(true, _x, 0, _y); }
         }
 
+        /// <summary>
+        /// 转成其次坐标
+        /// </summary>
+        public LVector3 ToHomogeneous 
+        {
+            get { return new LVector3(true, _x, _y, 1000); }
+        }
+
         public LFloat this[int index] {
             get {
                 switch (index) {

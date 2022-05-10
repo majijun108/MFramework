@@ -81,9 +81,8 @@ public class World
             var player = EntityMgr.AddComponent<PlayerComponent>(entity);
             player.PlayerID = playerInfo.PlayerID;
 
-            EntityMgr.AddComponent<SpeedComponent>(entity);
-            var pos = EntityMgr.AddComponent<PositionComponent>(entity);
-            var angle = EntityMgr.AddComponent<RotateComponent>(entity);
+            EntityMgr.AddComponent<PhysicsComponent>(entity);
+            var trans = EntityMgr.AddComponent<TransformComponent>(entity);
 
             var physics = EntityMgr.AddComponent<PhysicsComponent>(entity);
             physics.Shape = new COBB() { Size = LVector2.one * 2,Angle = LFloat.zero};
@@ -101,6 +100,7 @@ public class World
         if (State == WORLD_STATE.WAITING_FOR_FRAME) 
         {
             State = WORLD_STATE.RUNNING;
+            InputService.Instance.EnableInput(true);
         }
     }
 
