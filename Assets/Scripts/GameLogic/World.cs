@@ -57,7 +57,10 @@ public class World
     void RegisterSystems() 
     {
         m_systems.Add(new PlayerInputSystem(this));
+
+
         m_systems.Add(new MoveSystem(this));
+        m_systems.Add(new PhysicsSystem(this));//物理系统必须最后一个更新
     }
 
     public void DoAwake(IServiceContainer services) 

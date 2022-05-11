@@ -10,6 +10,12 @@ public enum ShapeType
     AABB
 }
 
+public enum PhsicsType 
+{
+    STATIC,//静态物体 不能被撞开
+    DYNAMIC
+}
+
 public interface IShape 
 {
     ShapeType Type { get; }
@@ -43,6 +49,7 @@ public struct CPolygon : IShape
 
 public class PhysicsComponent : IComponent
 {
+    public PhsicsType Type;
     public IShape Shape;
     public LVector2 Velocity;
     public LVector2 DeltaPosition;
