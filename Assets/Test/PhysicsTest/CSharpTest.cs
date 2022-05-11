@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
+using Lockstep.Math;
 
 public class CSharpTest : MonoBehaviour
 {
@@ -19,4 +20,10 @@ public class CSharpTest : MonoBehaviour
     //        transform.position = Vector3.Lerp(transform.position,pos,0.3f);
     //    }
     //}
+    private void Awake()
+    {
+        //Lockstep.Math.LFloat re = Lockstep.Math.LVector2.Cross(LVector2.right,LVector2.one);
+        //LFloat re = PhysicsUtil.GetRotateAngle(LVector2.right,LVector2.one);
+        //Debug.LogError(re.ToString());
+    }
 }
