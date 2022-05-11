@@ -14,7 +14,7 @@ public class MoveSystem : IInitializeSystem, IExecuteSystem
 
     public void Initialize()
     {
-        m_entityGroup = m_world.EntityMgr.GetGroup(new EntityMatcher(typeof(TransformComponent), typeof(PhysicsComponent)));
+        m_entityGroup = m_world.EntityMgr.GetGroup(new EntityMatcher(typeof(TransformComponent), typeof(MoveComponent)));
     }
 
     public void Execute()
@@ -25,12 +25,12 @@ public class MoveSystem : IInitializeSystem, IExecuteSystem
         {
             var entity = entities[i];
             var transform = m_world.EntityMgr.GetEntityComponent<TransformComponent>(entity);
-            var physics = m_world.EntityMgr.GetEntityComponent<PhysicsComponent>(entity);
+            var moveCom = m_world.EntityMgr.GetEntityComponent<MoveComponent>(entity);
 
-            physics.DeltaPosition = physics.Velocity * m_world.Billboard.FrameDeltaTime;
+            moveCom.DeltaPosition = moveCom.Velocity * m_world.Billboard.FrameDeltaTime;
             //TODO 测试
-            transform.Position += physics.DeltaPosition;
-            transform.Angle = physics.Angle;
+            transform.Position += moveCom.DeltaPosition;
+            transform.Angle = moveCom.Angle;
         }
     }
 }

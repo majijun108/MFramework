@@ -22,6 +22,7 @@ public class PhysicsWorld
             return;
         }
         ColliderProxy proxy = m_id2Collider[entityID];
+        proxy.Bounds = bound;
         m_boundsQuadTree.UpdateObj(proxy,bound);
     }
 
@@ -33,6 +34,7 @@ public class PhysicsWorld
             return;
         }
         ColliderProxy proxy = ObjectPool.Get<ColliderProxy>();
+        proxy.Bounds = bound;
         //TODO
         m_id2Collider[entityID] = proxy;
         m_boundsQuadTree.Add(proxy,bound);
@@ -55,5 +57,13 @@ public class PhysicsWorld
             RemoveObj(item.Key);
         }
         m_id2Collider.Clear();
+    }
+
+    private List<ColliderProxy> m_collidingList = new List<ColliderProxy>();
+    public void GetColliding(IShape shape,LRect checkBounds) 
+    {
+        m_collidingList.Clear();
+        m_boundsQuadTree.GetColliding(m_collidingList, checkBounds);
+
     }
 }

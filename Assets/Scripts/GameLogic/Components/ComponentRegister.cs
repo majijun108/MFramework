@@ -8,6 +8,7 @@ public class ComponentRegister
         typeof(PlayerComponent),
         typeof(TransformComponent),
         typeof(PhysicsComponent),
+        typeof(MoveComponent),
     };
     private static Dictionary<System.Type, int> m_TypeLookup = new Dictionary<System.Type, int>();
 

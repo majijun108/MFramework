@@ -12,7 +12,7 @@ public class PlayerInputSystem : IInitializeSystem, IExecuteSystem
     }
     public void Initialize()
     {
-        m_entityGroup = m_world.EntityMgr.GetGroup(new EntityMatcher(typeof(PlayerComponent), typeof(PhysicsComponent)));
+        m_entityGroup = m_world.EntityMgr.GetGroup(new EntityMatcher(typeof(PlayerComponent), typeof(MoveComponent)));
     }
 
     public void Execute()
@@ -25,15 +25,15 @@ public class PlayerInputSystem : IInitializeSystem, IExecuteSystem
             var input = m_world.Billboard.GetPlayerInput(playerCom.PlayerID);
             if (input != null)
             {
-                var physics = m_world.EntityMgr.GetEntityComponent<PhysicsComponent>(entity);
-                physics.Angle = input.MoveAngle;
+                var moveCom = m_world.EntityMgr.GetEntityComponent<MoveComponent>(entity);
+                moveCom.Angle = input.MoveAngle;
                 if (input.MoveAngle == 0)
                 {
-                    physics.Velocity = LVector2.zero;
+                    moveCom.Velocity = LVector2.zero;
                 }
                 else
                 {
-                    physics.Velocity = PhysicsUtil.GetRotateDir(input.MoveAngle, LVector2.right).normalized * 5;
+                    moveCom.Velocity = PhysicsUtil.GetRotateDir(input.MoveAngle, LVector2.right).normalized * 5;
                 }
             }
         }
