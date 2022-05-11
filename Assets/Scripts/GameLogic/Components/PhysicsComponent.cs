@@ -18,7 +18,7 @@ public struct COBB : IShape
 {
     public ShapeType Type => ShapeType.OBB;
     public LVector2 Size;
-    public LFloat Angle;//旋转角度 0-360
+    public int Angle;//旋转角度 0-360
 }
 
 public struct CAABB : IShape
@@ -37,7 +37,7 @@ public struct CPolygon : IShape
 {
     public ShapeType Type => ShapeType.POLYGON;
     public int VertexCount;
-    public LFloat Angle;//旋转角度 0-360
+    public int Angle;//旋转角度 0-360
     public LVector2[] Vertices;
 }
 

@@ -11,6 +11,12 @@ namespace Lockstep.Math
 
         public static LFloat Pi => PI;
 
+        //直接乘以deg2rad会有精度问题 后面改为查表
+        public static LFloat DegRad(int deg) 
+        {
+            return (deg.ToLFloat() / 180.ToLFloat()) * Pi;
+        }
+
         public static LFloat Atan2(LFloat y, LFloat x)
         {
             return Atan2(y._val, x._val);

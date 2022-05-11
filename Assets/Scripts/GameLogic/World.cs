@@ -85,7 +85,7 @@ public class World
             var trans = EntityMgr.AddComponent<TransformComponent>(entity);
 
             var physics = EntityMgr.AddComponent<PhysicsComponent>(entity);
-            physics.Shape = new COBB() { Size = LVector2.one * 2,Angle = LFloat.zero};
+            physics.Shape = new COBB() { Size = LVector2.one * 2,Angle = 0};
             //LRect rect = PhysicsUtil.GetRect(physics.Shape,pos.Position,angle.)
             //Physics.AddObj(entity.ID,)
             

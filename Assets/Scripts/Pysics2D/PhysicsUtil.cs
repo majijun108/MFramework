@@ -5,13 +5,13 @@ using Lockstep.UnsafeCollision2D;
 
 public static class PhysicsUtil
 {
-    //角度和方向改为查表
+    //角度和方向改为查表 TODO
     static List<LVector2> angle2Dir = new List<LVector2>() 
     {
 
     };
 
-    public static LRect GetRect(IShape shape,LVector2 pos,LFloat angle) 
+    public static LRect GetRect(IShape shape,LVector2 pos,int angle) 
     {
         switch ((ShapeType)shape.Type) 
         {
@@ -38,10 +38,10 @@ public static class PhysicsUtil
         return default(LRect);
     }
 
-    static void GetRotateTranslateMatrix(LVector2 pos, LFloat angle,ref LMatrix33 matrix)
+    static void GetRotateTranslateMatrix(LVector2 pos, int angle,ref LMatrix33 matrix)
     {
         //求旋转矩阵 先旋转在平移
-        var rad = LMath.Deg2Rad * angle;
+        var rad = LMath.DegRad(angle); //LMath.Deg2Rad * angle;
         matrix.SetColumn(0, new LVector3(LMath.Cos(rad), LMath.Sin(rad), LFloat.zero));
         matrix.SetColumn(1, new LVector3(-LMath.Sin(rad), LMath.Cos(rad), LFloat.zero));
         matrix.SetColumn(2, new LVector3(true, pos._x, pos._y, 1000));
