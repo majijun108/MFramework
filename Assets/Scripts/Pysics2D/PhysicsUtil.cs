@@ -10,6 +10,106 @@ public static class PhysicsUtil
     {
 
     };
+    public enum ECollisionPair 
+    {
+        OBB_OBB = 0x00,
+        OBB_POLYGON = 0x01,
+        OBB_CIRCLE = 0x02,
+        OBB_AABB = 0x03,
+
+        POLYGON_POLYGON = 0x11,
+        POLYGON_CIRCLE = 0x12,
+        POLYGON_AABB = 0x13,
+
+        CIRCLE_CIRCLE = 0x22,
+        CIRCLE_AABB = 0x23,
+
+        AABB_AABB = 0x33,
+    }
+    public delegate bool CheckCollisionFunc(IShape shape1, LVector2 pos1, int angle1,
+        IShape shape2, LVector2 pos2, int angle2);
+    static Dictionary<int, CheckCollisionFunc> checkCollisionFuncs =
+        new Dictionary<int, CheckCollisionFunc>()
+        {
+            [(int)ECollisionPair.OBB_OBB] = Check_OBB_OBB,
+            [(int)ECollisionPair.OBB_POLYGON] = Check_OBB_POLYGON,
+            [(int)ECollisionPair.OBB_CIRCLE] = Check_OBB_CIRCLE,
+            [(int)ECollisionPair.OBB_AABB] = Check_OBB_AABB,
+            [(int)ECollisionPair.POLYGON_POLYGON] = Check_POLYGON_POLYGON,
+            [(int)ECollisionPair.POLYGON_CIRCLE] = Check_POLYGON_CIRCLE,
+            [(int)ECollisionPair.POLYGON_AABB] = Check_POLYGON_AABB,
+            [(int)ECollisionPair.CIRCLE_CIRCLE] = Check_CIRCLE_CIRCLE,
+            [(int)ECollisionPair.CIRCLE_AABB] = Check_CIRCLE_AABB,
+            [(int)ECollisionPair.AABB_AABB] = Check_AABB_AABB,
+        };
+
+    static bool Check_OBB_OBB(IShape shape1, LVector2 pos1, int angle1,
+        IShape shape2, LVector2 pos2, int angle2)
+    {
+        return false;
+    }
+
+    static bool Check_OBB_POLYGON(IShape shape1, LVector2 pos1, int angle1,
+        IShape shape2, LVector2 pos2, int angle2)
+    {
+        return false;
+    }
+    static bool Check_OBB_CIRCLE(IShape shape1, LVector2 pos1, int angle1,
+        IShape shape2, LVector2 pos2, int angle2)
+    {
+        return false;
+    }
+    static bool Check_OBB_AABB(IShape shape1, LVector2 pos1, int angle1,
+        IShape shape2, LVector2 pos2, int angle2)
+    {
+        return false;
+    }
+    static bool Check_POLYGON_POLYGON(IShape shape1, LVector2 pos1, int angle1,
+        IShape shape2, LVector2 pos2, int angle2)
+    {
+        return false;
+    }
+    static bool Check_POLYGON_CIRCLE(IShape shape1, LVector2 pos1, int angle1,
+        IShape shape2, LVector2 pos2, int angle2)
+    {
+        return false;
+    }
+    static bool Check_POLYGON_AABB(IShape shape1, LVector2 pos1, int angle1,
+        IShape shape2, LVector2 pos2, int angle2)
+    {
+        return false;
+    }
+    static bool Check_CIRCLE_CIRCLE(IShape shape1, LVector2 pos1, int angle1,
+        IShape shape2, LVector2 pos2, int angle2)
+    {
+        return false;
+    }
+    static bool Check_CIRCLE_AABB(IShape shape1, LVector2 pos1, int angle1,
+        IShape shape2, LVector2 pos2, int angle2)
+    {
+        return false;
+    }
+    static bool Check_AABB_AABB(IShape shape1, LVector2 pos1, int angle1,
+        IShape shape2, LVector2 pos2, int angle2)
+    {
+        return false;
+    }
+
+    //不同形状的碰撞检测
+    public static bool CheckCollision(IShape shape1, LVector2 pos1, int angle1,
+        IShape shape2, LVector2 pos2, int angle2)
+    {
+        if ((int)shape1.Type > (int)shape2.Type) 
+        {
+            return CheckCollision(shape2,pos2,angle2,shape1,pos1,angle1);
+        }
+        int id = (int)shape1.Type << 4 | (int)shape2.Type;
+        if (!checkCollisionFuncs.ContainsKey(id))
+            return false;
+
+        var func = checkCollisionFuncs[id];
+        return func(shape1,pos1,angle1,shape2,pos2,angle2);
+    }
 
     public static LRect GetRect(IShape shape,LVector2 pos,int angle) 
     {

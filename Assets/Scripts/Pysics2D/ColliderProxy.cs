@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 public class ColliderProxy : IRecyclable
 {
     public LRect Bounds;
+    public IEntity Entity;
+    public PhysicsComponent PhysicsBody;
+    public TransformComponent Transform;
+
     public void OnRecycle()
     {
         

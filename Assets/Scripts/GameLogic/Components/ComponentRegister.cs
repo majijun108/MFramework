@@ -10,6 +10,12 @@ public class ComponentRegister
         typeof(PhysicsComponent),
         typeof(MoveComponent),
     };
+
+    public const int PlyerIndex = 0;
+    public const int TransformIndex = 1;
+    public const int PhysicsIndex = 2;
+    public const int MoveIndex = 3;
+
     private static Dictionary<System.Type, int> m_TypeLookup = new Dictionary<System.Type, int>();
 
     static bool m_hasInit = false;

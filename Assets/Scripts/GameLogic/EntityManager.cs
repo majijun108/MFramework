@@ -20,10 +20,11 @@ public class EntityManager
     private Dictionary<IMatcher,IGroup> m_groups = new Dictionary<IMatcher,IGroup>();
     private List<IGroup>[] m_index2Groups;
     private int m_totalComponents;
-    private PhysicsWorld m_physicsWorld;
+    private World m_World;
 
-    public EntityManager(int totalComponents, PhysicsWorld physics)
+    public EntityManager(World world,int totalComponents)
     {
+        m_World = world;
         m_entityComponentAdd = onEntityComponentAdd;
         m_entityComponentRemove = onEntityComponentRemove;
         m_entityComponentReplaced = onEntityComponentReplaced;
@@ -32,7 +33,6 @@ public class EntityManager
 
         m_totalComponents = totalComponents;
         m_index2Groups = new List<IGroup>[totalComponents];
-        m_physicsWorld = physics;
     }
 
     public Entity CreateEntity()
@@ -156,6 +156,6 @@ public class EntityManager
     {
         if (preCom == null || preCom is not PhysicsComponent)
             return;
-        m_physicsWorld.RemoveObj(entity.ID);
+        m_World.Physics.RemoveObj(entity.ID);
     }
 }

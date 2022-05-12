@@ -47,8 +47,8 @@ public class World
         m_updateFloatDeltaTime = new LFloat(true,updateTime);
         m_FrameBuffer = new FrameBuffer(this, 2000);
 
-        m_physicsWorld = new PhysicsWorld(MapService.Instance.MapInitSize,MapService.Instance.MapInitPos,2.ToLFloat(),LFloat.one);
-        m_entityMgr = new EntityManager(ComponentRegister.ComponentCount, m_physicsWorld);
+        m_physicsWorld = new PhysicsWorld(this,MapService.Instance.MapInitSize,MapService.Instance.MapInitPos,2.ToLFloat(),LFloat.one);
+        m_entityMgr = new EntityManager(this,ComponentRegister.ComponentCount);
         m_billboard = new WorldBillboard();
 
         m_systems = new Systems();
@@ -85,12 +85,11 @@ public class World
             player.PlayerID = playerInfo.PlayerID;
 
             EntityMgr.AddComponent<PhysicsComponent>(entity);
-            var trans = EntityMgr.AddComponent<TransformComponent>(entity);
-            var move = EntityMgr.AddComponent<MoveComponent>(entity);
+            EntityMgr.AddComponent<TransformComponent>(entity);
+            EntityMgr.AddComponent<MoveComponent>(entity);
             var physics = EntityMgr.AddComponent<PhysicsComponent>(entity);
             physics.Shape = new COBB() { Size = LVector2.one * 2,Angle = 0};
-            //LRect rect = PhysicsUtil.GetRect(physics.Shape,pos.Position,angle.)
-            //Physics.AddObj(entity.ID,)
+            Physics.AddObj(entity);
             
             GameViewService.Instance.CreatView(entity, "CompleteTank",player.PlayerID == NetworkService.Instance.LocalPlayerID);
         }

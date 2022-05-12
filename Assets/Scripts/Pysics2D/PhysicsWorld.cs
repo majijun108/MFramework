@@ -7,35 +7,71 @@ public class PhysicsWorld
 {
     private BoundsQuadTree m_boundsQuadTree;
     private Dictionary<int,ColliderProxy> m_id2Collider = new Dictionary<int, ColliderProxy>();
+    private World m_world;
 
-    public PhysicsWorld(LFloat initSize,LVector2 initPos, LFloat minNodeSize, LFloat loosenessVal) 
+    public PhysicsWorld(World world,LFloat initSize,LVector2 initPos, LFloat minNodeSize, LFloat loosenessVal) 
     {
+        m_world = world;
         m_boundsQuadTree = new BoundsQuadTree(initSize, initPos, minNodeSize, loosenessVal);
         m_id2Collider.Clear();
     }
 
-    public void UpdateObj(int entityID,ref LRect bound) 
+    public bool IsValide(IEntity entity) 
     {
-        if (!m_id2Collider.ContainsKey(entityID)) 
+        return entity != null && entity.HasComponent(ComponentRegister.PhysicsIndex)
+            && entity.HasComponent(ComponentRegister.TransformIndex);
+    }
+
+    public void UpdateObj(IEntity entity) 
+    {
+        if (!IsValide(entity)) 
         {
-            AddObj(entityID,ref bound);
+            DebugService.Instance.LogError("unvalide entity for phsics");
             return;
         }
+        int entityID = entity.ID;
+        if (!m_id2Collider.ContainsKey(entityID)) 
+        {
+            AddObj(entity);
+            return;
+        }
+
+        PhysicsComponent physics = m_world.EntityMgr.GetEntityComponent<PhysicsComponent>(entity);
+        TransformComponent trans = m_world.EntityMgr.GetEntityComponent<TransformComponent>(entity);
+        LRect bound = PhysicsUtil.GetRect(physics.Shape, trans.Position, trans.Angle);
+
         ColliderProxy proxy = m_id2Collider[entityID];
         proxy.Bounds = bound;
+        proxy.PhysicsBody = physics;
+        proxy.Entity = entity;
+        proxy.Transform = trans;
         m_boundsQuadTree.UpdateObj(proxy,bound);
     }
 
-    public void AddObj(int entityID, ref LRect bound) 
+    public void AddObj(IEntity entity) 
     {
-        if (m_id2Collider.ContainsKey(entityID)) 
+        if (!IsValide(entity))
         {
-            UpdateObj(entityID,ref bound);
+            DebugService.Instance.LogError("unvalide entity for phsics");
             return;
         }
+        int entityID = entity.ID;
+        if (m_id2Collider.ContainsKey(entityID)) 
+        {
+            UpdateObj(entity);
+            return;
+        }
+
+        PhysicsComponent physics = m_world.EntityMgr.GetEntityComponent<PhysicsComponent>(entity);
+        TransformComponent trans = m_world.EntityMgr.GetEntityComponent<TransformComponent>(entity);
+        LRect bound = PhysicsUtil.GetRect(physics.Shape, trans.Position, trans.Angle);
+
         ColliderProxy proxy = ObjectPool.Get<ColliderProxy>();
         proxy.Bounds = bound;
-        //TODO
+        proxy.PhysicsBody = physics;
+        proxy.Entity = entity;
+        proxy.Transform = trans;
+
         m_id2Collider[entityID] = proxy;
         m_boundsQuadTree.Add(proxy,bound);
     }
@@ -60,10 +96,14 @@ public class PhysicsWorld
     }
 
     private List<ColliderProxy> m_collidingList = new List<ColliderProxy>();
-    public void GetColliding(IShape shape,LRect checkBounds) 
+    public void GetColliding(IShape shape,LVector2 pos,int angle) 
     {
         m_collidingList.Clear();
+        LRect checkBounds = PhysicsUtil.GetRect(shape, pos, angle);
         m_boundsQuadTree.GetColliding(m_collidingList, checkBounds);
+        for (int i = 0; i < m_collidingList.Count; i++)
+        {
 
+        }
     }
 }
