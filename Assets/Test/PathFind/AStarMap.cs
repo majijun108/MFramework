@@ -25,13 +25,14 @@ public class MapNode
 
 public class AStarMap
 {
-    public static Vector2 LeftBottomPos = Vector2.zero;
+    public Vector2 LeftBottomPos = Vector2.zero;
     public static Vector2 NodeSize = Vector2.one;
-    public static Vector2 MapSize = new Vector2(40, 40);
-    public MapNode[,] Maps = new MapNode[40,40];
+    static int IndexWidth = 40;
+    public static Vector2 MapSize = new Vector2(IndexWidth, IndexWidth);
+    public MapNode[,] Maps = new MapNode[IndexWidth, IndexWidth];
 
     public List<MapNode> mapNodes = new List<MapNode>();
-    public int[,] notMove = new int[40, 40];
+    public int[,] notMove = new int[IndexWidth, IndexWidth];
 
     public MapNode GetNodeByPos(Vector2 pos) 
     {
@@ -47,8 +48,11 @@ public class AStarMap
         return notMove[x, y] == 0;
     }
 
-    public AStarMap()
+    private AStarMap() { }
+
+    public AStarMap(Vector2 left)
     {
+        LeftBottomPos = left;
         notMove[1, 2] = 1;
         notMove[1, 3] = 1;
         notMove[1, 4] = 1;
@@ -127,10 +131,10 @@ public class AStarMap
 
     void DrawNode(MapNode node) 
     {
-        Debug.DrawLine(node.Pos, node.Pos + new Vector2(0, MapSize.y),node.Color);
-        Debug.DrawLine(node.Pos + new Vector2(0, MapSize.y), node.Pos + MapSize, node.Color);
-        Debug.DrawLine(node.Pos + MapSize, node.Pos + new Vector2(MapSize.x, 0), node.Color);
-        Debug.DrawLine(node.Pos + new Vector2(MapSize.x, 0), node.Pos, node.Color);
+        Debug.DrawLine(node.Pos, node.Pos + new Vector2(0, NodeSize.y),node.Color);
+        Debug.DrawLine(node.Pos + new Vector2(0, NodeSize.y), node.Pos + NodeSize, node.Color);
+        Debug.DrawLine(node.Pos + NodeSize, node.Pos + new Vector2(NodeSize.x, 0), node.Color);
+        Debug.DrawLine(node.Pos + new Vector2(NodeSize.x, 0), node.Pos, node.Color);
     }
 
     public void DebugDraw() 

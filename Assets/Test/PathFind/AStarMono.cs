@@ -14,7 +14,7 @@ public class AStarMono : MonoBehaviour
 
     void Start()
     {
-        map = new AStarMap();
+        map = new AStarMap(this.transform.position);
         mechine = new AStarMechine();
         sw = new Stopwatch();
     }
@@ -29,7 +29,7 @@ public class AStarMono : MonoBehaviour
             var worldpos = Camera.main.ScreenToWorldPoint(mousePos);
             //Debug.LogError(worldpos);
             var t = DateTime.Now;
-            bool hasFind = mechine.PathFind(Vector2.zero, worldpos, map);
+            bool hasFind = mechine.PathFind(this.transform.position, worldpos, map);
             UnityEngine.Debug.Log(string.Format("total: {0} ms", (DateTime.Now - t).TotalMilliseconds));
             if (hasFind) 
             {

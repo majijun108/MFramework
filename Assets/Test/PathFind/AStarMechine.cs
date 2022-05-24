@@ -106,10 +106,12 @@ public class AStarMechine
                     }
 
                     AddToOpen(newNode);
+                    //Debug.LogError("AddToOpen" + newNode.indexX + "/" + newNode.indexY);
                 }
             }
             RemoveFromeOpen(current);
             AddToClose(current);
+            //Debug.LogError("RemoveFromOpen" + current.indexX + "/" + current.indexY);
         }
 
         Debug.LogError("ovverride");
@@ -170,7 +172,7 @@ public class AStarMechine
 
         if (linkHead != null && linkHead.Index == node.Index) 
         {
-            linkHead = null;
+            linkHead = linkHead.LinkNext;
             return;
         }
 
