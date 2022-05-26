@@ -14,7 +14,7 @@ public class AStarMono : MonoBehaviour
 
     void Start()
     {
-        map = new AStarMap(this.transform.position);
+        map = GetComponent<AStarMap>();
         mechine = new AStarMechine();
         sw = new Stopwatch();
     }
@@ -28,13 +28,39 @@ public class AStarMono : MonoBehaviour
             //Debug.LogError(mousePos);
             var worldpos = Camera.main.ScreenToWorldPoint(mousePos);
             //Debug.LogError(worldpos);
-            var t = DateTime.Now;
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             bool hasFind = mechine.PathFind(this.transform.position, worldpos, map);
-            UnityEngine.Debug.Log(string.Format("total: {0} ms", (DateTime.Now - t).TotalMilliseconds));
+            sw.Stop();
+            UnityEngine.Debug.Log(string.Format("total: {0}", sw.ElapsedTicks));
             if (hasFind) 
             {
                 path = mechine.GetPath();
                 //map.DebugDrawPath(path);
+            }
+        }
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            var mousePos = Input.mousePosition;
+            //Debug.LogError(mousePos);
+            var worldpos = Camera.main.ScreenToWorldPoint(mousePos);
+            var node = map.GetNodeByPos(worldpos);
+            if (node == null)
+                return;
+            //Debug.LogError(worldpos);
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            bool hasFind = map.CanDirectlyTo(0,0, (int)node.Index.x, (int)node.Index.y);
+            sw.Stop();
+            UnityEngine.Debug.Log(string.Format("total: {0}", sw.ElapsedTicks));
+            if (hasFind)
+            {
+                path = new List<Vector2>()
+                {
+                    Vector2.zero,
+                    new Vector2(node.Index.x,node.Index.y)
+                };
             }
         }
     }

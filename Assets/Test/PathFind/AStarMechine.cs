@@ -27,7 +27,7 @@ public class AStarMechine
     private AStarNode linkHead;
 
     public AStarNode FindePath;
-    public int MaxDepth = 100;
+    public int MaxDepth = 1000;
 
     public AStarMechine() 
     {

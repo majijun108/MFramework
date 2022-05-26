@@ -23,7 +23,7 @@ public class MapNode
     }
 }
 
-public class AStarMap
+public class AStarMap:MonoBehaviour
 {
     public Vector2 LeftBottomPos = Vector2.zero;
     public static Vector2 NodeSize = Vector2.one;
@@ -33,6 +33,60 @@ public class AStarMap
 
     public List<MapNode> mapNodes = new List<MapNode>();
     public int[,] notMove = new int[IndexWidth, IndexWidth];
+
+    public void Awake()
+    {
+        float xOff = -MapSize.x * NodeSize.x * 0.5f;
+        float yOff = -MapSize.y * NodeSize.y * 0.5f;
+        LeftBottomPos = transform.position + new Vector3(xOff,yOff,0);
+        transform.position = LeftBottomPos;
+        InitNotMove();
+
+        for (int h = 0; h < MapSize.y; h++)
+        {
+            for (int w = 0; w < MapSize.x; w++)
+            {
+                var node = new MapNode();
+                node.Index = new Vector2(w, h);
+                float posX = LeftBottomPos.x + w * NodeSize.x;
+                float posY = LeftBottomPos.y + h * NodeSize.y;
+                node.Pos = new Vector2(posX, posY);
+                node.MoveAble = CanMove(w, h);
+                if (!node.MoveAble)
+                {
+                    node.Color = Color.red;
+                }
+                Maps[w, h] = node;
+            }
+        }
+    }
+
+    void InitNotMove() 
+    {
+        var notMoveParent = transform.Find("NotMove");
+        if (!notMoveParent)
+            return;
+        int count = notMoveParent.childCount;
+        for (int i = 0; i < count; i++)
+        {
+            var child = notMoveParent.GetChild(i);
+            Vector2 index = GetNodeIndexByPos(child.transform.position);
+            if (index.x < 0 || index.x >= MapSize.x || index.y < 0 || index.y >= MapSize.y)
+            {
+                continue;
+            }
+            notMove[(int)index.x, (int)index.y] = 1;
+        }
+    }
+
+    Vector2 GetNodeIndexByPos(Vector2 pos) 
+    {
+        float wOff = pos.x - LeftBottomPos.x;
+        float hOff = pos.y - LeftBottomPos.y;
+        int indexx = (int)(wOff / NodeSize.x);
+        int indexy = (int)(hOff / NodeSize.y);
+        return new Vector2(indexx, indexy);
+    }
 
     public MapNode GetNodeByPos(Vector2 pos) 
     {
@@ -46,41 +100,6 @@ public class AStarMap
     public bool CanMove(int x, int y) 
     {
         return notMove[x, y] == 0;
-    }
-
-    private AStarMap() { }
-
-    public AStarMap(Vector2 left)
-    {
-        LeftBottomPos = left;
-        notMove[1, 2] = 1;
-        notMove[1, 3] = 1;
-        notMove[1, 4] = 1;
-        notMove[1, 5] = 1;
-
-
-        notMove[5, 2] = 1;
-        notMove[5, 3] = 1;
-        notMove[5, 4] = 1;
-        notMove[5, 5] = 1;
-
-        for (int h = 0; h < MapSize.y; h++) 
-        {
-            for (int w = 0; w < MapSize.x; w++)
-            {
-                var node = new MapNode();
-                node.Index = new Vector2(w, h);
-                float posX = LeftBottomPos.x + w * NodeSize.x;
-                float posY = LeftBottomPos.y + h * NodeSize.y;
-                node.Pos = new Vector2(posX, posY);
-                node.MoveAble = CanMove(w, h);
-                if (!node.MoveAble) 
-                {
-                    node.Color = Color.red;
-                }
-                Maps[w, h] = node;
-            }
-        }
     }
 
     public MapNode GetMoveableNode(int x, int y)
@@ -113,20 +132,52 @@ public class AStarMap
             {
                 if (i == 0 && j == 0)
                     continue;
-                if (i == 1 && j == 1)
-                    continue;
-                if (i == 1 && j == -1)
-                    continue;
-                if (i == -1 && j == 1)
-                    continue;
-                if (i == -1 && j == -1)
-                    continue;
+                //if (i == 1 && j == 1)
+                //    continue;
+                //if (i == 1 && j == -1)
+                //    continue;
+                //if (i == -1 && j == 1)
+                //    continue;
+                //if (i == -1 && j == -1)
+                //    continue;
                 var node = GetMoveableNode(i + x, j + y);
                 if(node != null)
                     mapNeighbor.Add(node);
             }
         }
         return mapNeighbor;
+    }
+
+    static float Eplise = 0.00001f;
+    //是否可以直接到达
+    public bool CanDirectlyTo(int x1,int y1,int x2,int y2) 
+    {
+        Vector2 from = new Vector2(x1+0.5f,y1+0.5f);
+        Vector2 to = new Vector2(x2+0.5f,y2+0.5f);
+
+        Vector2 dir = (to - from).normalized;
+        Vector2 start = from;
+        int startX = (int)start.x;
+        int startY = (int)start.y;
+        float speedX = 1.0f/Mathf.Abs(dir.x);
+        float speedY = 1.0f/Mathf.Abs(dir.y);
+        int count = 0;
+        while (startX != x2 && startY != y2 &&count++ < 1000) 
+        {
+            float tx = (dir.y > 0 ? (startY + 1.0f) - start.y : start.y - startY) * speedY;
+            if (dir.y == 0) tx = 10.0f;
+            float ty = (dir.x > 0 ? (startX + 1.0f) - start.x : start.x - startX) * speedX;
+            if(dir.y == 0) ty = 10.0f;
+            float t = Mathf.Min(tx, ty);
+
+            start = start + t * dir;
+            startX = (int)start.x;
+            startY = (int)start.y;
+            if (GetNode(startX, startY).MoveAble == false)
+                return false;
+        }
+
+        return true;
     }
 
     void DrawNode(MapNode node) 
