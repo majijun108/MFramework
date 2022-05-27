@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class AStarNode 
+public class AStarNode:OrderLinkItem<AStarNode>
 {
     public int Index;
 
@@ -13,25 +13,30 @@ public class AStarNode
     public int indexX;
     public int indexY;
 
-    public AStarNode LinkNext;
+    //public AStarNode LinkNext;
     public AStarNode Parent;
+
+    public AStarNode Next { get; set; }
 }
 
 public class AStarMechine
 {
-
     AStarMap map;
     MapNode target;
     private Dictionary<int, AStarNode> openDic = new Dictionary<int, AStarNode>();
     private Dictionary<int,AStarNode> closeDic = new Dictionary<int, AStarNode>();
-    private AStarNode linkHead;
+    //private AStarNode linkHead;
+    private PriorityQueue<AStarNode> openQueue;//优先队列
+    private OrderLinkList<AStarNode> linkQueue;//有序链表
 
     public AStarNode FindePath;
     public int MaxDepth = 1000;
+    private bool useLinkQueue = true;//是否使用链表 测试
 
     public AStarMechine() 
     {
-
+        openQueue = new PriorityQueue<AStarNode>((a, b) =>{return a.F < b.F;});
+        linkQueue = new OrderLinkList<AStarNode>((a, b) => { return a.F < b.F; });
     }
 
     AStarNode CreateAStarNode(MapNode node) 
@@ -53,10 +58,7 @@ public class AStarMechine
         if (node == null || from == null || node.MoveAble == false || from.MoveAble == false)
             return false;
 
-        openDic.Clear();
-        closeDic.Clear();
-        linkHead = null;
-        FindePath = null;
+        Setup();
         target = node;
 
         AStarNode astarNode = CreateAStarNode(from);
@@ -75,10 +77,13 @@ public class AStarMechine
                 return true;
             }
 
+            RemoveFromeOpen(current);
             var list = this.map.GetUseableNeighbors(current.indexX, current.indexY);
             foreach (var item in list)
             {
                 int index = item.GetIndex();
+                if (closeDic.ContainsKey(index))
+                    continue;
                 if (openDic.ContainsKey(index))
                 {
                     var neighbor = openDic[index];
@@ -109,7 +114,6 @@ public class AStarMechine
                     //Debug.LogError("AddToOpen" + newNode.indexX + "/" + newNode.indexY);
                 }
             }
-            RemoveFromeOpen(current);
             AddToClose(current);
             //Debug.LogError("RemoveFromOpen" + current.indexX + "/" + current.indexY);
         }
@@ -118,51 +122,31 @@ public class AStarMechine
         return false;
     }
 
-    public void AddToOpen(AStarNode node) 
+    void Setup() 
     {
-        if (openDic.ContainsKey(node.Index)) 
+        openDic.Clear();
+        closeDic.Clear();
+        //linkHead = null;
+        openQueue.Clear();
+        linkQueue.Clear();
+        FindePath = null;
+    }
+
+    public void AddToOpen(AStarNode node)
+    {
+        if (openDic.ContainsKey(node.Index))
         {
             Debug.LogError("重复添加" + node.Index);
             return;
         }
-        if (linkHead == null) 
-        {
-            linkHead = node;
-            openDic.Add(node.Index, node);
-            return;
-        }
-
         openDic.Add(node.Index, node);
-        var current = linkHead;
-        AStarNode pre = null;
-        while (current != null) 
-        {
-            if (node.F > current.F) 
-            {
-                if (current.LinkNext == null) 
-                {
-                    current.LinkNext = node;
-                    return;
-                }
-                pre = current;
-                current = current.LinkNext;
-                continue;
-            }
-
-            if (pre == null) 
-            {
-                linkHead = node;
-                node.LinkNext = current;
-                return;
-            }
-
-            pre.LinkNext = node;
-            node.LinkNext = current;
-            return;
-        }
+        if(useLinkQueue)
+            linkQueue.Enqueue(node);
+        else
+            openQueue.Enqueue(node);
     }
 
-    public void RemoveFromeOpen(AStarNode node) 
+    public void RemoveFromeOpen(AStarNode node)
     {
         if (!openDic.ContainsKey(node.Index))
         {
@@ -170,28 +154,11 @@ public class AStarMechine
             return;
         }
 
-        if (linkHead != null && linkHead.Index == node.Index) 
-        {
-            linkHead = linkHead.LinkNext;
-            return;
-        }
-
-        var current = linkHead;
-        bool hasFind = false;
-        while (current != null) 
-        {
-            if (current.LinkNext.Index == node.Index) 
-            {
-                hasFind = true;
-                break;
-            }
-            current = current.LinkNext;
-        }
-
-        if (hasFind) 
-        {
-            current.LinkNext = node.LinkNext;
-        }
+        openDic.Remove(node.Index);
+        if (useLinkQueue)
+            linkQueue.Dequeue();
+        else
+            openQueue.Dequeue();
     }
 
     public void AddToClose(AStarNode node) 
@@ -204,9 +171,18 @@ public class AStarMechine
         closeDic.Add(node.Index,node);
     }
 
-    public AStarNode GetCheapestNode() 
+    public AStarNode GetCheapestNode()
     {
-        return linkHead;
+        if (!useLinkQueue)
+        {
+            if (openQueue.IsEmpty)
+                return null;
+            return openQueue.Peek();
+        }
+        else 
+        {
+            return linkQueue.Peek();
+        }
     }
 
     public List<Vector2> GetPath() 
