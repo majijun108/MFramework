@@ -29,11 +29,11 @@ public class FrameBuffer : IFrameBuffer
     private int m_bufferSize;
     private Msg_FrameInfo[] m_serverBuffer;//服务器帧
     private Msg_FrameInfo[] m_clientBuffer;//本地帧
-    private World m_world;
+    private LogicWorld _mLogicWorld;
 
-    public FrameBuffer(World world,int buffSize) 
+    public FrameBuffer(LogicWorld logicWorld,int buffSize) 
     {
-        m_world = world;
+        _mLogicWorld = logicWorld;
         m_bufferSize = buffSize;
         m_maxServerOverFrameCount = buffSize;
         m_serverBuffer = new Msg_FrameInfo[m_bufferSize];
@@ -75,7 +75,7 @@ public class FrameBuffer : IFrameBuffer
     public void FrameCheck(float deltaTime)
     {
         IsNeedRollback = false;
-        while (NextTickToCheck <= MaxServerTickInBuffer && NextTickToCheck < m_world.Tick) 
+        while (NextTickToCheck <= MaxServerTickInBuffer && NextTickToCheck < _mLogicWorld.Tick) 
         {
             var index = GetFrameIndex(NextTickToCheck);
             var cFrame = m_clientBuffer[index];

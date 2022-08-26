@@ -50,6 +50,12 @@ public class AStarMechine
         return starNode;
     }
 
+    public bool JPSFind(Vector2 fromPos, Vector2 pos, AStarMap map) 
+    {
+
+        return false;
+    }
+
     public bool PathFind(Vector2 fromPos,Vector2 pos,AStarMap map) 
     {
         this.map = map;

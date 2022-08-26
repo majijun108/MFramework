@@ -4,15 +4,15 @@ using System.Collections.Generic;
 
 public class PlayerInputSystem : IInitializeSystem, IExecuteSystem
 {
-    World m_world;
+    LogicWorld _mLogicWorld;
     IGroup m_entityGroup;
-    public PlayerInputSystem(World world) 
+    public PlayerInputSystem(LogicWorld logicWorld) 
     {
-        m_world = world;
+        _mLogicWorld = logicWorld;
     }
     public void Initialize()
     {
-        m_entityGroup = m_world.EntityMgr.GetGroup(new EntityMatcher(typeof(PlayerComponent), typeof(MoveComponent)));
+        m_entityGroup = _mLogicWorld.EntityMgr.GetGroup(new EntityMatcher(typeof(PlayerComponent), typeof(MoveComponent)));
     }
 
     public void Execute()
@@ -21,11 +21,11 @@ public class PlayerInputSystem : IInitializeSystem, IExecuteSystem
         for (int i = 0; i < entities.Length; i++)
         {
             var entity = entities[i];
-            var playerCom = m_world.EntityMgr.GetEntityComponent<PlayerComponent>(entity);
-            var input = m_world.Billboard.GetPlayerInput(playerCom.PlayerID);
+            var playerCom = _mLogicWorld.EntityMgr.GetEntityComponent<PlayerComponent>(entity);
+            var input = _mLogicWorld.Billboard.GetPlayerInput(playerCom.PlayerID);
             if (input != null)
             {
-                var moveCom = m_world.EntityMgr.GetEntityComponent<MoveComponent>(entity);
+                var moveCom = _mLogicWorld.EntityMgr.GetEntityComponent<MoveComponent>(entity);
                 moveCom.Angle = input.MoveAngle;
                 if (input.MoveAngle == 0)
                 {

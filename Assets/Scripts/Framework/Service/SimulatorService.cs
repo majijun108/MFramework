@@ -4,9 +4,9 @@ using System.Collections.Generic;
 public class SimulatorService : BaseGameService, ISimulatorService,ILoadingHandle,IUpdate
 {
     private IServiceContainer m_serviceContainer;
-    private World m_mainWorld;
+    private LogicWorld _mMainLogicWorld;
     private bool m_isGaming = false;
-    private List<PlayerInfo> m_curPlayers;
+    private RoomInfo m_room;
 
     public const int UPDATE_DELTA_TIME = 30;
 
@@ -35,17 +35,17 @@ public class SimulatorService : BaseGameService, ISimulatorService,ILoadingHandl
     //收到服务器帧
     void OnRecvFramInfo(MsgType type, object obj) 
     {
-        m_mainWorld?.PushServerFrame(obj as Msg_FrameInfo);
+        _mMainLogicWorld?.PushServerFrame(obj as Msg_FrameInfo);
     }
 
 
-    public void StartGame(string mapName, List<PlayerInfo> players)
+    public void StartGame(string sceneName,RoomInfo roomInfo)
     {
         if (m_isGaming)
             return;
         m_isGaming = true;
-        m_curPlayers = players;
-        LoadingService.Instance.LoadingScene("GameScene",this);
+        m_room = roomInfo;
+        LoadingService.Instance.LoadingScene(sceneName,this);
     }
 
     public void OnLoadSuccess()
@@ -53,11 +53,9 @@ public class SimulatorService : BaseGameService, ISimulatorService,ILoadingHandl
         NetworkService.Instance.C2S_ClientReady();
     }
 
-    public void CreatWorld()
+    public void CreatLogicWorld()
     {
-        m_mainWorld = new World(UPDATE_DELTA_TIME);
-        m_mainWorld.DoAwake(m_ServiceContainer);
-        m_mainWorld.DoStart();
+        _mMainLogicWorld = LogicWorld.CreateWorld(m_room);
     }
 
     //预加载
@@ -66,9 +64,9 @@ public class SimulatorService : BaseGameService, ISimulatorService,ILoadingHandl
         
     }
 
-    public void CreatePlayer()
+    public void CreateViewWorld()
     {
-        m_mainWorld?.CreatePlayers(m_curPlayers);
+        
     }
 
     public override void DoDestroy()
@@ -79,6 +77,6 @@ public class SimulatorService : BaseGameService, ISimulatorService,ILoadingHandl
 
     public void DoUpdate(float deltaTime)
     {
-        m_mainWorld?.DoUpdate(deltaTime);
+        _mMainLogicWorld?.DoUpdate(deltaTime);
     }
 }

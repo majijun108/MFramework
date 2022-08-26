@@ -9,6 +9,7 @@ public class RoomInfo : BaseFormater
     public int MaxCount;
     public List<PlayerInfo> Players = new List<PlayerInfo>();
     public int RoomID;
+    public int UpdateTime;
     public override void Deserialize(Deserializer reader)
     {
         ServerIP = reader.ReadString();
@@ -19,6 +20,7 @@ public class RoomInfo : BaseFormater
         if(Players == null)// 代码中没有空判断的补救 以前用的protobuff
             Players = new List<PlayerInfo>();
         RoomID = reader.ReadInt32();
+        UpdateTime = reader.ReadInt32();
     }
 
     public override void Serialize(Serializer writer)
@@ -29,5 +31,6 @@ public class RoomInfo : BaseFormater
         writer.Write(MaxCount);
         writer.Write(Players);
         writer.Write(RoomID);
+        writer.Write(UpdateTime);
     }
 }

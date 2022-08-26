@@ -165,7 +165,7 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService,
         m_roomInfo = room;
         UIService.Instance.CloseWindow("RoomWindowCtrl");
 
-        m_SimulatorService.StartGame("GameScene", m_roomInfo.Players);
+        m_SimulatorService.StartGame("GameScene", m_roomInfo);
     }
 
     public void On_S2C_OnClosetRoom(MsgType type, object obj) 

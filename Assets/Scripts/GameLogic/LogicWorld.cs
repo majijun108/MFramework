@@ -3,7 +3,7 @@ using Lockstep.UnsafeCollision2D;
 using System;
 using System.Collections.Generic;
 
-public class World
+public class LogicWorld
 {
     public enum WORLD_STATE 
     {
@@ -41,7 +41,7 @@ public class World
 
     public WORLD_STATE State { get; private set; } = WORLD_STATE.INIT;
 
-    public World(int updateTime) 
+    public LogicWorld(int updateTime) 
     {
         m_updateDeltaTime = updateTime;
         m_updateFloatDeltaTime = new LFloat(true,updateTime);
@@ -54,6 +54,15 @@ public class World
         m_systems = new Systems();
     }
 
+    public static LogicWorld CreateWorld(RoomInfo room)
+    {
+        LogicWorld logicWorld = new LogicWorld(room.UpdateTime);
+        logicWorld.RegisterSystems();
+        logicWorld.Init();
+        logicWorld.CreatePlayers(room.Players);
+        return logicWorld;
+    }
+
     void RegisterSystems() 
     {
         m_systems.Add(new PlayerInputSystem(this));
@@ -63,17 +72,12 @@ public class World
         m_systems.Add(new PhysicsSystem(this));//物理系统必须最后一个更新
     }
 
-    public void DoAwake(IServiceContainer services) 
-    {
-        RegisterSystems();
-    }
-
-    public void DoStart() 
+    void Init() 
     {
         m_systems.Initialize();
     }
 
-    public void CreatePlayers(List<PlayerInfo> players) 
+    void CreatePlayers(List<PlayerInfo> players) 
     {
         if (m_hasCreatePlayer)
             return;
@@ -84,7 +88,6 @@ public class World
             var player = EntityMgr.AddComponent<PlayerComponent>(entity);
             player.PlayerID = playerInfo.PlayerID;
 
-            EntityMgr.AddComponent<PhysicsComponent>(entity);
             EntityMgr.AddComponent<TransformComponent>(entity);
             EntityMgr.AddComponent<MoveComponent>(entity);
             var physics = EntityMgr.AddComponent<PhysicsComponent>(entity);
@@ -95,7 +98,9 @@ public class World
         }
         State = WORLD_STATE.WAITING_FOR_FRAME;
     }
-
+    
+    
+    
     public void PushServerFrame(Msg_FrameInfo frame) 
     {
         m_FrameBuffer.PushServerFrame(frame);

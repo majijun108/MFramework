@@ -26,8 +26,6 @@ namespace Lockstep.NetWork
         {
             while (true)
             {
-                if (IsDisposed)
-                    return;
                 Packet packet = await m_UdpChannel.RecvAsync();
                 if (IsDisposed)
                     return;
