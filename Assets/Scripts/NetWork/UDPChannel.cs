@@ -8,7 +8,22 @@ using System.Threading.Tasks;
 
 namespace Lockstep.NetWork
 {
+    public static class AsyncExtensions
+    {
+        public static async Task<T> WithCancellation<T>( this Task<T> task, CancellationToken cancellationToken )
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            using( cancellationToken.Register( s => ( (TaskCompletionSource<bool>)s ).TrySetResult( true ), tcs ) )
+            {
+                if( task != await Task.WhenAny( task, tcs.Task ) )
+                {
+                    throw new OperationCanceledException( cancellationToken );
+                }
+            }
 
+            return task.Result;
+        }
+    }
     public class UDPChannel : AChannel
     {
         private readonly UdpClient _udpClient;
@@ -20,14 +35,43 @@ namespace Lockstep.NetWork
         private TaskCompletionSource<Packet> recvTask;//接受任务
         private readonly Queue<MessageInfo> m_SendQueue = new Queue<MessageInfo>();
         private IPEndPoint m_localIP;
+        private CancellationTokenSource m_cancel;
 
         public UDPChannel(NetWorkProxy service,IPEndPoint localIP):base(service,ChannelType.Accept)
         {
             this._udpClient = new UdpClient(localIP);
             m_localIP = localIP;
             packageParser = new PackageParser(this.recvBuffer);
+            m_cancel = new CancellationTokenSource();
+            DebugService.Instance.LogError(m_localIP.ToString());
 
-            this.StartRecvAsync();
+            Task.Run(StartRecvAsync);
+        }
+        private async void StartRecvAsync() 
+        {
+            try
+            {
+                while (true)
+                {
+                    var result = await _udpClient.ReceiveAsync().WithCancellation(m_cancel.Token);
+                    if (result.Buffer.Length == 0)
+                        continue;
+                    this.recvBuffer.Write(result.Buffer, 0, result.Buffer.Length);
+                    if (recvTask == null)
+                        continue;
+                    bool isOK = this.packageParser.Parse();
+                    if (isOK)
+                    {
+                        var task = recvTask;
+                        recvTask = null;
+                        task.SetResult(this.packageParser.GetPacket());//将结果丢入任务中
+                    }
+                }
+            }
+            catch (Exception ex) 
+            {
+                DebugService.Instance.LogWarning(ex.ToString());
+            }
         }
 
         public override void Send(byte opcode, object msg,IPEndPoint remote)
@@ -43,7 +87,8 @@ namespace Lockstep.NetWork
 
                 if (isSending)
                     return;
-                this.StartSendAsync();
+                isSending = true;
+                Task.Run(StartSendAsync);
             }
         }
 
@@ -72,17 +117,13 @@ namespace Lockstep.NetWork
         }
 
         private byte[] curSendBuffer = new byte[ushort.MaxValue];
-        private Task<int> m_sendTask;
         public async void StartSendAsync()
         {
             try
             {
                 while (true)
                 {
-                    if (this.IsDisposed)
-                        return;
                     IPEndPoint remote = PushMsgToBuffer();
-
                     long length = this.sendBuffer.Length;
                     if (length == 0)
                     {
@@ -90,53 +131,13 @@ namespace Lockstep.NetWork
                         return;
                     }
 
-                    this.isSending = true;
-
                     int n = sendBuffer.ReadMsg(curSendBuffer);
-                    m_sendTask = _udpClient.SendAsync(curSendBuffer, n, remote);
-                    await m_sendTask;
+                    await _udpClient.SendAsync(curSendBuffer, n, remote).WithCancellation(m_cancel.Token);
                 }
             }
             catch (Exception ex) 
             {
-                DebugService.Instance.LogError(ex.ToString());
-            }
-        }
-
-        private Task<UdpReceiveResult> m_ReceiveTask;
-        public async void StartRecvAsync() 
-        {
-            try
-            {
-                while (true)
-                {
-                    if (IsDisposed)
-                        return;
-                    m_ReceiveTask = _udpClient.ReceiveAsync();
-                    var result = await m_ReceiveTask;
-                    if (IsDisposed)
-                    {
-                        _udpClient.Close();
-                        _udpClient.Dispose();
-                        return;
-                    }
-                    if (result.Buffer.Length == 0)
-                        continue;
-                    this.recvBuffer.Write(result.Buffer, 0, result.Buffer.Length);
-                    if (recvTask == null)
-                        continue;
-                    bool isOK = this.packageParser.Parse();
-                    if (isOK)
-                    {
-                        var task = recvTask;
-                        recvTask = null;
-                        task.SetResult(this.packageParser.GetPacket());//将结果丢入任务中
-                    }
-                }
-            }
-            catch (Exception ex) 
-            {
-                DebugService.Instance.LogError(ex.ToString());
+                DebugService.Instance.LogWarning(ex.ToString());
             }
         }
 
@@ -159,13 +160,9 @@ namespace Lockstep.NetWork
         {
             base.Dispose();
             this.Enable = false;
-            //强制发送一条消息 让task关闭
-            if (_udpClient != null) 
-            {
-                m_localIP.Address = IPAddress.Parse(NetHelper.GetLocalIP());
-                byte[] data = new byte[1];
-                this._udpClient.Send(data, 1, m_localIP);
-            }
+            m_cancel?.Cancel();
+            _udpClient?.Close();
+            _udpClient?.Dispose();
         }
     }
 }

@@ -7,11 +7,11 @@ public class PhysicsWorld
 {
     private BoundsQuadTree m_boundsQuadTree;
     private Dictionary<int,ColliderProxy> m_id2Collider = new Dictionary<int, ColliderProxy>();
-    private World m_world;
+    private LogicWorld _mLogicWorld;
 
-    public PhysicsWorld(World world,LFloat initSize,LVector2 initPos, LFloat minNodeSize, LFloat loosenessVal) 
+    public PhysicsWorld(LogicWorld logicWorld,LFloat initSize,LVector2 initPos, LFloat minNodeSize, LFloat loosenessVal) 
     {
-        m_world = world;
+        _mLogicWorld = logicWorld;
         m_boundsQuadTree = new BoundsQuadTree(initSize, initPos, minNodeSize, loosenessVal);
         m_id2Collider.Clear();
     }
@@ -36,8 +36,8 @@ public class PhysicsWorld
             return;
         }
 
-        PhysicsComponent physics = m_world.EntityMgr.GetEntityComponent<PhysicsComponent>(entity);
-        TransformComponent trans = m_world.EntityMgr.GetEntityComponent<TransformComponent>(entity);
+        PhysicsComponent physics = _mLogicWorld.EntityMgr.GetEntityComponent<PhysicsComponent>(entity);
+        TransformComponent trans = _mLogicWorld.EntityMgr.GetEntityComponent<TransformComponent>(entity);
         LRect bound = PhysicsUtil.GetRect(physics.Shape, trans.Position, trans.Angle);
 
         ColliderProxy proxy = m_id2Collider[entityID];
@@ -62,8 +62,8 @@ public class PhysicsWorld
             return;
         }
 
-        PhysicsComponent physics = m_world.EntityMgr.GetEntityComponent<PhysicsComponent>(entity);
-        TransformComponent trans = m_world.EntityMgr.GetEntityComponent<TransformComponent>(entity);
+        PhysicsComponent physics = _mLogicWorld.EntityMgr.GetEntityComponent<PhysicsComponent>(entity);
+        TransformComponent trans = _mLogicWorld.EntityMgr.GetEntityComponent<TransformComponent>(entity);
         LRect bound = PhysicsUtil.GetRect(physics.Shape, trans.Position, trans.Angle);
 
         ColliderProxy proxy = ObjectPool.Get<ColliderProxy>();

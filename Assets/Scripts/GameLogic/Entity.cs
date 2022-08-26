@@ -38,7 +38,7 @@ public class Entity : IRecyclable, IEntity
     public event EntityEnvent OnEntityReleased;
     public event EntityEnvent OnEntityDestroyed;
 
-    protected World m_World { get; set; }
+    protected LogicWorld MLogicWorld { get; set; }
 
     public int ID { get; private set; }
 

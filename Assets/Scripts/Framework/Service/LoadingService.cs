@@ -20,9 +20,9 @@ public class LoadingState
 public interface ILoadingHandle 
 {
     void OnLoadSuccess();
-    void CreatWorld();
+    void CreatLogicWorld();
     void Preload();
-    void CreatePlayer();
+    void CreateViewWorld();
 }
 
 public class LoadingService:BaseSingleService<LoadingService>
@@ -72,7 +72,7 @@ public class LoadingService:BaseSingleService<LoadingService>
 
         //加载地图数据
         m_loadingState.state = LoadingState.STATE_TYPE.MAP_INFO;
-        m_loadHander.CreatWorld();
+        m_loadHander.CreatLogicWorld();
         EventHelper.Instance.Trigger(EEvent.LoadingSceneState, m_loadingState);
         yield return new WaitForSeconds(0.1f);
 
@@ -80,7 +80,7 @@ public class LoadingService:BaseSingleService<LoadingService>
 
         //加载角色
         m_loadingState.state = LoadingState.STATE_TYPE.CREATE_PLAYER;
-        m_loadHander.CreatePlayer();
+        m_loadHander.CreateViewWorld();
         EventHelper.Instance.Trigger(EEvent.LoadingSceneState, m_loadingState);
         yield return new WaitForSeconds(0.1f);
 

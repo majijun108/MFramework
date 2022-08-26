@@ -10,8 +10,8 @@ public class RoomManager
 
     NetworkService m_Network;
     ServerRoom m_Room;
-    string m_serverIP;//µ±Ç°·þÎñÆ÷µÄIP
-    int m_serverPort;//µ±Ç°·þÎñÆ÷µÄ¶Ë¿Ú
+    string m_serverIP;//ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½IP
+    int m_serverPort;//ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¶Ë¿ï¿½
     IPEndPoint m_serverAddress;
     string m_serverName;
 
@@ -22,7 +22,7 @@ public class RoomManager
         ClientMsgHandler.Instance.AddListener(MsgType.C2S_ReqRoomInfo, OnReqRoomInfo);
     }
 
-    //Íæ¼ÒÇëÇó·¿¼äÐÅÏ¢
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ó·¿¼ï¿½ï¿½ï¿½Ï¢
     void OnReqRoomInfo(MsgType type, object param)
     {
         if (m_Room == null || m_Room.IsDisposed)
@@ -34,7 +34,7 @@ public class RoomManager
         });
     }
 
-    //´´½¨·¿¼ä
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     public void CreateRoomAndStart(int startPort, int maxCount, string roomName,int broadMin,int broadMax,PlayerInfo mainPlayer)
     {
         if (m_Room != null && m_Room.IsDisposed == false)
@@ -43,7 +43,7 @@ public class RoomManager
         m_serverAddress = NetHelper.GetIPEndPoint(m_serverIP, m_serverPort);
         m_serverName = roomName;
 
-        m_Room.Start(mainPlayer);//·¿¼ä¿ªÊ¼ ¼ÓÈëÖ÷»úµÄÐÅÏ¢
+        m_Room.Start(mainPlayer);//ï¿½ï¿½ï¿½ä¿ªÊ¼ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
     }
 
     public IPEndPoint GetServerAddress() 

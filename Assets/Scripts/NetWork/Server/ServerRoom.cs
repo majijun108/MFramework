@@ -66,7 +66,8 @@ namespace Server
                 RoomName = roomName,
                 MaxCount = maxCount,
                 RoomID = roomID++,
-                Players = new List<PlayerInfo>()
+                Players = new List<PlayerInfo>(),
+                UpdateTime = FrameDelta,
             };
             m_MaxPlayerCount = maxCount;
             serverIP = NetHelper.GetLocalIP();
