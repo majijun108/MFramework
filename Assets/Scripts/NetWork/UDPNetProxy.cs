@@ -12,25 +12,20 @@ namespace Lockstep.NetWork
     public class UDPNetProxy : NetWorkProxy,IBroadcast
     {
         private UDPChannel m_UdpChannel;
-        private readonly Queue<MessageInfo> m_receiveMsgs = new Queue<MessageInfo>();
         private IPEndPoint m_remote;
 
         public UDPNetProxy(IPEndPoint localIP) 
         {
             m_UdpChannel = new UDPChannel(this,localIP);
             LocalIPEndPoint = localIP;
-            StartReceive();
         }
 
-        public async void StartReceive()
+        public void Init(IMessagePacker packer,IMessageDispatcher dispatcher) 
         {
-            while (true)
-            {
-                Packet packet = await m_UdpChannel.RecvAsync();
-                if (IsDisposed)
-                    return;
-                OnRecv(packet);
-            }
+            this.MessagePacker = packer;
+            this.MessageDispatcher = dispatcher;
+            m_UdpChannel.Init(MessagePacker);
+            m_UdpChannel.Start();
         }
 
         public void Connect(string ip, int port) 
@@ -41,25 +36,6 @@ namespace Lockstep.NetWork
         public void DisConnect() 
         {
             m_remote = null;
-        }
-
-        private void OnRecv(Packet packet)
-        {
-            if (IsDisposed)
-                return;
-            if (this.MessagePacker == null)
-                return;
-
-            var msg = this.MessagePacker.DeserializeFrom(packet.OpCode,packet.Bytes, Packet.DataIndex, packet.Size);
-            lock (m_receiveMsgs)
-            {
-                //_proxy.OnReceive(this, packet.OpCode, msg);
-                m_receiveMsgs.Enqueue(new MessageInfo()
-                {
-                    OpCode = packet.OpCode,
-                    Msg = msg,
-                });
-            }
         }
 
         public override void Send(byte opcode, object msg,IPEndPoint remote)
@@ -82,14 +58,14 @@ namespace Lockstep.NetWork
         {
             if (IsDisposed)
                 return;
-            lock (m_receiveMsgs)
-            {
-                while (m_receiveMsgs.Count > 0)
-                {
-                    var msgInfo = m_receiveMsgs.Dequeue();
-                    this.MessageDispatcher.Dispatch(null, msgInfo.OpCode, msgInfo.Msg);
-                }
-            }
+            m_UdpChannel?.OnUpdate(OnReceive);
+        }
+
+        void OnReceive(MessageInfo msg) 
+        {
+            //if (msg.Remote != m_remote)
+            //    return;
+            this.MessageDispatcher.Dispatch(null, msg.OpCode, msg.Msg);
         }
 
         public override void Dispose()

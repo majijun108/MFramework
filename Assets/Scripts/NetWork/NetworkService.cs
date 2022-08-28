@@ -29,11 +29,8 @@ public class NetworkService : BaseSingleService<NetworkService>,INetworkService,
         if (m_Client == null)
         {
             int usePort = GetUseablePort();
-            m_Client = new UDPNetProxy(NetHelper.GetIPEndPoint(usePort))
-            {
-                MessageDispatcher = ClientMsgHandler.Instance,
-                MessagePacker = MessagePacker.Instance
-            };
+            m_Client = new UDPNetProxy(NetHelper.GetIPEndPoint(usePort));
+            m_Client.Init(MessagePacker.Instance, ClientMsgHandler.Instance);
             m_PlayerInfo = new PlayerInfo()
             {
                 ClientIP = NetHelper.GetLocalIP(),

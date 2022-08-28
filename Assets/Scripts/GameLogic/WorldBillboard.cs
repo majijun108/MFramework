@@ -21,6 +21,8 @@ public class WorldBillboard : Billboard
     public void SetFrameInfo(Msg_FrameInfo frameInfo)
     {
         curInput.Clear();
+        if (frameInfo.Inputs == null)
+            return;
         for (int i = 0; i < frameInfo.Inputs.Length; i++)
         {
             var input = frameInfo.Inputs[i];

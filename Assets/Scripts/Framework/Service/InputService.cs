@@ -36,8 +36,11 @@ public class InputService:BaseSingleService<InputService>,IInputService,IUpdate
         if (Input.GetKey(KeyCode.A))
             dir.x -= LFloat.one;
 
-        if(dir != LVector2.zero)
+        if (dir != LVector2.zero)
+        {
             m_playerInput.MoveAngle = PhysicsUtil.GetRotateAngle(dir, LVector2.right);
+        }
+        NetworkService.Instance.C2S_PlayerInput(m_playerInput);
     }
 
     public Msg_PlayerInput GetInput()

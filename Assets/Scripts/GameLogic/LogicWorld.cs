@@ -190,7 +190,7 @@ public class LogicWorld
         if (input == null)
             return;
         input.Tick = tick;
-        NetworkService.Instance.C2S_PlayerInput(input);
+        //NetworkService.Instance.C2S_PlayerInput(input);
     }
 
     public void DoDestroy() 

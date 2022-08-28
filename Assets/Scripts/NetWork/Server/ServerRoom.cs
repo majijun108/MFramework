@@ -53,11 +53,8 @@ namespace Server
             m_broadcastMinPort = broadMin;
             m_broadcastMaxPort = broadMax;
             int port = NetHelper.FindAvailablePort(startPort);
-            m_Server = new UDPNetProxy(NetHelper.GetIPEndPoint(port))
-            {
-                MessagePacker = MessagePacker.Instance,
-                MessageDispatcher = this
-            };
+            m_Server = new UDPNetProxy(NetHelper.GetIPEndPoint(port));
+            m_Server.Init(MessagePacker.Instance, this);
 
             m_roomInfo = new RoomInfo()
             {
@@ -97,7 +94,7 @@ namespace Server
 
             BroadcastRoomInfo();
 
-            Run();
+            Task.Run(Run);
         }
 
         async void Run()
@@ -107,7 +104,6 @@ namespace Server
                 if (m_roomState == RoomState.Disposed)
                     return;
                 Tick();
-                await Task.Delay(FrameDelta);
             }
         }
 
@@ -271,9 +267,18 @@ namespace Server
                 return;
             while (m_Tick < m_tickSinceGameStart) 
             {
-                var frame = GetOrCreateFrame(m_Tick);
-                Broadcast(MsgType.S2C_Msg_FrameInfo, frame);
-                m_Tick++;
+                //var frame = GetOrCreateFrame(m_Tick);
+                lock (curFrame)
+                {
+                    curFrame.Tick = m_Tick;
+                    if (curFrame.Inputs == null) 
+                    {
+                        curFrame.Inputs = new Msg_PlayerInput[m_MaxPlayerCount];
+                    }
+                    Broadcast(MsgType.S2C_Msg_FrameInfo, curFrame);
+                    curFrame.Inputs = null;
+                    m_Tick++;
+                }
             }
         }
         #endregion
@@ -378,19 +383,29 @@ namespace Server
             return frame;
         }
 
+        Msg_FrameInfo curFrame = new Msg_FrameInfo();
         //收到客户端操作
         void On_C2S_PlayerInput(Msg_PlayerInput input) 
         {
-            if (m_roomState != RoomState.InBattle)
-                return;
-            if (input.Tick < m_Tick)
-                return;
-            int index = GetPlayerIndex(input.PlayerID);
-            if (index < 0)
-                return;
+            //if (m_roomState != RoomState.InBattle)
+            //    return;
+            //if (input.Tick < m_Tick)
+            //    return;
+            //int index = GetPlayerIndex(input.PlayerID);
+            //if (index < 0)
+            //    return;
 
-            var frame = GetOrCreateFrame(input.Tick);
-            frame.Inputs[index] = input;
+            //var frame = GetOrCreateFrame(input.Tick);
+            //frame.Inputs[index] = input;
+            lock (curFrame)
+            {
+                if (curFrame.Inputs == null)
+                {
+                    curFrame.Inputs = new Msg_PlayerInput[m_MaxPlayerCount];
+                }
+                int index = GetPlayerIndex(input.PlayerID);
+                curFrame.Inputs[index] = input;
+            }
         }
 
         public void Dispatch(Session session, byte opcode, object message)
